@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>姚子皓学习工作台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            boyblue: {
+              50: '#e8f7ff',
+              100: '#d1efff',
+              200: '#a3dfff',
+              300: '#75cfff',
+              400: '#47bfff',
+              500: '#1aafff',
+              600: '#008fe0',
+              700: '#006db0',
+            },
+            candy: {
+              red: '#ff6b6b',
+              orange: '#ff9f43',
+              yellow: '#feca57',
+              green: '#1dd1a1',
+              teal: '#00d2d3',
+              blue: '#54a0ff',
+              purple: '#5f27cd',
+              pink: '#ff9ff3',
+            }
+          },
+          fontFamily: {
+            sans: ['"Noto Sans SC"', 'Nunito', 'system-ui', 'sans-serif'],
+          },
+          boxShadow: {
+            'soft': '0 8px 32px -8px rgba(26, 175, 255, 0.4)',
+            'card': '0 10px 30px -10px rgba(26, 175, 255, 0.35)',
+            'float': '0 15px 40px -12px rgba(26, 175, 255, 0.5)',
+            'btn': '0 6px 0px rgba(0,0,0,0.1)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Noto Sans SC', 'Nunito', system-ui, sans-serif; }
+    .pattern-bg {
+      background-color: #e8f7ff;
+      background-image:
+        radial-gradient(circle at 15% 25%, rgba(255,255,255,0.8) 20px, transparent 21px),
+        radial-gradient(circle at 85% 15%, rgba(255,255,255,0.6) 15px, transparent 16px),
+        radial-gradient(circle at 75% 75%, rgba(255,255,255,0.7) 25px, transparent 26px),
+        radial-gradient(circle at 25% 85%, rgba(255,255,255,0.5) 18px, transparent 19px);
+      background-size: 120px 120px, 160px 160px, 200px 200px, 140px 140px;
+    }
+    .nav-item { transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .nav-item:hover { transform: scale(1.08) rotate(-2deg); }
+    .nav-item.active { background: rgba(255,255,255,0.5); box-shadow: 0 8px 24px rgba(0,111,224,0.35); transform: scale(1.12) rotate(2deg); }
+    .card-hover { transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .card-hover:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 16px 40px -10px rgba(26, 175, 255, 0.45); }
+    .progress-ring-circle { transition: stroke-dashoffset 0.6s ease; transform: rotate(-90deg); transform-origin: 50% 50%; }
+    .checkbox-custom {
+      appearance: none;
+      width: 26px;
+      height: 26px;
+      border: 3px solid #d1efff;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: white;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .checkbox-custom:checked {
+      background: linear-gradient(135deg, #1aafff, #008fe0);
+      border-color: #1aafff;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E");
+      box-shadow: 0 4px 10px rgba(26,175,255,0.4);
+    }
+    .scroll-hide::-webkit-scrollbar { display: none; }
+    .scroll-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(3deg); }
+    }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+    .animate-wiggle { animation: wiggle 2s ease-in-out infinite; }
+    @keyframes bounce-slow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    .animate-bounce-slow { animation: bounce-slow 2.5s ease-in-out infinite; }
+    .calendar-day { aspect-ratio: 1; }
+    .week-btn { transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .week-btn.active { transform: scale(1.12); box-shadow: 0 8px 20px rgba(26,175,255,0.5); }
+    .week-btn:hover:not(.active) { transform: scale(1.06); }
+    .sticker-shadow { filter: drop-shadow(0 4px 6px rgba(0,0,0,0.12)); }
+    .text-stroke { -webkit-text-stroke: 2px rgba(255,255,255,0.6); }
+    .cloud-decoration {
+      position: absolute;
+      background: rgba(255,255,255,0.8);
+      border-radius: 50px;
+    }
+    .cloud-decoration::before, .cloud-decoration::after {
+      content: '';
+      position: absolute;
+      background: rgba(255,255,255,0.8);
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body class="pattern-bg text-slate-700 h-screen overflow-hidden">
+  <div class="flex h-full">
+    <!-- 左侧导航 -->
+    <aside class="w-[76px] md:w-32 bg-gradient-to-b from-boyblue-400 via-boyblue-500 to-boyblue-600 flex flex-col py-4 shadow-soft overflow-y-auto scroll-hide shrink-0 relative">
+      <!-- 装饰云朵 -->
+      <div class="cloud-decoration w-16 h-6 top-4 -left-6 opacity-60"></div>
+      <div class="cloud-decoration w-12 h-5 top-20 -right-4 opacity-40"></div>
+
+      <div class="px-2 mb-5 text-center relative z-10">
+        <div class="w-12 h-12 md:w-16 md:h-16 mx-auto bg-white/30 rounded-3xl flex items-center justify-center text-3xl mb-1 animate-float border-2 border-white/40">🧑‍🚀</div>
+        <p class="hidden md:block text-white text-[10px] font-black drop-shadow-md">姚子皓</p>
+      </div>
+      <nav class="flex-1 space-y-2 px-2 relative z-10" id="sidebar-nav">
+        <!-- 导航项由 JS 生成 -->
+      </nav>
+      <div class="px-2 pt-3 mt-auto relative z-10">
+        <div class="bg-white/30 rounded-2xl p-2 text-center border-2 border-white/30 shadow-btn">
+          <div class="text-2xl sticker-shadow animate-wiggle">☀️</div>
+          <div class="text-white text-xs font-black" id="nav-sun">0</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 右侧主内容 -->
+    <main class="flex-1 overflow-y-auto scroll-hide relative">
+      <div class="max-w-5xl mx-auto p-4 md:p-8 pb-24" id="main-content">
+        <!-- 内容由 JS 渲染 -->
+      </div>
+    </main>
+  </div>
+
+  <!-- 提示 Toast -->
+  <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 bg-white px-6 py-3 rounded-full shadow-float transform -translate-y-24 transition-transform duration-300 z-50 flex items-center gap-2 border-2 border-boyblue-200">
+    <span id="toast-icon">✅</span>
+    <span id="toast-msg" class="text-sm font-black text-slate-600"></span>
+  </div>
+
+  <script>
+    // ==================== 数据 ====================
+    const navItems = [
+      { id: 'home', icon: '📋', label: '每日计划' },
+      { id: 'calendar', icon: '📚', label: '打卡记录' },
+      { id: 'chinese', icon: '📝', label: '语文' },
+      { id: 'math', icon: '🧮', label: '数学' },
+      { id: 'english', icon: '🌈', label: '英语' },
+      { id: 'science', icon: '🔬', label: '科学' },
+      { id: 'sport', icon: '🏃', label: '运动' },
+      { id: 'textbook', icon: '📖', label: '四上教材' },
+      { id: 'reward', icon: '🎁', label: '奖励中心' },
+      { id: 'stats', icon: '📊', label: '统计' },
+    ];
+
+    const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+
+    const defaultData = {
+      version: 4,
+      sun: 25,
+      streak: 0,
+      fullDays: 0,
+      missed: 0,
+      tasks: {
+        home: [
+          { id: 'h1', title: '练字帖', sub: 'Writing', desc: '四上练字帖写1单元', done: false, sun: 5 },
+          { id: 'h2', title: '背诵', sub: 'Recitation', desc: '背诵一篇必背课文', done: false, sun: 5 },
+          { id: 'h3', title: '课文预习', sub: 'Preview', desc: '预习语文四上课文', done: false, sun: 5 },
+          { id: 'h4', title: '文言文', sub: 'Classical', desc: '阅读文言文2篇', done: false, sun: 5 },
+          { id: 'h5', title: '口算', sub: 'Math', desc: '暑假口算写2页', done: false, sun: 5 },
+          { id: 'h6', title: '英语朗读', sub: 'English', desc: '预习四上课文一篇', done: false, sun: 5 },
+          { id: 'h7', title: '单词', sub: 'Vocabulary', desc: '预习四上新单词10个', done: false, sun: 5 },
+          { id: 'h8', title: '跳绳', sub: 'Sport', desc: '跳绳3组，每组1分钟', done: false, sun: 5 },
+        ],
+        chinese: {
+          // 应用周日 = 图片第1列（7.1 周三）
+          0: [
+            { id: 'c01', text: '古诗一首', done: false },
+            { id: 'c02', text: '字帖+听写', done: false },
+            { id: 'c03', text: '阅读理解', done: false },
+            { id: 'c04', text: '大语文', done: false },
+          ],
+          // 应用周一 = 图片第2列（7.2 周四）
+          1: [
+            { id: 'c11', text: '古诗一首', done: false },
+            { id: 'c12', text: '字帖+听写', done: false },
+            { id: 'c13', text: '仿写', done: false },
+            { id: 'c14', text: '大语文', done: false },
+          ],
+          // 应用周二 = 图片第3列（7.3 周五）
+          2: [
+            { id: 'c21', text: '古诗一首', done: false },
+            { id: 'c22', text: '字帖+听写', done: false },
+            { id: 'c23', text: '阅读理解', done: false },
+            { id: 'c24', text: '大语文', done: false },
+          ],
+          // 应用周三 = 图片第4列（7.4 周六）
+          3: [
+            { id: 'c31', text: '古诗一首', done: false },
+            { id: 'c32', text: '字帖+听写', done: false },
+            { id: 'c33', text: '仿写', done: false },
+            { id: 'c34', text: '大语文', done: false },
+          ],
+          // 应用周四 = 图片第5列（7.5 周日）
+          4: [
+            { id: 'c41', text: '古诗一首', done: false },
+            { id: 'c42', text: '字帖+听写', done: false },
+            { id: 'c43', text: '阅读理解', done: false },
+            { id: 'c44', text: '大语文', done: false },
+          ],
+          // 应用周五 = 图片第6列（7.6 周一）
+          5: [
+            { id: 'c51', text: '古诗一首', done: false },
+            { id: 'c52', text: '字帖+听写', done: false },
+            { id: 'c53', text: '仿写', done: false },
+            { id: 'c54', text: '大语文', done: false },
+          ],
+          // 应用周六 = 图片第7列（7.7 周二）
+          6: [
+            { id: 'c61', text: '古诗一首', done: false },
+            { id: 'c62', text: '字帖+听写', done: false },
+            { id: 'c63', text: '周内听写', done: false },
+            { id: 'c64', text: '大语文', done: false },
+          ],
+        },
+        math: {
+          // 应用周日 = 图片第1列（7.1 周三）
+          0: [
+            { id: 'm01', text: '口算1页', done: false },
+            { id: 'm02', text: '清华+练习', done: false },
+            { id: 'm03', text: '3道思维题', done: false },
+          ],
+          // 应用周一 = 图片第2列（7.2 周四）
+          1: [
+            { id: 'm11', text: '口算1页', done: false },
+            { id: 'm12', text: '清华+练习', done: false },
+            { id: 'm13', text: '3道思维题', done: false },
+          ],
+          // 应用周二 = 图片第3列（7.3 周五）
+          2: [
+            { id: 'm21', text: '口算1页', done: false },
+            { id: 'm22', text: '清华+练习', done: false },
+            { id: 'm23', text: '3道思维题', done: false },
+          ],
+          // 应用周三 = 图片第4列（7.4 周六）
+          3: [
+            { id: 'm31', text: '口算1页', done: false },
+            { id: 'm32', text: '清华+练习', done: false },
+            { id: 'm33', text: '3道思维题', done: false },
+          ],
+          // 应用周四 = 图片第5列（7.5 周日）
+          4: [
+            { id: 'm41', text: '口算1页', done: false },
+            { id: 'm42', text: '清华+练习', done: false },
+            { id: 'm43', text: '3道思维题', done: false },
+          ],
+          // 应用周五 = 图片第6列（7.6 周一）
+          5: [
+            { id: 'm51', text: '口算1页', done: false },
+            { id: 'm52', text: '清华+练习', done: false },
+            { id: 'm53', text: '3道思维题', done: false },
+          ],
+          // 应用周六 = 图片第7列（7.7 周二）
+          6: [
+            { id: 'm61', text: '口算1页', done: false },
+            { id: 'm62', text: '清华+练习', done: false },
+            { id: 'm63', text: '周内复习', done: false },
+          ],
+        },
+        english: {
+          // 应用周日 = 图片第1列（7.1 周三）
+          0: [
+            { id: 'e01', text: '跟读15分钟', done: false },
+            { id: 'e02', text: '字帖+听写', done: false },
+            { id: 'e03', text: '剑桥国际', done: false },
+          ],
+          // 应用周一 = 图片第2列（7.2 周四）
+          1: [
+            { id: 'e11', text: '跟读15分钟', done: false },
+            { id: 'e12', text: '字帖+听写', done: false },
+            { id: 'e13', text: '剑桥国际', done: false },
+          ],
+          // 应用周二 = 图片第3列（7.3 周五）
+          2: [
+            { id: 'e21', text: '跟读15分钟', done: false },
+            { id: 'e22', text: '字帖+听写', done: false },
+            { id: 'e23', text: '剑桥国际', done: false },
+          ],
+          // 应用周三 = 图片第4列（7.4 周六）
+          3: [
+            { id: 'e31', text: '跟读15分钟', done: false },
+            { id: 'e32', text: '字帖+听写', done: false },
+            { id: 'e33', text: '剑桥国际', done: false },
+          ],
+          // 应用周四 = 图片第5列（7.5 周日）
+          4: [
+            { id: 'e41', text: '跟读15分钟', done: false },
+            { id: 'e42', text: '字帖+听写', done: false },
+            { id: 'e43', text: '剑桥国际', done: false },
+          ],
+          // 应用周五 = 图片第6列（7.6 周一）
+          5: [
+            { id: 'e51', text: '跟读15分钟', done: false },
+            { id: 'e52', text: '字帖+听写', done: false },
+            { id: 'e53', text: '剑桥国际', done: false },
+          ],
+          // 应用周六 = 图片第7列（7.7 周二）
+          6: [
+            { id: 'e61', text: '跟读15分钟', done: false },
+            { id: 'e62', text: '字帖+听写', done: false },
+            { id: 'e63', text: '周内单词', done: false },
+          ],
+        },
+        science: {
+          // 应用周日 = 图片第1列
+          0: [
+            { id: 'sc01', text: '观察记录', done: false },
+            { id: 'sc02', text: '科学阅读', done: false },
+            { id: 'sc03', text: '小实验', done: false },
+          ],
+          1: [
+            { id: 'sc11', text: '观察记录', done: false },
+            { id: 'sc12', text: '科学阅读', done: false },
+            { id: 'sc13', text: '小实验', done: false },
+          ],
+          2: [
+            { id: 'sc21', text: '观察记录', done: false },
+            { id: 'sc22', text: '科学阅读', done: false },
+            { id: 'sc23', text: '小实验', done: false },
+          ],
+          3: [
+            { id: 'sc31', text: '观察记录', done: false },
+            { id: 'sc32', text: '科学阅读', done: false },
+            { id: 'sc33', text: '小实验', done: false },
+          ],
+          4: [
+            { id: 'sc41', text: '观察记录', done: false },
+            { id: 'sc42', text: '科学阅读', done: false },
+            { id: 'sc43', text: '小实验', done: false },
+          ],
+          5: [
+            { id: 'sc51', text: '观察记录', done: false },
+            { id: 'sc52', text: '科学阅读', done: false },
+            { id: 'sc53', text: '小实验', done: false },
+          ],
+          6: [
+            { id: 'sc61', text: '观察记录', done: false },
+            { id: 'sc62', text: '科学阅读', done: false },
+            { id: 'sc63', text: '周内总结', done: false },
+          ],
+        },
+        sport: [
+          { id: 's1', title: '跳绳', sub: 'Jump Rope', desc: '跳绳3组，每组1分钟', done: false, sun: 5 },
+          { id: 's2', title: '跑步', sub: 'Running', desc: '户外慢跑或快走20分钟', done: false, sun: 5 },
+          { id: 's3', title: '护眼操', sub: 'Eye Exercise', desc: '做眼保健操2次', done: false, sun: 5 },
+        ],
+      },
+      textbooks: [
+        { id: 't1', subject: '语文', name: '部编版四上语文', progress: 0, color: 'bg-emerald-100 text-emerald-700', link: 'https://www.pep.com.cn/czyw/' },
+        { id: 't2', subject: '数学', name: '人教版四上数学', progress: 0, color: 'bg-blue-100 text-blue-700', link: 'https://www.pep.com.cn/rjsy/' },
+        { id: 't3', subject: '英语', name: '人教PEP四上英语', progress: 0, color: 'bg-amber-100 text-amber-700', link: 'https://run.minapp.com/f/i5QmFEKFzBANtMc' },
+        { id: 't4', subject: '科学', name: '教科版四上科学', progress: 0, color: 'bg-purple-100 text-purple-700', link: 'https://www.esph.com.cn/' },
+      ],
+      rewards: [
+        { id: 'r1', icon: '🍦', name: '吃冰淇淋', cost: 30 },
+        { id: 'r2', icon: '🎬', name: '看一集动画片', cost: 50 },
+        { id: 'r3', icon: '🎡', name: '去公园玩', cost: 80 },
+        { id: 'r4', icon: '🧸', name: '买一个小玩具', cost: 150 },
+        { id: 'r5', icon: '🎠', name: '去游乐园', cost: 300 },
+      ],
+      calendar: {},
+    };
+
+    let data = JSON.parse(JSON.stringify(defaultData));
+    let currentNav = 'home';
+    let currentMonth = new Date();
+    let currentSubjectDay = { chinese: new Date().getDay(), math: new Date().getDay(), english: new Date().getDay(), science: new Date().getDay() };
+
+    function loadData() {
+      const saved = localStorage.getItem('yaozihao-workbench');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          // 如果版本号不一致，说明任务模板已更新，使用新模板
+          if (parsed.version !== defaultData.version) {
+            console.log('任务模板已更新，使用最新默认任务');
+            return;
+          }
+          data = { ...defaultData, ...parsed };
+          ['home', 'sport'].forEach(k => {
+            if (parsed.tasks && parsed.tasks[k]) data.tasks[k] = parsed.tasks[k];
+          });
+          ['chinese', 'math', 'english', 'science'].forEach(k => {
+            if (parsed.tasks && parsed.tasks[k]) data.tasks[k] = parsed.tasks[k];
+          });
+          if (parsed.textbooks) data.textbooks = parsed.textbooks;
+          if (parsed.rewards) data.rewards = parsed.rewards;
+          if (parsed.calendar) data.calendar = parsed.calendar;
+        } catch (e) {}
+      }
+    }
+
+    function saveData() {
+      const toSave = { ...data, version: defaultData.version };
+      localStorage.setItem('yaozihao-workbench', JSON.stringify(toSave));
+      updateNavSun();
+    }
+
+    function showToast(msg, icon='✅') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      document.getElementById('toast-icon').textContent = icon;
+      toast.classList.remove('-translate-y-24');
+      setTimeout(() => toast.classList.add('-translate-y-24'), 2200);
+    }
+
+    function formatDate(date) {
+      const m = date.getMonth() + 1;
+      const d = date.getDate();
+      const w = weekDays[date.getDay()];
+      return `${m}月${d}日 ${w}`;
+    }
+
+    function todayKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function getTodayWeekDay() {
+      return new Date().getDay();
+    }
+
+    function calcProgress() {
+      let total = 0, done = 0;
+      data.tasks.home.forEach(t => { total++; if(t.done) done++; });
+      data.tasks.sport.forEach(t => { total++; if(t.done) done++; });
+      ['chinese','math','english','science'].forEach(sub => {
+        for (let i=0;i<7;i++) {
+          data.tasks[sub][i].forEach(t => { total++; if(t.done) done++; });
+        }
+      });
+      return total === 0 ? 0 : Math.round(done / total * 100);
+    }
+
+    function calcTodayDone() {
+      const w = getTodayWeekDay();
+      let total = data.tasks.home.length + data.tasks.sport.length + data.tasks.chinese[w].length + data.tasks.math[w].length + data.tasks.english[w].length + data.tasks.science[w].length;
+      let done = 0;
+      data.tasks.home.forEach(t => { if(t.done) done++; });
+      data.tasks.sport.forEach(t => { if(t.done) done++; });
+      [data.tasks.chinese[w], data.tasks.math[w], data.tasks.english[w], data.tasks.science[w]].forEach(arr => arr.forEach(t => { if(t.done) done++; }));
+      return { total, done };
+    }
+
+    function updateCalendarStatus() {
+      const { total, done } = calcTodayDone();
+      const key = todayKey();
+      if (total === 0) data.calendar[key] = 'none';
+      else if (done === total) data.calendar[key] = 'full';
+      else if (done > 0) data.calendar[key] = 'partial';
+      else data.calendar[key] = 'missed';
+
+      data.fullDays = Object.values(data.calendar).filter(s => s === 'full').length;
+      data.missed = Object.values(data.calendar).filter(s => s === 'missed').length;
+
+      let streak = 0;
+      const d = new Date();
+      while (true) {
+        const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        if (data.calendar[k] === 'full') { streak++; d.setDate(d.getDate() - 1); }
+        else if (k === todayKey() && data.calendar[k] !== 'missed') { d.setDate(d.getDate() - 1); }
+        else break;
+      }
+      data.streak = streak;
+    }
+
+    function updateNavSun() {
+      document.getElementById('nav-sun').textContent = data.sun;
+    }
+
+    function renderNav() {
+      const nav = document.getElementById('sidebar-nav');
+      nav.innerHTML = navItems.map(item => `
+        <button onclick="switchNav('${item.id}')" class="nav-item w-full flex flex-col items-center justify-center gap-1 px-1 py-2 rounded-2xl ${currentNav === item.id ? 'active' : 'text-white/95 hover:bg-white/20'}">
+          <span class="text-2xl md:text-3xl sticker-shadow">${item.icon}</span>
+          <span class="text-[10px] md:text-xs font-black leading-tight text-center">${item.label}</span>
+        </button>
+      `).join('');
+    }
+
+    function switchNav(id) {
+      currentNav = id;
+      renderNav();
+      renderMain();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ==================== 首页 ====================
+    function renderHome() {
+      const progress = calcProgress();
+      const { total, done } = calcTodayDone();
+      const radius = 52;
+      const circumference = 2 * Math.PI * radius;
+      const offset = circumference - (progress / 100) * circumference;
+
+      return `
+        <div class="mb-5">
+          <div class="bg-gradient-to-r from-boyblue-400 to-boyblue-500 rounded-3xl p-6 text-white shadow-soft relative overflow-hidden border-4 border-white/40">
+            <div class="absolute -right-8 -top-8 w-36 h-36 bg-white/20 rounded-full"></div>
+            <div class="absolute -left-6 -bottom-6 w-28 h-28 bg-white/15 rounded-full"></div>
+            <div class="absolute right-12 bottom-2 text-4xl opacity-60 animate-float">🚀</div>
+            <div class="relative flex items-center gap-3 mb-2">
+              <span class="text-4xl animate-bounce-slow">👋</span>
+              <h2 class="text-2xl md:text-3xl font-black">姚子皓，今天加油！</h2>
+            </div>
+            <p class="relative text-white/95 text-sm md:text-base font-bold">${new Date().getFullYear()}年${formatDate(new Date())}</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-5 mb-6">
+          <div class="bg-white rounded-3xl p-5 shadow-card flex flex-col items-center justify-center border-4 border-boyblue-100 card-hover">
+            <h3 class="text-slate-500 font-black mb-3">整体完成进度</h3>
+            <div class="relative w-36 h-36">
+              <svg class="w-full h-full" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="${radius}" fill="none" stroke="#d1efff" stroke-width="14"/>
+                <circle class="progress-ring-circle" cx="60" cy="60" r="${radius}" fill="none" stroke="url(#blueGradient)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/>
+                <defs>
+                  <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#1aafff"/>
+                    <stop offset="100%" stop-color="#008fe0"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span class="text-4xl font-black text-boyblue-500">${progress}%</span>
+              </div>
+            </div>
+            <p class="text-slate-400 text-sm mt-2 font-bold">今日已完成 ${done}/${total} 项</p>
+          </div>
+
+          <div class="bg-white rounded-3xl p-5 shadow-card border-4 border-boyblue-100 card-hover">
+            <h3 class="text-slate-600 font-black mb-4 flex items-center gap-2 text-lg"><span class="text-2xl">☀️</span> 今日能量</h3>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center p-3 bg-gradient-to-r from-boyblue-50 to-boyblue-100 rounded-xl border-2 border-boyblue-200">
+                <span class="text-slate-600 font-black">可用阳光</span>
+                <span class="text-2xl font-black text-amber-500">${data.sun}</span>
+              </div>
+              <div class="flex justify-between items-center p-3 bg-gradient-to-r from-boyblue-50 to-boyblue-100 rounded-xl border-2 border-boyblue-200">
+                <span class="text-slate-600 font-black">连续全勤</span>
+                <span class="text-xl font-black text-boyblue-500">${data.streak} 天</span>
+              </div>
+              <div class="flex justify-between items-center p-3 bg-gradient-to-r from-boyblue-50 to-boyblue-100 rounded-xl border-2 border-boyblue-200">
+                <span class="text-slate-600 font-black">漏打卡</span>
+                <span class="text-xl font-black text-candy-red">${data.missed} 天</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 今日任务卡片：一排两张 -->
+        <div class="mb-5">
+          <h3 class="text-xl font-black text-slate-700 flex items-center gap-2 mb-4">
+            <span class="text-2xl">🎯</span> 今日任务卡片
+          </h3>
+          <div class="grid grid-cols-2 gap-3 md:gap-4">
+            ${data.tasks.home.map((task, idx) => {
+              const colors = [
+                'bg-gradient-to-br from-sky-100 to-blue-100 border-blue-200',
+                'bg-gradient-to-br from-amber-100 to-yellow-100 border-amber-200',
+                'bg-gradient-to-br from-emerald-100 to-green-100 border-emerald-200',
+                'bg-gradient-to-br from-purple-100 to-violet-100 border-purple-200',
+                'bg-gradient-to-br from-rose-100 to-pink-100 border-rose-200',
+                'bg-gradient-to-br from-cyan-100 to-teal-100 border-cyan-200',
+                'bg-gradient-to-br from-indigo-100 to-blue-100 border-indigo-200',
+                'bg-gradient-to-br from-orange-100 to-amber-100 border-orange-200'
+              ];
+              const icons = ['✍️','📖','📚','🔖','🧮','🔤','⭐','🏃'];
+              return `
+              <div class="${colors[idx % colors.length]} border-2 rounded-2xl p-3 md:p-4 card-hover relative">
+                <div class="flex justify-between items-start mb-2">
+                  <div class="text-2xl md:text-3xl sticker-shadow">${icons[idx]}</div>
+                  <input type="checkbox" class="checkbox-custom" ${task.done ? 'checked' : ''} onchange="toggleHomeTask('${task.id}', this)">
+                </div>
+                <h4 class="font-black text-slate-700 text-base md:text-lg ${task.done ? 'line-through text-slate-400' : ''}">${task.title}</h4>
+                <p class="text-[10px] md:text-xs text-slate-500 mb-1 font-bold">${task.sub}</p>
+                <p class="text-xs md:text-sm text-slate-600 ${task.done ? 'line-through text-slate-300' : ''}">${task.desc}</p>
+                <div class="mt-2 inline-flex items-center gap-1 text-[10px] md:text-xs font-black text-amber-600 bg-white/90 px-2 py-1 rounded-full border border-amber-100 shadow-sm">
+                  <span>☀️</span> +${task.sun}
+                </div>
+              </div>
+            `}).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleHomeTask(id, el) {
+      const task = data.tasks.home.find(t => t.id === id);
+      if (!task) return;
+      task.done = el.checked;
+      if (task.done) { data.sun += task.sun; showToast(`完成「${task.title}」，获得 ${task.sun} 阳光！`); }
+      else { data.sun -= task.sun; }
+      updateCalendarStatus();
+      saveData();
+      renderMain();
+    }
+
+    // ==================== 打卡记录 ====================
+    function renderCalendar() {
+      const year = currentMonth.getFullYear();
+      const month = currentMonth.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const startWeekDay = firstDay.getDay();
+      const daysInMonth = lastDay.getDate();
+
+      return `
+        <div class="bg-white rounded-3xl p-5 md:p-6 shadow-card border-4 border-boyblue-100 card-hover">
+          <div class="flex items-center justify-between mb-6">
+            <button onclick="changeMonth(-1)" class="w-11 h-11 rounded-full bg-boyblue-100 hover:bg-boyblue-200 text-boyblue-600 font-black text-xl shadow-btn">‹</button>
+            <h2 class="text-2xl font-black text-slate-700">${year}年 ${month + 1}月</h2>
+            <button onclick="changeMonth(1)" class="w-11 h-11 rounded-full bg-boyblue-100 hover:bg-boyblue-200 text-boyblue-600 font-black text-xl shadow-btn">›</button>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3 md:gap-4 mb-6">
+            <div class="bg-gradient-to-br from-boyblue-50 to-boyblue-100 rounded-2xl p-4 text-center border-2 border-boyblue-200">
+              <div class="text-3xl font-black text-boyblue-500">${data.streak}</div>
+              <div class="text-sm text-slate-500 font-black">连续全勤</div>
+            </div>
+            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-4 text-center border-2 border-emerald-200">
+              <div class="text-3xl font-black text-emerald-500">${data.fullDays}</div>
+              <div class="text-sm text-slate-500 font-black">满分天数</div>
+            </div>
+            <div class="bg-gradient-to-br from-rose-50 to-rose-100 rounded-2xl p-4 text-center border-2 border-rose-200">
+              <div class="text-3xl font-black text-rose-500">${data.missed}</div>
+              <div class="text-sm text-slate-500 font-black">漏打卡</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-7 gap-1 md:gap-2 mb-2 text-center">
+            ${weekDays.map(d => `<div class="text-xs md:text-sm font-black text-slate-400 py-2">${d}</div>`).join('')}
+          </div>
+          <div class="grid grid-cols-7 gap-1 md:gap-2">
+            ${Array(startWeekDay).fill('<div></div>').join('')}
+            ${Array.from({length: daysInMonth}, (_, i) => {
+              const day = i + 1;
+              const key = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+              const status = data.calendar[key] || 'none';
+              const isToday = key === todayKey();
+              const statusClass = {
+                full: 'bg-gradient-to-br from-emerald-200 to-emerald-300 text-emerald-700 border-2 border-emerald-400',
+                partial: 'bg-gradient-to-br from-amber-200 to-amber-300 text-amber-700 border-2 border-amber-400',
+                missed: 'bg-gradient-to-br from-rose-200 to-rose-300 text-rose-600 border-2 border-rose-400',
+                none: 'bg-slate-50 text-slate-400 border-2 border-slate-100'
+              }[status];
+              const mark = status === 'missed' ? '×' : (status === 'full' ? '✓' : '');
+              return `
+                <div class="calendar-day rounded-xl ${statusClass} ${isToday ? 'ring-2 ring-boyblue-400 ring-offset-2' : ''} flex flex-col items-center justify-center text-xs md:text-sm font-black cursor-pointer hover:opacity-80 transition">
+                  <span>${day}</span>
+                  ${mark ? `<span class="text-[10px]">${mark}</span>` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="flex flex-wrap gap-3 md:gap-4 mt-6 text-xs md:text-sm">
+            <div class="flex items-center gap-2 font-bold text-slate-500"><span class="w-4 h-4 rounded bg-emerald-300 border border-emerald-400"></span> 全部完成</div>
+            <div class="flex items-center gap-2 font-bold text-slate-500"><span class="w-4 h-4 rounded bg-amber-300 border border-amber-400"></span> 部分完成</div>
+            <div class="flex items-center gap-2 font-bold text-slate-500"><span class="w-4 h-4 rounded bg-rose-300 border border-rose-400"></span> 未打卡</div>
+            <div class="flex items-center gap-2 font-bold text-slate-500"><span class="w-4 h-4 rounded bg-slate-50 border border-slate-100"></span> 无任务/未来</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function changeMonth(delta) {
+      currentMonth.setMonth(currentMonth.getMonth() + delta);
+      renderMain();
+    }
+
+    // ==================== 学科模块（标题只显示栏目名）====================
+    // 各学科对应的联网动作按钮配置
+    const subjectActions = {
+      chinese: [
+        { label: '🔊 课文跟读', url: 'https://www.baidu.com/s?wd=部编版四年级上册语文课文朗读跟读', color: 'bg-emerald-400 hover:bg-emerald-500' },
+        { label: '📚 课文内容', url: 'https://www.baidu.com/s?wd=部编版四年级上册语文课文原文', color: 'bg-emerald-300 hover:bg-emerald-400' },
+      ],
+      math: [
+        { label: '✏️ 在线练习', url: 'https://www.baidu.com/s?wd=四年级数学口算题在线练习', color: 'bg-blue-400 hover:bg-blue-500' },
+        { label: '🎬 名师讲解', url: 'https://www.baidu.com/s?wd=四年级数学上册名师讲解视频', color: 'bg-blue-300 hover:bg-blue-400' },
+      ],
+      english: [
+        { label: '🔊 英语跟读', url: 'https://www.baidu.com/s?wd=人教PEP四年级上册英语课文跟读', color: 'bg-amber-400 hover:bg-amber-500' },
+        { label: '📚 课文内容', url: 'https://www.baidu.com/s?wd=人教PEP四年级上册英语课文原文', color: 'bg-amber-300 hover:bg-amber-400' },
+      ],
+      science: [
+        { label: '🎬 实验视频', url: 'https://www.baidu.com/s?wd=教科版四年级上册科学实验视频', color: 'bg-purple-400 hover:bg-purple-500' },
+        { label: '🔬 科学知识', url: 'https://www.baidu.com/s?wd=教科版四年级上册科学知识点', color: 'bg-purple-300 hover:bg-purple-400' },
+      ],
+    };
+
+    function renderSubject(subject, icon) {
+      const map = { chinese: '语文', math: '数学', english: '英语', science: '科学' };
+      const title = map[subject];
+      const selectedDay = currentSubjectDay[subject];
+      const tasks = data.tasks[subject][selectedDay];
+      const doneCount = tasks.filter(t => t.done).length;
+      const allDone = doneCount === tasks.length && tasks.length > 0;
+      const dayColors = [
+        'bg-gradient-to-br from-rose-100 to-red-100 border-rose-200',
+        'bg-gradient-to-br from-orange-100 to-amber-100 border-orange-200',
+        'bg-gradient-to-br from-amber-100 to-yellow-100 border-amber-200',
+        'bg-gradient-to-br from-emerald-100 to-green-100 border-emerald-200',
+        'bg-gradient-to-br from-sky-100 to-blue-100 border-sky-200',
+        'bg-gradient-to-br from-indigo-100 to-violet-100 border-indigo-200',
+        'bg-gradient-to-br from-purple-100 to-fuchsia-100 border-purple-200'
+      ];
+      const subjectBanners = {
+        chinese: 'from-emerald-400 to-emerald-500',
+        math: 'from-blue-400 to-blue-500',
+        english: 'from-amber-400 to-amber-500',
+        science: 'from-purple-400 to-purple-500'
+      };
+      const decoIcon = { chinese: '📚', math: '🧮', english: '🌈', science: '🔬' }[subject];
+      const actions = subjectActions[subject] || [];
+
+      return `
+        <div class="mb-6">
+          <div class="bg-gradient-to-r ${subjectBanners[subject]} rounded-3xl p-6 text-white shadow-soft mb-5 relative overflow-hidden border-4 border-white/40">
+            <div class="absolute -right-6 -top-6 w-28 h-28 bg-white/20 rounded-full"></div>
+            <div class="absolute left-8 bottom-1 text-4xl opacity-50 animate-float">${decoIcon}</div>
+            <div class="relative flex items-center gap-3">
+              <span class="text-4xl sticker-shadow">${icon}</span>
+              <div>
+                <h2 class="text-3xl font-black">${title}</h2>
+                <p class="text-white/95 text-sm font-bold">每日任务，点击星期查看明细</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 联网动作按钮 -->
+          ${actions.length > 0 ? `
+          <div class="flex flex-wrap gap-2 mb-5">
+            ${actions.map(a => `
+              <a href="${a.url}" target="_blank" rel="noopener" class="${a.color} text-white px-4 py-2 rounded-2xl font-black text-sm shadow-soft transition flex items-center gap-1">
+                ${a.label}
+              </a>
+            `).join('')}
+          </div>
+          ` : ''}
+
+          <!-- 星期选择按钮：无框彩色标签 -->
+          <div class="mb-5">
+            <div class="flex justify-between items-stretch gap-1 md:gap-2">
+              ${weekDays.map((dayName, idx) => {
+                const dayTasks = data.tasks[subject][idx];
+                const dayDone = dayTasks.filter(t => t.done).length;
+                const isActive = idx === selectedDay;
+                const allDayDone = dayDone === dayTasks.length && dayTasks.length > 0;
+                const dayPalette = [
+                  { active: 'bg-rose-400', light: 'bg-rose-100 text-rose-500' },
+                  { active: 'bg-orange-400', light: 'bg-orange-100 text-orange-500' },
+                  { active: 'bg-amber-400', light: 'bg-amber-100 text-amber-500' },
+                  { active: 'bg-emerald-400', light: 'bg-emerald-100 text-emerald-500' },
+                  { active: 'bg-sky-400', light: 'bg-sky-100 text-sky-500' },
+                  { active: 'bg-indigo-400', light: 'bg-indigo-100 text-indigo-500' },
+                  { active: 'bg-purple-400', light: 'bg-purple-100 text-purple-500' },
+                ];
+                const pal = dayPalette[idx];
+                return `
+                  <button onclick="selectSubjectDay('${subject}', ${idx})" class="week-btn flex-1 py-3 px-1 rounded-2xl flex flex-col items-center justify-center gap-1 ${isActive ? `${pal.active} text-white shadow-soft` : `${pal.light} hover:opacity-80`}">
+                    <span class="text-sm md:text-base font-black">${dayName}</span>
+                    <span class="text-[10px] md:text-xs font-bold ${isActive ? 'text-white/90' : 'opacity-70'}">${dayDone}/${dayTasks.length}</span>
+                    ${allDayDone ? '<span class="text-[10px]">✨</span>' : ''}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <!-- 选中日期任务明细 -->
+          <div class="bg-white rounded-3xl p-5 md:p-6 shadow-card border-4 border-boyblue-100 card-hover">
+            <div class="flex items-center justify-between mb-5 pb-4 border-b-2 border-slate-100">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 md:w-14 md:h-14 rounded-2xl ${dayColors[selectedDay]} flex items-center justify-center text-2xl sticker-shadow">${icon}</div>
+                <div>
+                  <h3 class="text-xl md:text-2xl font-black text-slate-700">${weekDays[selectedDay]} 任务明细</h3>
+                  <p class="text-sm text-slate-400 font-bold">${doneCount}/${tasks.length} 已完成</p>
+                </div>
+              </div>
+              ${allDone ? '<span class="text-3xl md:text-4xl animate-wiggle">🌟</span>' : '<span class="text-3xl md:text-4xl animate-bounce-slow">📖</span>'}
+            </div>
+
+            <div class="space-y-3">
+              ${tasks.map((task, tidx) => `
+                <label class="flex items-start gap-3 p-4 rounded-2xl ${task.done ? 'bg-gradient-to-r from-emerald-50 to-emerald-100 border-2 border-emerald-200' : 'bg-gradient-to-r from-boyblue-50 to-boyblue-100 border-2 border-boyblue-200'} cursor-pointer transition hover:shadow-md card-hover">
+                  <input type="checkbox" class="checkbox-custom mt-0.5 shrink-0" ${task.done ? 'checked' : ''} onchange="toggleSubjectTask('${subject}', ${selectedDay}, '${task.id}', this)">
+                  <div class="flex-1 flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <span class="text-base md:text-lg font-black ${task.done ? 'line-through text-slate-400' : 'text-slate-700'}">${task.text}</span>
+                      ${task.done ? '<span class="ml-2 text-xs font-black text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">已完成</span>' : `<span class="ml-2 text-xs font-black text-boyblue-600 bg-boyblue-100 px-2 py-0.5 rounded-full">任务 ${tidx + 1}</span>`}
+                    </div>
+                    <a href="${getTaskSearchUrl(subject, task.text)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="text-xs font-black text-white bg-boyblue-400 hover:bg-boyblue-500 px-3 py-1 rounded-full shadow-sm transition">
+                      🔍 查一查
+                    </a>
+                  </div>
+                </label>
+              `).join('')}
+            </div>
+
+            ${allDone ? `
+              <div class="mt-5 p-4 bg-gradient-to-r from-emerald-100 to-boyblue-100 rounded-2xl border-2 border-emerald-200 text-center">
+                <span class="text-2xl">🎉</span>
+                <span class="font-black text-emerald-600 ml-2">太棒了！${weekDays[selectedDay]}任务全部完成！</span>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // 根据学科和任务文字生成搜索链接
+    function getTaskSearchUrl(subject, taskText) {
+      const subjectName = { chinese: '语文', math: '数学', english: '英语', science: '科学' }[subject];
+      const query = encodeURIComponent(`${subjectName} 四年级 ${taskText}`);
+      return `https://www.baidu.com/s?wd=${query}`;
+    }
+
+    function selectSubjectDay(subject, dayIdx) {
+      currentSubjectDay[subject] = dayIdx;
+      renderMain();
+    }
+
+    function toggleSubjectTask(subject, dayIdx, id, el) {
+      const task = data.tasks[subject][dayIdx].find(t => t.id === id);
+      if (!task) return;
+      task.done = el.checked;
+      if (task.done) { data.sun += 5; showToast('完成任务，获得 5 阳光！'); }
+      else { data.sun -= 5; }
+      updateCalendarStatus();
+      saveData();
+      renderMain();
+    }
+
+    // ==================== 运动 ====================
+    function renderSport() {
+      return `
+        <div class="mb-6">
+          <div class="bg-gradient-to-r from-candy-purple to-purple-500 rounded-3xl p-6 text-white shadow-soft mb-6 relative overflow-hidden border-4 border-white/40">
+            <div class="absolute -right-8 -top-8 w-32 h-32 bg-white/20 rounded-full"></div>
+            <div class="absolute left-6 bottom-2 text-4xl opacity-60 animate-bounce-slow">🏆</div>
+            <div class="relative flex items-center gap-4">
+              <span class="text-5xl sticker-shadow animate-wiggle">🏃</span>
+              <div>
+                <h2 class="text-2xl md:text-3xl font-black">运动</h2>
+                <p class="text-white/95 font-bold">强健体魄，为学习注入满满能量</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            ${data.tasks.sport.map((task, idx) => {
+              const colors = [
+                'bg-gradient-to-br from-sky-100 to-blue-100 border-sky-200',
+                'bg-gradient-to-br from-emerald-100 to-green-100 border-emerald-200',
+                'bg-gradient-to-br from-purple-100 to-violet-100 border-purple-200'
+              ];
+              const icons = ['🪢','🏃','👀'];
+              return `
+                <div class="${colors[idx]} border-2 rounded-2xl p-5 card-hover">
+                  <div class="flex justify-between items-start mb-3">
+                    <span class="text-4xl sticker-shadow">${icons[idx]}</span>
+                    <input type="checkbox" class="checkbox-custom" ${task.done ? 'checked' : ''} onchange="toggleSportTask('${task.id}', this)">
+                  </div>
+                  <h4 class="text-lg md:text-xl font-black text-slate-700 ${task.done ? 'line-through text-slate-400' : ''}">${task.title}</h4>
+                  <p class="text-xs text-slate-500 font-bold mb-2">${task.sub}</p>
+                  <p class="text-sm text-slate-600 ${task.done ? 'line-through text-slate-300' : ''}">${task.desc}</p>
+                  <div class="mt-3 inline-flex items-center gap-1 text-xs font-black text-amber-600 bg-white/90 px-2 py-1 rounded-full border border-amber-100 shadow-sm">
+                    <span>☀️</span> +${task.sun}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="bg-white rounded-3xl p-5 md:p-6 shadow-card border-4 border-boyblue-100 card-hover">
+            <h3 class="text-lg font-black text-slate-700 mb-4 flex items-center gap-2"><span class="text-2xl">✅</span> 运动今日打卡</h3>
+            <div class="space-y-3">
+              ${data.tasks.sport.filter(t => t.done).map(t => `
+                <div class="flex justify-between items-center p-3 bg-gradient-to-r from-boyblue-50 to-boyblue-100 rounded-xl border-2 border-boyblue-200">
+                  <div class="flex items-center gap-3">
+                    <span>🏃</span>
+                    <span class="text-slate-700 font-black">${t.title}</span>
+                    <span class="text-xs text-slate-400 font-medium">${t.desc}</span>
+                  </div>
+                  <span class="text-emerald-500 font-black">+${t.sun} 阳光</span>
+                </div>
+              `).join('') || '<p class="text-slate-400 text-center py-4 font-bold">还没有完成运动任务哦，加油！</p>'}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleSportTask(id, el) {
+      const task = data.tasks.sport.find(t => t.id === id);
+      if (!task) return;
+      task.done = el.checked;
+      if (task.done) { data.sun += task.sun; showToast(`完成「${task.title}」，获得 ${task.sun} 阳光！`); }
+      else { data.sun -= task.sun; }
+      updateCalendarStatus();
+      saveData();
+      renderMain();
+    }
+
+    // ==================== 人教PEP四上英语教材内容 ====================
+    const englishBookData = {
+      units: [
+        {
+          name: 'Unit 1 My classroom',
+          words: [
+            { en: 'classroom', cn: '教室' },
+            { en: 'window', cn: '窗户' },
+            { en: 'picture', cn: '图画' },
+            { en: 'door', cn: '门' },
+            { en: 'blackboard', cn: '黑板' },
+            { en: 'light', cn: '灯' },
+            { en: 'fan', cn: '风扇' },
+            { en: 'wall', cn: '墙壁' },
+            { en: 'floor', cn: '地板' },
+          ],
+          sentences: [
+            { en: "Where is it?", cn: "它在哪？" },
+            { en: "It's near the window.", cn: "它在窗户旁边。" },
+            { en: "Let's go and see!", cn: "我们去看看！" },
+            { en: "What's in the classroom?", cn: "教室里有什么？" },
+            { en: "One blackboard, one TV, many desks and chairs.", cn: "一块黑板，一台电视，许多桌椅。" },
+          ]
+        },
+        {
+          name: 'Unit 2 My schoolbag',
+          words: [
+            { en: 'schoolbag', cn: '书包' },
+            { en: 'maths book', cn: '数学书' },
+            { en: 'English book', cn: '英语书' },
+            { en: 'Chinese book', cn: '语文书' },
+            { en: 'storybook', cn: '故事书' },
+            { en: 'candy', cn: '糖果' },
+            { en: 'notebook', cn: '笔记本' },
+            { en: 'toy', cn: '玩具' },
+            { en: 'key', cn: '钥匙' },
+          ],
+          sentences: [
+            { en: "What's in your schoolbag?", cn: "你书包里有什么？" },
+            { en: "An English book, a Chinese book, a maths book and three storybooks.", cn: "一本英语书、一本语文书、一本数学书和三本故事书。" },
+            { en: "What colour is it?", cn: "它是什么颜色？" },
+            { en: "It's blue and white.", cn: "它是蓝白相间的。" },
+          ]
+        },
+        {
+          name: 'Unit 3 My friends',
+          words: [
+            { en: 'strong', cn: '强壮的' },
+            { en: 'friendly', cn: '友好的' },
+            { en: 'quiet', cn: '安静的' },
+            { en: 'hair', cn: '头发' },
+            { en: 'shoe', cn: '鞋' },
+            { en: 'glasses', cn: '眼镜' },
+            { en: 'his', cn: '他的' },
+            { en: 'her', cn: '她的' },
+            { en: 'or', cn: '或者' },
+          ],
+          sentences: [
+            { en: "What's his name?", cn: "他叫什么名字？" },
+            { en: "His name is Zhang Peng.", cn: "他叫张鹏。" },
+            { en: "Who's he?", cn: "他是谁？" },
+            { en: "He has glasses and his shoes are blue.", cn: "他戴眼镜，穿蓝色鞋子。" },
+            { en: "Is she Wu Yifan?", cn: "她是吴一凡吗？" },
+          ]
+        },
+        {
+          name: 'Unit 4 My home',
+          words: [
+            { en: 'bedroom', cn: '卧室' },
+            { en: 'living room', cn: '客厅' },
+            { en: 'study', cn: '书房' },
+            { en: 'kitchen', cn: '厨房' },
+            { en: 'bathroom', cn: '浴室' },
+            { en: 'phone', cn: '电话' },
+            { en: 'bed', cn: '床' },
+            { en: 'sofa', cn: '沙发' },
+            { en: 'fridge', cn: '冰箱' },
+            { en: 'table', cn: '桌子' },
+          ],
+          sentences: [
+            { en: "Where are the keys?", cn: "钥匙在哪里？" },
+            { en: "Are they on the table?", cn: "它们在桌子上吗？" },
+            { en: "No, they aren't. They're in the door.", cn: "不，不在。它们在门上。" },
+            { en: "Is she in the study?", cn: "她在书房里吗？" },
+            { en: "Yes, she is.", cn: "是的，她在。" },
+          ]
+        },
+        {
+          name: "Unit 5 Dinner's ready",
+          words: [
+            { en: 'beef', cn: '牛肉' },
+            { en: 'chicken', cn: '鸡肉' },
+            { en: 'noodles', cn: '面条' },
+            { en: 'soup', cn: '汤' },
+            { en: 'vegetables', cn: '蔬菜' },
+            { en: 'chopsticks', cn: '筷子' },
+            { en: 'bowl', cn: '碗' },
+            { en: 'fork', cn: '叉子' },
+            { en: 'knife', cn: '刀' },
+            { en: 'spoon', cn: '勺子' },
+          ],
+          sentences: [
+            { en: "What would you like?", cn: "你想要什么？" },
+            { en: "I'd like some soup and bread, please.", cn: "我想要一些汤和面包。" },
+            { en: "Would you like a knife and fork?", cn: "你想要刀叉吗？" },
+            { en: "No, thanks. I can use chopsticks.", cn: "不了，谢谢。我会用筷子。" },
+            { en: "Dinner's ready!", cn: "晚饭好了！" },
+          ]
+        },
+        {
+          name: 'Unit 6 Meet my family!',
+          words: [
+            { en: 'parents', cn: '父母' },
+            { en: 'uncle', cn: '叔叔' },
+            { en: 'aunt', cn: '阿姨' },
+            { en: 'baby brother', cn: '婴儿小弟弟' },
+            { en: 'cousin', cn: '堂/表兄弟姐妹' },
+            { en: 'doctor', cn: '医生' },
+            { en: 'cook', cn: '厨师' },
+            { en: 'driver', cn: '司机' },
+            { en: 'farmer', cn: '农民' },
+            { en: 'nurse', cn: '护士' },
+          ],
+          sentences: [
+            { en: "How many people are there in your family?", cn: "你家有几口人？" },
+            { en: "Three. My parents and me.", cn: "三口。我父母和我。" },
+            { en: "Is this your uncle?", cn: "这是你叔叔吗？" },
+            { en: "Yes, it is.", cn: "是的。" },
+            { en: "What's your aunt's job?", cn: "你阿姨做什么工作？" },
+            { en: "She's a nurse.", cn: "她是一名护士。" },
+          ]
+        }
+      ]
+    };
+
+    // 教材内容当前标签状态（英语）
+    let currentBookTab = 'words';
+    let currentBookUnit = 0;
+
+    // 原声音频映射表（后期填入真实 mp3 URL 后自动优先使用原声）
+    // 现在为空，全部走 TTS 机器发音；拿到人教社原声文件后按 { '单词': 'mp3地址' } 填入即可
+    const audioMap = {};
+
+    // 朗读文本：有原声用原声，否则用 TTS
+    function speakText(text) {
+      // 1. 优先播放原声 mp3
+      if (audioMap[text]) {
+        try {
+          const audio = new Audio(audioMap[text]);
+          audio.play().catch(() => fallbackTTS(text));
+          return;
+        } catch (e) { /* 失败则走 TTS */ }
+      }
+      fallbackTTS(text);
+    }
+
+    // TTS 机器发音兜底（语速慢、清晰，尽量接近教学发音）
+    function fallbackTTS(text) {
+      if (!window.speechSynthesis) {
+        showToast('你的浏览器不支持语音朗读', '⚠️');
+        return;
+      }
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'en-US';
+      utter.rate = 0.75;   // 更慢，便于跟读
+      utter.pitch = 1.0;   // 平稳音调，接近原声
+      utter.volume = 1.0;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utter);
+    }
+
+    // ==================== 四上教材 ====================
+    function renderTextbook() {
+      const unit = englishBookData.units[currentBookUnit];
+      return `
+        <div class="mb-6">
+          <h2 class="text-2xl md:text-3xl font-black text-slate-700 mb-5 flex items-center gap-2"><span class="text-3xl sticker-shadow animate-bounce-slow">📖</span> 四上教材</h2>
+
+          <!-- 教材卡片 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            ${data.textbooks.map(book => `
+              <div class="bg-white rounded-3xl p-5 shadow-card border-4 border-boyblue-100 card-hover">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-12 h-12 rounded-2xl ${book.color} flex items-center justify-center text-xl font-black sticker-shadow border-2 border-white">${book.subject[0]}</div>
+                  <div>
+                    <h4 class="font-black text-slate-700 text-base">${book.name}</h4>
+                    <p class="text-xs text-slate-400 font-bold">${book.subject}</p>
+                  </div>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-3 mb-2 overflow-hidden border-2 border-slate-200">
+                  <div class="bg-gradient-to-r from-boyblue-400 to-boyblue-500 h-full rounded-full transition-all" style="width: ${book.progress}%"></div>
+                </div>
+                <div class="flex justify-between text-sm mb-3">
+                  <span class="text-slate-500 font-bold text-xs">学习进度</span>
+                  <span class="font-black text-boyblue-500 text-xs">${book.progress}%</span>
+                </div>
+                ${book.subject === '英语' ? '' : `
+                <a href="${book.link || '#'}" target="_blank" rel="noopener" class="block w-full py-2 rounded-xl bg-gradient-to-r from-boyblue-400 to-boyblue-500 text-white text-sm font-black text-center hover:from-boyblue-500 hover:to-boyblue-600 shadow-btn mb-2">
+                  📖 查看课文内容
+                </a>
+                `}
+                <div class="flex gap-2">
+                  <button onclick="updateBookProgress('${book.id}', -10)" class="flex-1 py-1.5 rounded-xl bg-slate-100 text-slate-600 text-xs font-black hover:bg-slate-200 shadow-btn">-10%</button>
+                  <button onclick="updateBookProgress('${book.id}', 10)" class="flex-1 py-1.5 rounded-xl bg-boyblue-100 text-boyblue-700 text-xs font-black hover:bg-boyblue-200 shadow-btn">+10%</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- 英语教材专属学习区 -->
+          <div class="bg-white rounded-3xl p-5 md:p-6 shadow-card border-4 border-amber-200 card-hover">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="text-3xl">🌈</span>
+              <h3 class="text-xl md:text-2xl font-black text-slate-700">英语（人教PEP四上）</h3>
+            </div>
+
+            <!-- 标签切换 -->
+            <div class="flex flex-wrap gap-2 mb-5">
+              <button onclick="setBookTab('words')" class="px-4 py-2 rounded-full font-black text-sm transition ${currentBookTab === 'words' ? 'bg-amber-400 text-white shadow-soft' : 'bg-amber-100 text-amber-600 hover:bg-amber-200'}">📝 重点单词</button>
+              <button onclick="setBookTab('sentences')" class="px-4 py-2 rounded-full font-black text-sm transition ${currentBookTab === 'sentences' ? 'bg-purple-400 text-white shadow-soft' : 'bg-purple-100 text-purple-600 hover:bg-purple-200'}">💬 句型要点</button>
+            </div>
+
+            <!-- Unit 选择 -->
+            <div class="flex flex-wrap gap-2 mb-5">
+              ${englishBookData.units.map((u, idx) => `
+                <button onclick="setBookUnit(${idx})" class="px-3 py-1.5 rounded-xl text-xs font-black transition ${currentBookUnit === idx ? 'bg-boyblue-400 text-white shadow-soft' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}">${u.name.split(' ').slice(0,2).join(' ')}</button>
+              `).join('')}
+            </div>
+
+            <h4 class="text-lg font-black text-slate-700 mb-3">${unit.name}</h4>
+
+            ${currentBookTab === 'words' ? `
+              <div class="grid grid-cols-1 gap-2">
+                ${unit.words.map(w => `
+                  <div class="bg-gradient-to-r from-amber-50 to-amber-100 border-2 border-amber-200 rounded-2xl px-4 py-3 flex items-center justify-between card-hover">
+                    <div class="flex items-center gap-3 min-w-0">
+                      <span class="text-amber-400 text-lg shrink-0">📝</span>
+                      <div class="min-w-0">
+                        <div class="font-black text-amber-700 text-lg truncate">${w.en}</div>
+                        <div class="text-xs text-slate-500 font-bold">${w.cn}</div>
+                      </div>
+                    </div>
+                    <button onclick="speakText(${JSON.stringify(w.en).replace(/"/g, '&quot;')})" class="shrink-0 px-3 h-10 rounded-full bg-white text-amber-600 shadow-sm flex items-center gap-1 text-sm font-black hover:scale-105 hover:bg-amber-50 transition">
+                      🔊 <span class="text-xs">跟读</span>
+                    </button>
+                  </div>
+                `).join('')}
+              </div>
+            ` : `
+              <div class="space-y-3">
+                ${unit.sentences.map(s => `
+                  <div class="bg-gradient-to-r from-purple-50 to-purple-100 border-2 border-purple-200 rounded-2xl p-4 flex items-start justify-between gap-3 card-hover">
+                    <div class="flex-1">
+                      <div class="font-black text-purple-700 text-base mb-1">${s.en}</div>
+                      <div class="text-sm text-slate-500 font-bold">${s.cn}</div>
+                    </div>
+                    <button onclick="speakText(${JSON.stringify(s.en).replace(/"/g, '&quot;')})" class="shrink-0 px-3 h-10 rounded-full bg-white text-purple-600 shadow-sm flex items-center gap-1 text-sm font-black hover:scale-105 hover:bg-purple-50 transition">🔊 <span class="text-xs">跟读</span></button>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    function setBookTab(tab) {
+      currentBookTab = tab;
+      renderMain();
+    }
+
+    function setBookUnit(idx) {
+      currentBookUnit = idx;
+      renderMain();
+    }
+
+    function updateBookProgress(id, delta) {
+      const book = data.textbooks.find(b => b.id === id);
+      if (!book) return;
+      book.progress = Math.max(0, Math.min(100, book.progress + delta));
+      saveData();
+      renderMain();
+    }
+
+    // ==================== 奖励中心 ====================
+    function renderReward() {
+      return `
+        <div class="mb-6">
+          <div class="bg-gradient-to-r from-amber-200 to-yellow-200 rounded-3xl p-6 shadow-soft mb-6 flex items-center gap-4 border-4 border-amber-300 card-hover">
+            <span class="text-5xl sticker-shadow animate-wiggle">☀️</span>
+            <div>
+              <div class="text-4xl md:text-5xl font-black text-amber-600">${data.sun}</div>
+              <div class="text-amber-700 font-black">可用阳光</div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl md:text-2xl font-black text-slate-700 flex items-center gap-2"><span class="text-2xl">🎯</span> 奖励清单</h3>
+            <span class="text-sm text-slate-400 bg-white px-3 py-1 rounded-full shadow-sm font-black border-2 border-slate-100">${data.rewards.length} 项</span>
+          </div>
+
+          <div class="space-y-3 mb-6">
+            ${data.rewards.map(reward => `
+              <div class="bg-white rounded-2xl p-4 shadow-card border-4 border-boyblue-100 flex items-center justify-between card-hover">
+                <div class="flex items-center gap-4">
+                  <span class="text-4xl sticker-shadow">${reward.icon}</span>
+                  <div>
+                    <h4 class="font-black text-slate-700 text-lg">${reward.name}</h4>
+                    <div class="text-amber-500 font-black text-sm flex items-center gap-1">${reward.cost} <span>☀️</span></div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button onclick="redeemReward('${reward.id}')" class="px-4 py-2 rounded-xl ${data.sun >= reward.cost ? 'bg-gradient-to-r from-boyblue-400 to-boyblue-500 text-white hover:from-boyblue-500 hover:to-boyblue-600 shadow-btn' : 'bg-slate-200 text-slate-400 cursor-not-allowed'} font-black text-sm">兑换</button>
+                  <button onclick="deleteReward('${reward.id}')" class="w-9 h-9 rounded-full bg-rose-100 text-rose-500 hover:bg-rose-200 flex items-center justify-center font-black text-lg shadow-btn">×</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <button onclick="showAddReward()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-boyblue-400 to-boyblue-500 text-white font-black text-lg flex items-center justify-center gap-2 hover:from-boyblue-500 hover:to-boyblue-600 transition shadow-soft">
+            <span>➕</span> 添加奖励
+          </button>
+
+          <div id="add-reward-form" class="hidden mt-4 bg-white rounded-2xl p-4 shadow-card border-4 border-boyblue-100">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <input type="text" id="reward-name" placeholder="奖励名称" class="px-4 py-2 rounded-xl bg-boyblue-50 border-2 border-boyblue-100 focus:outline-none focus:border-boyblue-400 font-bold">
+              <input type="number" id="reward-cost" placeholder="所需阳光" class="px-4 py-2 rounded-xl bg-boyblue-50 border-2 border-boyblue-100 focus:outline-none focus:border-boyblue-400 font-bold">
+              <input type="text" id="reward-icon" placeholder="图标 emoji" class="px-4 py-2 rounded-xl bg-boyblue-50 border-2 border-boyblue-100 focus:outline-none focus:border-boyblue-400 font-bold">
+            </div>
+            <div class="flex gap-2 mt-3">
+              <button onclick="addReward()" class="flex-1 py-2 rounded-xl bg-gradient-to-r from-boyblue-400 to-boyblue-500 text-white font-black hover:from-boyblue-500 hover:to-boyblue-600 shadow-btn">确认添加</button>
+              <button onclick="hideAddReward()" class="flex-1 py-2 rounded-xl bg-slate-100 text-slate-600 font-black hover:bg-slate-200 shadow-btn">取消</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function redeemReward(id) {
+      const reward = data.rewards.find(r => r.id === id);
+      if (!reward || data.sun < reward.cost) return;
+      data.sun -= reward.cost;
+      saveData();
+      showToast(`兑换成功：${reward.name}！`, '🎉');
+      renderMain();
+    }
+
+    function deleteReward(id) {
+      data.rewards = data.rewards.filter(r => r.id !== id);
+      saveData();
+      renderMain();
+    }
+
+    function showAddReward() { document.getElementById('add-reward-form').classList.remove('hidden'); }
+    function hideAddReward() { document.getElementById('add-reward-form').classList.add('hidden'); }
+
+    function addReward() {
+      const name = document.getElementById('reward-name').value.trim();
+      const cost = parseInt(document.getElementById('reward-cost').value) || 0;
+      const icon = document.getElementById('reward-icon').value.trim() || '🎁';
+      if (!name || cost <= 0) { showToast('请填写完整奖励信息', '⚠️'); return; }
+      data.rewards.push({ id: 'r' + Date.now(), icon, name, cost });
+      saveData();
+      hideAddReward();
+      renderMain();
+      showToast('奖励添加成功！');
+    }
+
+    // ==================== 统计 ====================
+    function renderStats() {
+      const progress = calcProgress();
+      const subjectTotals = { chinese: 0, math: 0, english: 0, science: 0 };
+      const subjectDone = { chinese: 0, math: 0, english: 0, science: 0 };
+      ['chinese','math','english','science'].forEach(sub => {
+        for (let i=0;i<7;i++) {
+          data.tasks[sub][i].forEach(t => {
+            subjectTotals[sub]++;
+            if (t.done) subjectDone[sub]++;
+          });
+        }
+      });
+
+      return `
+        <div class="mb-6">
+          <h2 class="text-2xl md:text-3xl font-black text-slate-700 mb-6 flex items-center gap-2"><span class="text-3xl sticker-shadow animate-bounce-slow">📊</span> 学习统计</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white rounded-2xl p-5 shadow-card border-4 border-boyblue-100 text-center card-hover">
+              <div class="text-3xl md:text-4xl font-black text-boyblue-500">${progress}%</div>
+              <div class="text-sm text-slate-500 font-black">整体完成率</div>
+            </div>
+            <div class="bg-white rounded-2xl p-5 shadow-card border-4 border-boyblue-100 text-center card-hover">
+              <div class="text-3xl md:text-4xl font-black text-amber-500">${data.sun}</div>
+              <div class="text-sm text-slate-500 font-black">累计阳光</div>
+            </div>
+            <div class="bg-white rounded-2xl p-5 shadow-card border-4 border-boyblue-100 text-center card-hover">
+              <div class="text-3xl md:text-4xl font-black text-emerald-500">${data.fullDays}</div>
+              <div class="text-sm text-slate-500 font-black">满分天数</div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-3xl p-6 shadow-card border-4 border-boyblue-100 card-hover">
+            <h3 class="font-black text-slate-700 mb-4 text-lg">各学科完成情况</h3>
+            <div class="space-y-4">
+              ${[
+                { key: 'chinese', label: '语文', color: 'from-emerald-400 to-emerald-500' },
+                { key: 'math', label: '数学', color: 'from-blue-400 to-blue-500' },
+                { key: 'english', label: '英语', color: 'from-amber-400 to-amber-500' },
+                { key: 'science', label: '科学', color: 'from-purple-400 to-purple-500' },
+              ].map(s => {
+                const pct = subjectTotals[s.key] ? Math.round(subjectDone[s.key] / subjectTotals[s.key] * 100) : 0;
+                return `
+                  <div>
+                    <div class="flex justify-between text-sm mb-1">
+                      <span class="font-black text-slate-600">${s.label}</span>
+                      <span class="text-slate-400 font-bold">${subjectDone[s.key]}/${subjectTotals[s.key]}</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden border-2 border-slate-200">
+                      <div class="bg-gradient-to-r ${s.color} h-full rounded-full transition-all" style="width: ${pct}%"></div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ==================== 主渲染 ====================
+    function renderMain() {
+      const main = document.getElementById('main-content');
+      const headerDate = `<p class="text-slate-400 text-sm mb-6 font-bold">${formatDate(new Date())}</p>`;
+
+      let content = '';
+      switch (currentNav) {
+        case 'home': content = renderHome(); break;
+        case 'calendar': content = renderCalendar(); break;
+        case 'chinese': content = renderSubject('chinese', '📝'); break;
+        case 'math': content = renderSubject('math', '🧮'); break;
+        case 'english': content = renderSubject('english', '🌈'); break;
+        case 'science': content = renderSubject('science', '🔬'); break;
+        case 'sport': content = renderSport(); break;
+        case 'textbook': content = renderTextbook(); break;
+        case 'reward': content = renderReward(); break;
+        case 'stats': content = renderStats(); break;
+      }
+
+      main.innerHTML = (currentNav === 'home' ? '' : headerDate) + content;
+    }
+
+    function init() {
+      loadData();
+      renderNav();
+      renderMain();
+      updateNavSun();
+      updateCalendarStatus();
+      saveData();
+    }
+
+    init();
+  </script>
+</body>
+</html>
