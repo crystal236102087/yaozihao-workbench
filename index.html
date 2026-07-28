@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>姚子皓学习工作台</title>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#1aafff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="学习工作台">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="./icon-192.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <script>
@@ -1388,6 +1395,18 @@
     }
 
     init();
+  </script>
+  <script>
+    // 注册 Service Worker 实现 PWA 离线可用
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          console.log('学习工作台已可离线使用');
+        }).catch((err) => {
+          console.log('离线功能未启用:', err);
+        });
+      });
+    }
   </script>
 </body>
 </html>
