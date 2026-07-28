@@ -178,7 +178,7 @@
     const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
     const defaultData = {
-      version: 6,
+      version: 7,
       sun: 25,
       streak: 0,
       fullDays: 0,
@@ -1204,52 +1204,46 @@
     }
 
     // ==================== 人教PEP四上英语教材内容 ====================
+    // 人教PEP四上英语教材内容（2024新版，含官方原声音频）
     const englishBookData = {
       units: [
         {
-          name: 'Unit 1 My classroom',
+          name: 'Unit 1 Helping at home',
           words: [
-            { en: 'classroom', cn: '教室' },
-            { en: 'window', cn: '窗户' },
-            { en: 'picture', cn: '图画' },
-            { en: 'door', cn: '门' },
-            { en: 'blackboard', cn: '黑板' },
-            { en: 'light', cn: '灯' },
-            { en: 'fan', cn: '风扇' },
-            { en: 'wall', cn: '墙壁' },
-            { en: 'floor', cn: '地板' },
+            { en: 'bedroom', cn: '卧室' },
+            { en: 'living room', cn: '客厅' },
+            { en: 'kitchen', cn: '厨房' },
+            { en: 'bathroom', cn: '浴室' },
+            { en: 'study', cn: '书房' },
+            { en: 'home', cn: '家' },
+            { en: 'room', cn: '房间' },
+            { en: 'help', cn: '帮助' },
+            { en: 'clean', cn: '打扫' },
+            { en: 'cook', cn: '做饭' },
           ],
           sentences: [
-            { en: "Where is it?", cn: "它在哪？" },
-            { en: "It's near the window.", cn: "它在窗户旁边。" },
-            { en: "Let's go and see!", cn: "我们去看看！" },
-            { en: "What's in the classroom?", cn: "教室里有什么？" },
-            { en: "One blackboard, one TV, many desks and chairs.", cn: "一块黑板，一台电视，许多桌椅。" },
-          ]
-        },
-        {
-          name: 'Unit 2 My schoolbag',
-          words: [
-            { en: 'schoolbag', cn: '书包' },
-            { en: 'maths book', cn: '数学书' },
-            { en: 'English book', cn: '英语书' },
-            { en: 'Chinese book', cn: '语文书' },
-            { en: 'storybook', cn: '故事书' },
-            { en: 'candy', cn: '糖果' },
-            { en: 'notebook', cn: '笔记本' },
-            { en: 'toy', cn: '玩具' },
-            { en: 'key', cn: '钥匙' },
+            { en: "Where is he?", cn: "他在哪里？" },
+            { en: "He's in the kitchen.", cn: "他在厨房里。" },
+            { en: "What is she doing?", cn: "她在做什么？" },
+            { en: "She's cooking.", cn: "她在做饭。" },
           ],
-          sentences: [
-            { en: "What's in your schoolbag?", cn: "你书包里有什么？" },
-            { en: "An English book, a Chinese book, a maths book and three storybooks.", cn: "一本英语书、一本语文书、一本数学书和三本故事书。" },
-            { en: "What colour is it?", cn: "它是什么颜色？" },
-            { en: "It's blue and white.", cn: "它是蓝白相间的。" },
-          ]
+          audios: [
+            { name: '01 Listen and chant', url: 'https://www.pep.com.cn/yyszptzy/pep4s01Unit1Listenandchant.mp3' },
+            { name: '02 Listen and sing', url: 'https://www.pep.com.cn/yyszptzy/pep4s02Unit1Listenandsing.mp3' },
+            { name: "03 A Let's talk", url: 'https://www.pep.com.cn/yyszptzy/pep4s03Unit1ALetstalk.mp3' },
+            { name: "04 A Let's spell - Listen and repeat", url: 'https://www.pep.com.cn/yyszptzy/pep4s04Unit1ALetsspellListen.mp3' },
+            { name: "05 A Let's spell - Read, listen and circle", url: 'https://www.pep.com.cn/yyszptzy/pep4s05Unit1ALetsspellRead.mp3' },
+            { name: "06 A Let's spell - Look, listen and write", url: 'https://www.pep.com.cn/yyszptzy/pep4s06Unit1ALetsspellLook.mp3' },
+            { name: "07 B Let's talk", url: 'https://www.pep.com.cn/yyszptzy/pep4s07Unit1BLetstalk.mp3' },
+            { name: '08 B Listen and chant', url: 'https://www.pep.com.cn/yyszptzy/pep4s08Unit1BListenandchant.mp3' },
+            { name: '09 B Read and write', url: 'https://www.pep.com.cn/yyszptzy/pep4s09Unit1BReadandwrite.mp3' },
+            { name: '10 C Project', url: 'https://www.pep.com.cn/yyszptzy/pep4s10Unit1CProject.mp3' },
+          ],
         },
         {
-          name: 'Unit 3 My friends',
+          name: 'Unit 2 My friends',
           words: [
+            { en: 'friend', cn: '朋友' },
             { en: 'strong', cn: '强壮的' },
             { en: 'friendly', cn: '友好的' },
             { en: 'quiet', cn: '安静的' },
@@ -1258,84 +1252,171 @@
             { en: 'glasses', cn: '眼镜' },
             { en: 'his', cn: '他的' },
             { en: 'her', cn: '她的' },
-            { en: 'or', cn: '或者' },
+            { en: 'tall', cn: '高的' },
           ],
           sentences: [
             { en: "What's his name?", cn: "他叫什么名字？" },
             { en: "His name is Zhang Peng.", cn: "他叫张鹏。" },
-            { en: "Who's he?", cn: "他是谁？" },
-            { en: "He has glasses and his shoes are blue.", cn: "他戴眼镜，穿蓝色鞋子。" },
-            { en: "Is she Wu Yifan?", cn: "她是吴一凡吗？" },
-          ]
+            { en: "He has glasses.", cn: "他戴眼镜。" },
+            { en: "She is tall and thin.", cn: "她又高又瘦。" },
+          ],
+          audios: [
+            { name: '01 Listen and chant', url: 'https://www.pep.com.cn/yyszptzy/pep4s01Unit2Listenandchant.mp3' },
+            { name: '02 Listen and sing', url: 'https://www.pep.com.cn/yyszptzy/pep4s02Unit2Listenandsing.mp3' },
+            { name: "03 A Let's talk", url: 'https://www.pep.com.cn/yyszptzy/pep4s03Unit2ALetstalk.mp3' },
+            { name: '04 A Listen and chant', url: 'https://www.pep.com.cn/yyszptzy/pep4s04Unit2AListenandchant.mp3' },
+            { name: "05 A Let's spell - Listen and repeat", url: 'https://www.pep.com.cn/yyszptzy/pep4s05Unit2ALetsspellListen.mp3' },
+            { name: "06 A Let's spell - Read, listen and number", url: 'https://www.pep.com.cn/yyszptzy/pep4s06Unit2ALetsspellRead.mp3' },
+            { name: "07 A Let's spell - Look, listen and write", url: 'https://www.pep.com.cn/yyszptzy/pep4s07Unit2ALetsspellLook.mp3' },
+            { name: "08 B Let's talk", url: 'https://www.pep.com.cn/yyszptzy/pep4s08Unit2BLetstalk.mp3' },
+            { name: '09 B Read and write', url: 'https://www.pep.com.cn/yyszptzy/pep4s09Unit2BReadandwrite.mp3' },
+            { name: '10 C Project 1', url: 'https://www.pep.com.cn/yyszptzy/pep4s10Unit2CProject1.mp3' },
+          ],
         },
         {
-          name: 'Unit 4 My home',
+          name: 'Unit 3 Places we live in',
           words: [
-            { en: 'bedroom', cn: '卧室' },
-            { en: 'living room', cn: '客厅' },
-            { en: 'study', cn: '书房' },
-            { en: 'kitchen', cn: '厨房' },
-            { en: 'bathroom', cn: '浴室' },
-            { en: 'phone', cn: '电话' },
-            { en: 'bed', cn: '床' },
-            { en: 'sofa', cn: '沙发' },
-            { en: 'fridge', cn: '冰箱' },
-            { en: 'table', cn: '桌子' },
+            { en: 'city', cn: '城市' },
+            { en: 'town', cn: '城镇' },
+            { en: 'village', cn: '村庄' },
+            { en: 'street', cn: '街道' },
+            { en: 'park', cn: '公园' },
+            { en: 'shop', cn: '商店' },
+            { en: 'school', cn: '学校' },
+            { en: 'hospital', cn: '医院' },
+            { en: 'library', cn: '图书馆' },
+            { en: 'zoo', cn: '动物园' },
           ],
           sentences: [
-            { en: "Where are the keys?", cn: "钥匙在哪里？" },
-            { en: "Are they on the table?", cn: "它们在桌子上吗？" },
-            { en: "No, they aren't. They're in the door.", cn: "不，不在。它们在门上。" },
-            { en: "Is she in the study?", cn: "她在书房里吗？" },
-            { en: "Yes, she is.", cn: "是的，她在。" },
-          ]
+            { en: "Where do you live?", cn: "你住在哪里？" },
+            { en: "I live in a city.", cn: "我住在城市里。" },
+            { en: "Is there a park near your home?", cn: "你家附近有公园吗？" },
+            { en: "Yes, there is.", cn: "是的，有。" },
+          ],
+          audios: [
+            { name: '01 Listen and chant', url: 'https://www.pep.com.cn/yyszptzy/4s01Unit3.mp3' },
+            { name: '02 Listen and sing', url: 'https://www.pep.com.cn/yyszptzy/4s02Unit3.mp3' },
+            { name: "03 A Let's talk", url: 'https://www.pep.com.cn/yyszptzy/4s03Unit3.mp3' },
+            { name: "04 A Let's spell - Listen, repeat and chant", url: 'https://www.pep.com.cn/yyszptzy/4s04Unit3.mp3' },
+            { name: "05 A Let's spell - Read, listen and tick", url: 'https://www.pep.com.cn/yyszptzy/4s05Unit3.mp3' },
+            { name: "06 A Let's spell - Look, listen and write", url: 'https://www.pep.com.cn/yyszptzy/4s06Unit3.mp3' },
+            { name: "07 B Let's talk", url: 'https://www.pep.com.cn/yyszptzy/4s07Unit3.mp3' },
+            { name: '08 B Listen and do', url: 'https://www.pep.com.cn/yyszptzy/4s08Unit3B.mp3' },
+            { name: '09 B Read and write', url: 'https://www.pep.com.cn/yyszptzy/4s09Unit3B.mp3' },
+            { name: '10 C Project', url: 'https://www.pep.com.cn/yyszptzy/4s10Unit3C.mp3' },
+          ],
         },
         {
-          name: "Unit 5 Dinner's ready",
+          name: 'Unit 4 Helping in the community',
           words: [
-            { en: 'beef', cn: '牛肉' },
-            { en: 'chicken', cn: '鸡肉' },
-            { en: 'noodles', cn: '面条' },
-            { en: 'soup', cn: '汤' },
-            { en: 'vegetables', cn: '蔬菜' },
-            { en: 'chopsticks', cn: '筷子' },
-            { en: 'bowl', cn: '碗' },
-            { en: 'fork', cn: '叉子' },
-            { en: 'knife', cn: '刀' },
-            { en: 'spoon', cn: '勺子' },
+            { en: 'community', cn: '社区' },
+            { en: 'help', cn: '帮助' },
+            { en: 'people', cn: '人们' },
+            { en: 'neighbour', cn: '邻居' },
+            { en: 'clean', cn: '打扫' },
+            { en: 'carry', cn: '搬运' },
+            { en: 'give', cn: '给' },
+            { en: 'kind', cn: '善良的' },
+            { en: 'helpful', cn: '乐于助人的' },
+            { en: 'share', cn: '分享' },
           ],
           sentences: [
-            { en: "What would you like?", cn: "你想要什么？" },
-            { en: "I'd like some soup and bread, please.", cn: "我想要一些汤和面包。" },
-            { en: "Would you like a knife and fork?", cn: "你想要刀叉吗？" },
-            { en: "No, thanks. I can use chopsticks.", cn: "不了，谢谢。我会用筷子。" },
-            { en: "Dinner's ready!", cn: "晚饭好了！" },
-          ]
+            { en: "How can we help?", cn: "我们怎么帮忙？" },
+            { en: "We can clean the park.", cn: "我们可以打扫公园。" },
+            { en: "Let's help our neighbours.", cn: "让我们帮助邻居吧。" },
+            { en: "That's very kind of you.", cn: "你真是太好了。" },
+          ],
+          audios: [
+            { name: '01 Listen and chant', url: 'https://www.pep.com.cn/yyszptzy/4s01Unit4.mp3' },
+            { name: '02 Listen and sing', url: 'https://www.pep.com.cn/yyszptzy/4s02Unit4.mp3' },
+            { name: "03 A Let's talk", url: 'https://www.pep.com.cn/yyszptzy/4s03Unit4A.mp3' },
+            { name: "04 A Let's spell - Listen, repeat and chant", url: 'https://www.pep.com.cn/yyszptzy/4s04Unit4A.mp3' },
+            { name: "05 A Let's spell - Read, listen and number", url: 'https://www.pep.com.cn/yyszptzy/4s05Unit4A.mp3' },
+            { name: "06 A Let's spell - Look, listen and write", url: 'https://www.pep.com.cn/yyszptzy/4s06Unit4A.mp3' },
+            { name: "07 B Let's talk", url: 'https://www.pep.com.cn/yyszptzy/4s07Unit4B.mp3' },
+            { name: '08 B Read and write', url: 'https://www.pep.com.cn/yyszptzy/4s08Unit4B.mp3' },
+            { name: '09 C Project', url: 'https://www.pep.com.cn/yyszptzy/4s09Unit4C.mp3' },
+          ],
         },
         {
-          name: 'Unit 6 Meet my family!',
+          name: 'Unit 5 The weather and us',
           words: [
-            { en: 'parents', cn: '父母' },
-            { en: 'uncle', cn: '叔叔' },
-            { en: 'aunt', cn: '阿姨' },
-            { en: 'baby brother', cn: '婴儿小弟弟' },
-            { en: 'cousin', cn: '堂/表兄弟姐妹' },
-            { en: 'doctor', cn: '医生' },
-            { en: 'cook', cn: '厨师' },
-            { en: 'driver', cn: '司机' },
-            { en: 'farmer', cn: '农民' },
-            { en: 'nurse', cn: '护士' },
+            { en: 'weather', cn: '天气' },
+            { en: 'sunny', cn: '晴朗的' },
+            { en: 'rainy', cn: '下雨的' },
+            { en: 'windy', cn: '刮风的' },
+            { en: 'cloudy', cn: '多云的' },
+            { en: 'snowy', cn: '下雪的' },
+            { en: 'hot', cn: '热的' },
+            { en: 'cold', cn: '冷的' },
+            { en: 'warm', cn: '温暖的' },
+            { en: 'cool', cn: '凉爽的' },
           ],
           sentences: [
-            { en: "How many people are there in your family?", cn: "你家有几口人？" },
-            { en: "Three. My parents and me.", cn: "三口。我父母和我。" },
-            { en: "Is this your uncle?", cn: "这是你叔叔吗？" },
-            { en: "Yes, it is.", cn: "是的。" },
-            { en: "What's your aunt's job?", cn: "你阿姨做什么工作？" },
-            { en: "She's a nurse.", cn: "她是一名护士。" },
-          ]
-        }
-      ]
+            { en: "What's the weather like today?", cn: "今天天气怎么样？" },
+            { en: "It's sunny and warm.", cn: "晴朗又温暖。" },
+            { en: "Is it cold in winter?", cn: "冬天冷吗？" },
+            { en: "Yes, it is. Put on your coat.", cn: "是的，穿上你的外套。" },
+          ],
+          audios: [
+            { name: '01 Listen and chant', url: 'https://www.pep.com.cn/yyszptzy/4s01Unit5.mp3' },
+            { name: '02 Listen and sing', url: 'https://www.pep.com.cn/yyszptzy/4s02Unit5.mp3' },
+            { name: "03 A Let's talk", url: 'https://www.pep.com.cn/yyszptzy/4s03Unit5A.mp3' },
+            { name: "04 A Let's spell - Listen and repeat", url: 'https://www.pep.com.cn/yyszptzy/4s04Unit5A.mp3' },
+            { name: "05 A Let's spell - Read, listen and circle", url: 'https://www.pep.com.cn/yyszptzy/4s05Unit5A.mp3' },
+            { name: "06 A Let's spell - Look, listen and write", url: 'https://www.pep.com.cn/yyszptzy/4s06Unit5A.mp3' },
+            { name: "07 B Let's talk", url: 'https://www.pep.com.cn/yyszptzy/4s07Unit5B.mp3' },
+            { name: '08 B Read and write', url: 'https://www.pep.com.cn/yyszptzy/4s08Unit5B.mp3' },
+            { name: '09 C Project', url: 'https://www.pep.com.cn/yyszptzy/4s09Unit5C.mp3' },
+          ],
+        },
+        {
+          name: 'Unit 6 Changing for the seasons',
+          words: [
+            { en: 'season', cn: '季节' },
+            { en: 'spring', cn: '春天' },
+            { en: 'summer', cn: '夏天' },
+            { en: 'autumn', cn: '秋天' },
+            { en: 'winter', cn: '冬天' },
+            { en: 'leaf', cn: '树叶' },
+            { en: 'snow', cn: '雪' },
+            { en: 'flower', cn: '花' },
+            { en: 'grow', cn: '生长' },
+            { en: 'change', cn: '变化' },
+          ],
+          sentences: [
+            { en: "Which season do you like?", cn: "你喜欢哪个季节？" },
+            { en: "I like spring. Flowers grow.", cn: "我喜欢春天。花开了。" },
+            { en: "Leaves fall in autumn.", cn: "秋天树叶落了。" },
+            { en: "We can play in the snow.", cn: "我们可以在雪里玩。" },
+          ],
+          audios: [
+            { name: '01 Listen and chant', url: 'https://www.pep.com.cn/yyszptzy/4s01Unit6.mp3' },
+            { name: '02 Listen and sing', url: 'https://www.pep.com.cn/yyszptzy/4s02Unit6.mp3' },
+            { name: "03 A Let's talk", url: 'https://www.pep.com.cn/yyszptzy/4s03Unit6A.mp3' },
+            { name: "04 A Let's spell - Listen, repeat and chant", url: 'https://www.pep.com.cn/yyszptzy/4s04Unit6A.mp3' },
+            { name: "05 A Let's spell - Read, listen and circle", url: 'https://www.pep.com.cn/yyszptzy/4s05Unit6A.mp3' },
+            { name: "06 A Let's spell - Look, listen and write", url: 'https://www.pep.com.cn/yyszptzy/4s06Unit6A.mp3' },
+            { name: "07 B Let's talk", url: 'https://www.pep.com.cn/yyszptzy/4s07Unit6B.mp3' },
+            { name: '08 B Read and write', url: 'https://www.pep.com.cn/yyszptzy/4s08Unit6B.mp3' },
+            { name: '09 C Project', url: 'https://www.pep.com.cn/yyszptzy/4s09Unit6C.mp3' },
+          ],
+        },
+      ],
+      wordsAudio: {
+        0: 'https://www.pep.com.cn/yyszptzy/4s01wUnit1.mp3',
+        1: 'https://www.pep.com.cn/yyszptzy/4s02wUnit2.mp3',
+        2: 'https://www.pep.com.cn/yyszptzy/4s03wUnit3.mp3',
+        3: 'https://www.pep.com.cn/yyszptzy/4s04wUnit4.mp3',
+        4: 'https://www.pep.com.cn/yyszptzy/4s05wUnit5.mp3',
+        5: 'https://www.pep.com.cn/yyszptzy/4s06wUnit6.mp3',
+      },
+      revisionAudios: [
+        { name: '01 Read aloud and act it out', url: 'https://www.pep.com.cn/yyszptzy/4s01Revision.mp3' },
+        { name: '02 Listen and finish the plans', url: 'https://www.pep.com.cn/yyszptzy/4s02Revision.mp3' },
+        { name: '03 Read, write and talk', url: 'https://www.pep.com.cn/yyszptzy/4s03Revision.mp3' },
+        { name: '04 Listen and chant', url: 'https://www.pep.com.cn/yyszptzy/4s04Revision.mp3' },
+      ],
     };
 
     // 教材内容当前标签状态（英语）
@@ -1372,6 +1453,23 @@
       utter.volume = 1.0;
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(utter);
+    }
+
+    // 播放人教社官方原声音频
+    let currentAudio = null;
+    function playAudio(url) {
+      if (!url) { showToast('暂无音频', '⚠️'); return; }
+      // 停止当前播放
+      if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+      // 也停止 TTS
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+      currentAudio = new Audio(url);
+      currentAudio.play().then(() => {
+        showToast('正在播放原声音频 🎵');
+      }).catch(() => {
+        showToast('音频加载失败，请稍后重试', '⚠️');
+      });
+      currentAudio.addEventListener('ended', () => { currentAudio = null; });
     }
 
     // ==================== 四上教材 ====================
@@ -1423,6 +1521,7 @@
             <div class="flex flex-wrap gap-2 mb-5">
               <button onclick="setBookTab('words')" class="px-4 py-2 rounded-full font-black text-sm transition ${currentBookTab === 'words' ? 'bg-amber-400 text-white shadow-soft' : 'bg-amber-100 text-amber-600 hover:bg-amber-200'}">📝 重点单词</button>
               <button onclick="setBookTab('sentences')" class="px-4 py-2 rounded-full font-black text-sm transition ${currentBookTab === 'sentences' ? 'bg-purple-400 text-white shadow-soft' : 'bg-purple-100 text-purple-600 hover:bg-purple-200'}">💬 句型要点</button>
+              <button onclick="setBookTab('audios')" class="px-4 py-2 rounded-full font-black text-sm transition ${currentBookTab === 'audios' ? 'bg-emerald-400 text-white shadow-soft' : 'bg-emerald-100 text-emerald-600 hover:bg-emerald-200'}">🎵 课文原声</button>
             </div>
 
             <!-- Unit 选择 -->
@@ -1451,7 +1550,7 @@
                   </div>
                 `).join('')}
               </div>
-            ` : `
+            ` : currentBookTab === 'sentences' ? `
               <div class="space-y-3">
                 ${unit.sentences.map(s => `
                   <div class="bg-gradient-to-r from-purple-50 to-purple-100 border-2 border-purple-200 rounded-2xl p-4 flex items-start justify-between gap-3 card-hover">
@@ -1463,7 +1562,54 @@
                   </div>
                 `).join('')}
               </div>
-            `}
+            ` : currentBookTab === 'audios' ? `
+              <!-- 单元单词朗读 -->
+              <div class="mb-5 p-4 bg-gradient-to-r from-sky-50 to-blue-50 border-2 border-sky-200 rounded-2xl flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <span class="text-2xl">📋</span>
+                  <div>
+                    <div class="font-black text-sky-700 text-base">本单元单词朗读</div>
+                    <div class="text-xs text-slate-500 font-bold">官方原声·全部单词连读</div>
+                  </div>
+                </div>
+                <button onclick="playAudio(${JSON.stringify(englishBookData.wordsAudio[currentBookUnit] || '').replace(/"/g, '&quot;')})" class="shrink-0 px-4 h-10 rounded-full bg-sky-400 hover:bg-sky-500 text-white shadow-sm flex items-center gap-1 text-sm font-black transition">
+                  ▶️ <span class="text-xs">播放</span>
+                </button>
+              </div>
+
+              <!-- 课文音频列表 -->
+              <div class="space-y-2">
+                ${unit.audios.map(a => `
+                  <div class="bg-gradient-to-r from-emerald-50 to-green-50 border-2 border-emerald-200 rounded-2xl px-4 py-3 flex items-center justify-between gap-3 card-hover">
+                    <div class="flex items-center gap-3 min-w-0">
+                      <span class="text-emerald-500 text-lg shrink-0">🎵</span>
+                      <div class="font-black text-emerald-700 text-sm md:text-base truncate">${a.name}</div>
+                    </div>
+                    <button onclick="playAudio(${JSON.stringify(a.url).replace(/"/g, '&quot;')})" class="shrink-0 px-3 h-10 rounded-full bg-white text-emerald-600 shadow-sm flex items-center gap-1 text-sm font-black hover:scale-105 hover:bg-emerald-50 transition">
+                      ▶️ <span class="text-xs">播放</span>
+                    </button>
+                  </div>
+                `).join('')}
+              </div>
+
+              <!-- 复习音频 -->
+              <div class="mt-5">
+                <h4 class="text-base font-black text-slate-600 mb-3 flex items-center gap-2"><span>📖</span> 复习音频</h4>
+                <div class="space-y-2">
+                  ${englishBookData.revisionAudios.map(a => `
+                    <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-200 rounded-2xl px-4 py-3 flex items-center justify-between gap-3 card-hover">
+                      <div class="flex items-center gap-3 min-w-0">
+                        <span class="text-amber-500 text-lg shrink-0">🎧</span>
+                        <div class="font-black text-amber-700 text-sm md:text-base truncate">${a.name}</div>
+                      </div>
+                      <button onclick="playAudio(${JSON.stringify(a.url).replace(/"/g, '&quot;')})" class="shrink-0 px-3 h-10 rounded-full bg-white text-amber-600 shadow-sm flex items-center gap-1 text-sm font-black hover:scale-105 hover:bg-amber-50 transition">
+                        ▶️ <span class="text-xs">播放</span>
+                      </button>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
           </div>
         </div>
       `;
