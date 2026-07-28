@@ -178,7 +178,7 @@
     const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
     const defaultData = {
-      version: 5,
+      version: 6,
       sun: 25,
       streak: 0,
       fullDays: 0,
@@ -370,6 +370,7 @@
             { id: 'rd8', name: '《了不起的狐狸爸爸》', author: '罗尔德·达尔', done: false },
           ],
           finished: [],  // 已读积累记录 [{id, name, author, date}]
+          dailyLog: {},  // 每日阅读记录 { 'YYYY-MM-DD': [{id, book, minutes, pages}] }
         },
         sport: [
           { id: 's1', title: '跳绳', sub: 'Jump Rope', desc: '跳绳3组，每组1分钟', done: false, sun: 5 },
@@ -454,7 +455,6 @@
 
     function calcProgress() {
       let total = 0, done = 0;
-      data.tasks.home.forEach(t => { total++; if(t.done) done++; });
       data.tasks.sport.forEach(t => { total++; if(t.done) done++; });
       ['chinese','math','english','science'].forEach(sub => {
         for (let i=0;i<7;i++) {
@@ -466,9 +466,8 @@
 
     function calcTodayDone() {
       const w = getTodayWeekDay();
-      let total = data.tasks.home.length + data.tasks.sport.length + data.tasks.chinese[w].length + data.tasks.math[w].length + data.tasks.english[w].length + data.tasks.science[w].length;
+      let total = data.tasks.sport.length + data.tasks.chinese[w].length + data.tasks.math[w].length + data.tasks.english[w].length + data.tasks.science[w].length;
       let done = 0;
-      data.tasks.home.forEach(t => { if(t.done) done++; });
       data.tasks.sport.forEach(t => { if(t.done) done++; });
       [data.tasks.chinese[w], data.tasks.math[w], data.tasks.english[w], data.tasks.science[w]].forEach(arr => arr.forEach(t => { if(t.done) done++; }));
       return { total, done };
@@ -579,49 +578,56 @@
           </div>
         </div>
 
-        <!-- 今日任务卡片：一排两张 -->
+        <!-- 今日任务卡片：汇总当天语数英科+运动 -->
         <div class="mb-5">
           <h3 class="text-xl font-black text-slate-700 flex items-center gap-2 mb-4">
             <span class="text-2xl">🎯</span> 今日任务卡片
           </h3>
-          <div class="grid grid-cols-2 gap-3 md:gap-4">
-            ${data.tasks.home.map((task, idx) => {
-              const colors = [
-                'bg-gradient-to-br from-sky-100 to-blue-100 border-blue-200',
-                'bg-gradient-to-br from-amber-100 to-yellow-100 border-amber-200',
-                'bg-gradient-to-br from-emerald-100 to-green-100 border-emerald-200',
-                'bg-gradient-to-br from-purple-100 to-violet-100 border-purple-200',
-                'bg-gradient-to-br from-rose-100 to-pink-100 border-rose-200',
-                'bg-gradient-to-br from-cyan-100 to-teal-100 border-cyan-200',
-                'bg-gradient-to-br from-indigo-100 to-blue-100 border-indigo-200',
-                'bg-gradient-to-br from-orange-100 to-amber-100 border-orange-200'
-              ];
-              const icons = ['✍️','📖','📚','🔖','🧮','🔤','⭐','🏃'];
-              return `
-              <div class="${colors[idx % colors.length]} border-2 rounded-2xl p-3 md:p-4 card-hover relative">
-                <div class="flex justify-between items-start mb-2">
-                  <div class="text-2xl md:text-3xl sticker-shadow">${icons[idx]}</div>
-                  <input type="checkbox" class="checkbox-custom" ${task.done ? 'checked' : ''} onchange="toggleHomeTask('${task.id}', this)">
+          ${(() => {
+            const w = getTodayWeekDay();
+            // 汇总当天所有科目任务
+            const groups = [
+              { key: 'chinese', label: '语文', icon: '📝', color: 'from-emerald-100 to-green-100 border-emerald-200', tasks: data.tasks.chinese[w] },
+              { key: 'math', label: '数学', icon: '🧮', color: 'from-blue-100 to-sky-100 border-blue-200', tasks: data.tasks.math[w] },
+              { key: 'english', label: '英语', icon: '🌈', color: 'from-amber-100 to-yellow-100 border-amber-200', tasks: data.tasks.english[w] },
+              { key: 'science', label: '科学', icon: '🔬', color: 'from-purple-100 to-violet-100 border-purple-200', tasks: data.tasks.science[w] },
+              { key: 'sport', label: '运动', icon: '🏃', color: 'from-rose-100 to-pink-100 border-rose-200', tasks: data.tasks.sport },
+            ];
+            return groups.map(g => `
+              <div class="bg-gradient-to-br ${g.color} border-2 rounded-2xl p-4 mb-3 card-hover">
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="text-2xl">${g.icon}</span>
+                  <h4 class="font-black text-slate-700 text-lg">${g.label}</h4>
+                  <span class="ml-auto text-xs font-black text-slate-500 bg-white/70 px-2 py-1 rounded-full">${g.tasks.filter(t=>t.done).length}/${g.tasks.length}</span>
                 </div>
-                <h4 class="font-black text-slate-700 text-base md:text-lg ${task.done ? 'line-through text-slate-400' : ''}">${task.title}</h4>
-                <p class="text-[10px] md:text-xs text-slate-500 mb-1 font-bold">${task.sub}</p>
-                <p class="text-xs md:text-sm text-slate-600 ${task.done ? 'line-through text-slate-300' : ''}">${task.desc}</p>
-                <div class="mt-2 inline-flex items-center gap-1 text-[10px] md:text-xs font-black text-amber-600 bg-white/90 px-2 py-1 rounded-full border border-amber-100 shadow-sm">
-                  <span>☀️</span> +${task.sun}
+                <div class="space-y-2">
+                  ${g.tasks.map(task => `
+                    <label class="flex items-center gap-2 p-2 bg-white/60 rounded-xl cursor-pointer">
+                      <input type="checkbox" class="checkbox-custom shrink-0" ${task.done ? 'checked' : ''} onchange="toggleTodayTask('${g.key}', ${g.key === 'sport' ? -1 : w}, '${task.id}', this)">
+                      <span class="text-sm font-bold ${task.done ? 'line-through text-slate-400' : 'text-slate-700'}">${task.text || task.title}${task.desc ? '（'+task.desc+'）' : ''}</span>
+                      ${task.done ? '' : `<span class="ml-auto text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full shrink-0">☀️+${task.sun || 5}</span>`}
+                    </label>
+                  `).join('')}
                 </div>
               </div>
-            `}).join('')}
-          </div>
+            `).join('');
+          })()}
         </div>
       `;
     }
 
-    function toggleHomeTask(id, el) {
-      const task = data.tasks.home.find(t => t.id === id);
+    // 今日任务勾选(同步到各科目)
+    function toggleTodayTask(subject, dayIdx, id, el) {
+      let task;
+      if (subject === 'sport') {
+        task = data.tasks.sport.find(t => t.id === id);
+      } else {
+        task = data.tasks[subject][dayIdx].find(t => t.id === id);
+      }
       if (!task) return;
       task.done = el.checked;
-      if (task.done) { data.sun += task.sun; showToast(`完成「${task.title}」，获得 ${task.sun} 阳光！`); }
-      else { data.sun -= task.sun; }
+      if (task.done) { data.sun += (task.sun || 5); showToast('完成任务，获得 ' + (task.sun || 5) + ' 阳光！'); }
+      else { data.sun -= (task.sun || 5); }
       updateCalendarStatus();
       saveData();
       renderMain();
@@ -954,6 +960,54 @@
             </div>
           </div>
 
+          <!-- 今日阅读记录 -->
+          ${(() => {
+            const today = todayKey();
+            const todayLogs = data.tasks.reading.dailyLog[today] || [];
+            const todayDone = todayLogs.length > 0;
+            return `
+          <div class="bg-white rounded-3xl p-5 md:p-6 shadow-card border-4 ${todayDone ? 'border-emerald-200' : 'border-sky-100'} card-hover mb-6">
+            <div class="flex items-center justify-between mb-5 pb-4 border-b-2 border-slate-100">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl ${todayDone ? 'bg-emerald-100' : 'bg-sky-100'} flex items-center justify-center text-2xl sticker-shadow">${todayDone ? '✅' : '📖'}</div>
+                <div>
+                  <h3 class="text-xl font-black text-slate-700">今日阅读记录</h3>
+                  <p class="text-sm text-slate-400 font-bold">${todayDone ? '今天已阅读 '+todayLogs.length+' 条记录' : '当天看过就算完成任务'}</p>
+                </div>
+              </div>
+              ${todayDone ? '<span class="text-3xl animate-wiggle">🌟</span>' : ''}
+            </div>
+            ${todayLogs.length === 0 ? `
+              <div class="text-center py-6 text-slate-400">
+                <div class="text-3xl mb-2">📚</div>
+                <p class="font-bold text-sm">今天还没有阅读记录</p>
+                <p class="text-xs mt-1">点下方按钮记录今天读的书</p>
+              </div>
+            ` : `
+              <div class="space-y-2 mb-4">
+                ${todayLogs.map(log => `
+                  <div class="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-sky-50 to-blue-50 border-2 border-sky-100">
+                    <span class="text-xl">📕</span>
+                    <div class="flex-1 min-w-0">
+                      <span class="text-base font-black text-slate-700">${log.book}</span>
+                      <div class="text-xs text-slate-500 font-bold">
+                        <span class="text-sky-600">⏱ ${log.minutes}分钟</span>
+                        <span class="mx-2">·</span>
+                        <span class="text-blue-600">📄 ${log.pages}页</span>
+                      </div>
+                    </div>
+                    <button onclick="delDailyLog('${today}', '${log.id}')" class="w-7 h-7 rounded-full bg-rose-100 text-rose-500 hover:bg-rose-200 flex items-center justify-center text-sm font-black shrink-0">×</button>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+            <button onclick="addDailyLog()" class="w-full py-3 rounded-2xl bg-sky-400 hover:bg-sky-500 text-white font-black text-sm shadow-soft transition flex items-center justify-center gap-1">
+              <span class="text-lg">＋</span> 添加今日阅读记录
+            </button>
+          </div>
+            `;
+          })()}
+
           <!-- 已读积累 -->
           <div class="bg-white rounded-3xl p-5 md:p-6 shadow-card border-4 border-amber-100 card-hover">
             <div class="flex items-center justify-between mb-5 pb-4 border-b-2 border-slate-100">
@@ -1031,6 +1085,48 @@
     function delFinishedBook(id) {
       if (!confirm('确定删除这条记录吗？')) return;
       data.tasks.reading.finished = data.tasks.reading.finished.filter(f => f.id !== id);
+      saveData();
+      renderMain();
+      showToast('已删除记录 🗑️');
+    }
+
+    // 添加今日阅读记录
+    function addDailyLog() {
+      const today = todayKey();
+      if (!data.tasks.reading.dailyLog[today]) data.tasks.reading.dailyLog[today] = [];
+      const book = prompt('今天读了哪本书？（书名）');
+      if (!book || !book.trim()) return;
+      const minutes = prompt('读了多少分钟？', '20');
+      if (!minutes) return;
+      const pages = prompt('读了多少页？', '10');
+      if (!pages) return;
+      const wasEmpty = data.tasks.reading.dailyLog[today].length === 0;
+      data.tasks.reading.dailyLog[today].push({
+        id: 'log' + Date.now(),
+        book: book.trim(),
+        minutes: parseInt(minutes) || 0,
+        pages: parseInt(pages) || 0
+      });
+      if (wasEmpty) {
+        data.sun += 5;
+        showToast('今日阅读已打卡，获得 5 阳光！📖');
+      } else {
+        showToast('已添加阅读记录 📕');
+      }
+      saveData();
+      renderMain();
+    }
+
+    // 删除今日阅读记录
+    function delDailyLog(date, id) {
+      if (!confirm('确定删除这条阅读记录吗？')) return;
+      if (data.tasks.reading.dailyLog[date]) {
+        data.tasks.reading.dailyLog[date] = data.tasks.reading.dailyLog[date].filter(l => l.id !== id);
+        if (data.tasks.reading.dailyLog[date].length === 0) {
+          delete data.tasks.reading.dailyLog[date];
+          data.sun -= 5;  // 当天没阅读记录了,扣回阳光
+        }
+      }
       saveData();
       renderMain();
       showToast('已删除记录 🗑️');
@@ -1285,9 +1381,9 @@
         <div class="mb-6">
           <h2 class="text-2xl md:text-3xl font-black text-slate-700 mb-5 flex items-center gap-2"><span class="text-3xl sticker-shadow animate-bounce-slow">📖</span> 四上教材</h2>
 
-          <!-- 教材卡片 -->
+          <!-- 教材卡片（英语单独在下方学习区展示） -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            ${data.textbooks.map(book => `
+            ${data.textbooks.filter(book => book.subject !== '英语').map(book => `
               <div class="bg-white rounded-3xl p-5 shadow-card border-4 border-boyblue-100 card-hover">
                 <div class="flex items-center gap-3 mb-4">
                   <div class="w-12 h-12 rounded-2xl ${book.color} flex items-center justify-center text-xl font-black sticker-shadow border-2 border-white">${book.subject[0]}</div>
