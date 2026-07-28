@@ -178,7 +178,7 @@
     const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
     const defaultData = {
-      version: 7,
+      version: 8,
       sun: 25,
       streak: 0,
       fullDays: 0,
@@ -1534,6 +1534,19 @@
             <h4 class="text-lg font-black text-slate-700 mb-3">${unit.name}</h4>
 
             ${currentBookTab === 'words' ? `
+              <!-- 本单元单词原声朗读 -->
+              <div class="mb-4 p-4 bg-gradient-to-r from-sky-50 to-blue-50 border-2 border-sky-200 rounded-2xl flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <span class="text-2xl">📋</span>
+                  <div>
+                    <div class="font-black text-sky-700 text-base">本单元单词原声朗读</div>
+                    <div class="text-xs text-slate-500 font-bold">人教社官方音频·全部单词连读</div>
+                  </div>
+                </div>
+                <button onclick="playAudio(${JSON.stringify(englishBookData.wordsAudio[currentBookUnit] || '').replace(/"/g, '&quot;')})" class="shrink-0 px-4 h-10 rounded-full bg-sky-400 hover:bg-sky-500 text-white shadow-sm flex items-center gap-1 text-sm font-black transition">
+                  ▶️ <span class="text-xs">播放原声</span>
+                </button>
+              </div>
               <div class="grid grid-cols-1 gap-2">
                 ${unit.words.map(w => `
                   <div class="bg-gradient-to-r from-amber-50 to-amber-100 border-2 border-amber-200 rounded-2xl px-4 py-3 flex items-center justify-between card-hover">
