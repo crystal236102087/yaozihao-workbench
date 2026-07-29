@@ -178,7 +178,7 @@
     const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
     const defaultData = {
-      version: 10,
+      version: 11,
       sun: 25,
       streak: 0,
       fullDays: 0,
@@ -1422,6 +1422,7 @@
     // 教材内容当前标签状态（英语）
     let currentBookTab = 'audios';
     let currentBookUnit = 0;
+    let currentTextbookSubject = 'english';
 
     // 原声音频映射表（后期填入真实 mp3 URL 后自动优先使用原声）
     // 现在为空，全部走 TTS 机器发音；拿到人教社原声文件后按 { '单词': 'mp3地址' } 填入即可
@@ -1475,66 +1476,89 @@
     // ==================== 四上教材 ====================
     function renderTextbook() {
       const unit = englishBookData.units[currentBookUnit];
-      return `
-        <div class="mb-6">
-          <h2 class="text-2xl md:text-3xl font-black text-slate-700 mb-5 flex items-center gap-2"><span class="text-3xl sticker-shadow animate-bounce-slow">📖</span> 四上教材</h2>
 
-          <!-- 教材卡片（英语单独在下方学习区展示） -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            ${data.textbooks.filter(book => book.subject !== '英语').map(book => `
-              <div class="bg-white rounded-3xl p-5 shadow-card border-4 border-boyblue-100 card-hover">
-                <div class="flex items-center gap-3 mb-4">
-                  <div class="w-12 h-12 rounded-2xl ${book.color} flex items-center justify-center text-xl font-black sticker-shadow border-2 border-white">${book.subject[0]}</div>
-                  <div>
-                    <h4 class="font-black text-slate-700 text-base">${book.name}</h4>
-                    <p class="text-xs text-slate-400 font-bold">${book.subject}</p>
-                  </div>
-                </div>
-                <div class="w-full bg-slate-100 rounded-full h-3 mb-2 overflow-hidden border-2 border-slate-200">
-                  <div class="bg-gradient-to-r from-boyblue-400 to-boyblue-500 h-full rounded-full transition-all" style="width: ${book.progress}%"></div>
-                </div>
-                <div class="flex justify-between text-sm mb-3">
-                  <span class="text-slate-500 font-bold text-xs">学习进度</span>
-                  <span class="font-black text-boyblue-500 text-xs">${book.progress}%</span>
-                </div>
-                ${book.subject === '英语' ? '' : `
-                <a href="${book.link || '#'}" target="_blank" rel="noopener" class="block w-full py-2 rounded-xl bg-gradient-to-r from-boyblue-400 to-boyblue-500 text-white text-sm font-black text-center hover:from-boyblue-500 hover:to-boyblue-600 shadow-btn mb-2">
-                  📖 查看课文内容
-                </a>
-                `}
-                <div class="flex gap-2">
-                  <button onclick="updateBookProgress('${book.id}', -10)" class="flex-1 py-1.5 rounded-xl bg-slate-100 text-slate-600 text-xs font-black hover:bg-slate-200 shadow-btn">-10%</button>
-                  <button onclick="updateBookProgress('${book.id}', 10)" class="flex-1 py-1.5 rounded-xl bg-boyblue-100 text-boyblue-700 text-xs font-black hover:bg-boyblue-200 shadow-btn">+10%</button>
-                </div>
-              </div>
-            `).join('')}
-          </div>
+      // 四科教材配置：标题 + 4 个标签
+      const subjectConfig = {
+        english: {
+          title: '英语四上',
+          icon: '🌈',
+          color: 'amber',
+          tabs: [
+            { id: 'audios', label: '🎵 课文原声', activeColor: 'bg-emerald-400 text-white', bgColor: 'bg-emerald-100 text-emerald-600' },
+            { id: 'words', label: '📝 重点单词', activeColor: 'bg-amber-400 text-white', bgColor: 'bg-amber-100 text-amber-600' },
+            { id: 'sentences', label: '💬 句型要点', activeColor: 'bg-purple-400 text-white', bgColor: 'bg-purple-100 text-purple-600' },
+            { id: 'practice', label: '✏️ 在线练习', isLink: 'https://yy.suyang123.com/xiaoxue/sinianji/rjbp_shangce.html' },
+          ]
+        },
+        chinese: {
+          title: '语文四上',
+          icon: '📝',
+          color: 'emerald',
+          tabs: [
+            { id: 'kewen', label: '📖 课文原文', activeColor: 'bg-emerald-400 text-white', bgColor: 'bg-emerald-100 text-emerald-600' },
+            { id: 'ciyu', label: '📚 单元词语', activeColor: 'bg-sky-400 text-white', bgColor: 'bg-sky-100 text-sky-600' },
+            { id: 'gushi', label: '🏮 古诗文言文', activeColor: 'bg-rose-400 text-white', bgColor: 'bg-rose-100 text-rose-600' },
+            { id: 'practice', label: '✏️ 在线练习', isLink: 'https://www.ximalaya.com/album/117412002' },
+          ]
+        },
+        math: {
+          title: '数学四上',
+          icon: '🧮',
+          color: 'blue',
+          tabs: [
+            { id: 'practice', label: '✏️ 同步练习', activeColor: 'bg-blue-400 text-white', bgColor: 'bg-blue-100 text-blue-600' },
+            { id: 'kousuan', label: '⚡ 口算速练', activeColor: 'bg-orange-400 text-white', bgColor: 'bg-orange-100 text-orange-600' },
+            { id: 'jiangjie', label: '🎬 名师讲解', activeColor: 'bg-purple-400 text-white', bgColor: 'bg-purple-100 text-purple-600' },
+            { id: 'zhishi', label: '💡 知识点', activeColor: 'bg-emerald-400 text-white', bgColor: 'bg-emerald-100 text-emerald-600' },
+          ]
+        },
+        science: {
+          title: '科学四上',
+          icon: '🔬',
+          color: 'purple',
+          tabs: [
+            { id: 'video', label: '🎬 实验视频', activeColor: 'bg-purple-400 text-white', bgColor: 'bg-purple-100 text-purple-600' },
+            { id: 'knowledge', label: '🔬 科学知识', activeColor: 'bg-emerald-400 text-white', bgColor: 'bg-emerald-100 text-emerald-600' },
+            { id: 'practice', label: '✏️ 在线练习', activeColor: 'bg-blue-400 text-white', bgColor: 'bg-blue-100 text-blue-600' },
+            { id: 'doc', label: '📖 电子课本', activeColor: 'bg-amber-400 text-white', bgColor: 'bg-amber-100 text-amber-600' },
+          ]
+        },
+      };
 
-          <!-- 英语教材专属学习区 -->
-          <div class="bg-white rounded-3xl p-5 md:p-6 shadow-card border-4 border-amber-200 card-hover">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="text-3xl">🌈</span>
-              <h3 class="text-xl md:text-2xl font-black text-slate-700">英语（人教PEP四上）</h3>
-            </div>
+      const cfg = subjectConfig[currentTextbookSubject];
 
-            <!-- 标签切换：一排两个 -->
-            <div class="grid grid-cols-2 gap-2 mb-5">
-              <button onclick="setBookTab('audios')" class="px-4 py-3 rounded-2xl font-black text-sm transition ${currentBookTab === 'audios' ? 'bg-emerald-400 text-white shadow-soft' : 'bg-emerald-100 text-emerald-600 hover:bg-emerald-200'}">🎵 课文原声</button>
-              <button onclick="setBookTab('words')" class="px-4 py-3 rounded-2xl font-black text-sm transition ${currentBookTab === 'words' ? 'bg-amber-400 text-white shadow-soft' : 'bg-amber-100 text-amber-600 hover:bg-amber-200'}">📝 重点单词</button>
-              <button onclick="setBookTab('sentences')" class="px-4 py-3 rounded-2xl font-black text-sm transition ${currentBookTab === 'sentences' ? 'bg-purple-400 text-white shadow-soft' : 'bg-purple-100 text-purple-600 hover:bg-purple-200'}">💬 句型要点</button>
-              <a href="https://yy.suyang123.com/xiaoxue/sinianji/rjbp_shangce.html" target="_blank" rel="noopener" class="px-4 py-3 rounded-2xl font-black text-sm transition bg-sky-100 text-sky-600 hover:bg-sky-200 text-center">✏️ 在线练习</a>
-            </div>
+      const renderSubjectTabs = () => {
+        const subjects = [
+          { id: 'english', icon: '🌈', label: '英语' },
+          { id: 'chinese', icon: '📝', label: '语文' },
+          { id: 'math', icon: '🧮', label: '数学' },
+          { id: 'science', icon: '🔬', label: '科学' },
+        ];
+        return subjects.map(s => `
+          <button onclick="setTextbookSubject('${s.id}')" class="flex-1 py-3 px-2 rounded-2xl font-black text-sm transition flex flex-col items-center gap-1 ${currentTextbookSubject === s.id ? 'bg-boyblue-400 text-white shadow-soft scale-105' : 'bg-white text-slate-500 hover:bg-boyblue-50 border-2 border-boyblue-100'}">
+            <span class="text-xl">${s.icon}</span>
+            <span>${s.label}</span>
+          </button>
+        `).join('');
+      };
 
-            <!-- Unit 选择 -->
-            <div class="flex flex-wrap gap-2 mb-5">
-              ${englishBookData.units.map((u, idx) => `
-                <button onclick="setBookUnit(${idx})" class="px-3 py-1.5 rounded-xl text-xs font-black transition ${currentBookUnit === idx ? 'bg-boyblue-400 text-white shadow-soft' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}">${u.name.split(' ').slice(0,2).join(' ')}</button>
-              `).join('')}
-            </div>
+      const renderContentTabs = () => `
+        <div class="grid grid-cols-2 gap-2 mb-5">
+          ${cfg.tabs.map(t => {
+            const active = currentBookTab === t.id;
+            const cls = active ? `${t.activeColor} shadow-soft` : `${t.bgColor} hover:opacity-80`;
+            if (t.isLink) {
+              return `<a href="${t.isLink}" target="_blank" rel="noopener" class="px-4 py-3 rounded-2xl font-black text-sm transition ${t.bgColor} text-center">${t.label}</a>`;
+            }
+            return `<button onclick="setBookTab('${t.id}')" class="px-4 py-3 rounded-2xl font-black text-sm transition ${cls}">${t.label}</button>`;
+          }).join('')}
+        </div>
+      `;
 
-            <h4 class="text-lg font-black text-slate-700 mb-3">${unit.name}</h4>
-
-            ${currentBookTab === 'words' ? `
+      const renderContent = () => {
+        if (currentTextbookSubject === 'english') {
+          if (currentBookTab === 'words') {
+            return `
               <div class="grid grid-cols-1 gap-2">
                 ${unit.words.map(w => `
                   <div class="bg-gradient-to-r from-amber-50 to-amber-100 border-2 border-amber-200 rounded-2xl px-4 py-3 flex items-center justify-between card-hover">
@@ -1551,7 +1575,10 @@
                   </div>
                 `).join('')}
               </div>
-            ` : currentBookTab === 'sentences' ? `
+            `;
+          }
+          if (currentBookTab === 'sentences') {
+            return `
               <div class="space-y-3">
                 ${unit.sentences.map(s => `
                   <div class="bg-gradient-to-r from-purple-50 to-purple-100 border-2 border-purple-200 rounded-2xl p-4 flex items-start justify-between gap-3 card-hover">
@@ -1563,7 +1590,17 @@
                   </div>
                 `).join('')}
               </div>
-            ` : currentBookTab === 'audios' ? `
+            `;
+          }
+          if (currentBookTab === 'audios') {
+            return `
+              <!-- Unit 选择 -->
+              <div class="flex flex-wrap gap-2 mb-4">
+                ${englishBookData.units.map((u, idx) => `
+                  <button onclick="setBookUnit(${idx})" class="px-3 py-1.5 rounded-xl text-xs font-black transition ${currentBookUnit === idx ? 'bg-boyblue-400 text-white shadow-soft' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}">${u.name.split(' ').slice(0,2).join(' ')}</button>
+                `).join('')}
+              </div>
+              <h4 class="text-lg font-black text-slate-700 mb-3">${unit.name}</h4>
               <!-- 课文音频列表 -->
               <div class="space-y-2">
                 ${unit.audios.map(a => `
@@ -1578,7 +1615,6 @@
                   </div>
                 `).join('')}
               </div>
-
               <!-- 复习音频 -->
               <div class="mt-5">
                 <h4 class="text-base font-black text-slate-600 mb-3 flex items-center gap-2"><span>📖</span> 复习音频</h4>
@@ -1596,7 +1632,144 @@
                   `).join('')}
                 </div>
               </div>
-            ` : ''}
+            `;
+          }
+        }
+
+        if (currentTextbookSubject === 'chinese') {
+          if (currentBookTab === 'kewen') {
+            return `
+              <div class="text-center py-8 text-slate-500">
+                <div class="text-4xl mb-3">📖</div>
+                <p class="font-bold text-base mb-2">语文四上课文原文</p>
+                <a href="https://www.pep.com.cn/czyw/" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-emerald-400 hover:bg-emerald-500 text-white font-black text-sm shadow-soft transition">🏫 查看人教社官方课本</a>
+              </div>
+            `;
+          }
+          if (currentBookTab === 'ciyu') {
+            return `
+              <div class="text-center py-8 text-slate-500">
+                <div class="text-4xl mb-3">📚</div>
+                <p class="font-bold text-base mb-2">语文四上单元词语</p>
+                <a href="https://www.pep.com.cn/czyw/" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-sky-400 hover:bg-sky-500 text-white font-black text-sm shadow-soft transition">🏫 查看人教社词语表</a>
+              </div>
+            `;
+          }
+          if (currentBookTab === 'gushi') {
+            return `
+              <div class="text-center py-8 text-slate-500">
+                <div class="text-4xl mb-3">🏮</div>
+                <p class="font-bold text-base mb-2">语文四上古诗文言文</p>
+                <a href="https://www.pep.com.cn/czyw/" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-rose-400 hover:bg-rose-500 text-white font-black text-sm shadow-soft transition">🏫 查看人教社古诗文</a>
+              </div>
+            `;
+          }
+        }
+
+        if (currentTextbookSubject === 'math') {
+          if (currentBookTab === 'practice') {
+            return `
+              <div class="text-center py-8 text-slate-500">
+                <div class="text-4xl mb-3">✏️</div>
+                <p class="font-bold text-base mb-2">人教版数学四上同步练习</p>
+                <a href="https://www.skillxm.cn/textbook/pep/grade-4/" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-blue-400 hover:bg-blue-500 text-white font-black text-sm shadow-soft transition">🚀 开始练习</a>
+              </div>
+            `;
+          }
+          if (currentBookTab === 'kousuan') {
+            return `
+              <div class="text-center py-8 text-slate-500">
+                <div class="text-4xl mb-3">⚡</div>
+                <p class="font-bold text-base mb-2">口算速练·计时挑战</p>
+                <a href="https://www.skillxm.cn/tools/mental-math/" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-orange-400 hover:bg-orange-500 text-white font-black text-sm shadow-soft transition">⏱️ 开始计时</a>
+              </div>
+            `;
+          }
+          if (currentBookTab === 'jiangjie') {
+            return `
+              <div class="text-center py-8 text-slate-500">
+                <div class="text-4xl mb-3">🎬</div>
+                <p class="font-bold text-base mb-2">数学四上名师讲解</p>
+                <a href="https://www.baidu.com/s?wd=人教版四年级上册数学名师讲解" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-purple-400 hover:bg-purple-500 text-white font-black text-sm shadow-soft transition">🔍 搜索视频</a>
+              </div>
+            `;
+          }
+          if (currentBookTab === 'zhishi') {
+            return `
+              <div class="text-center py-8 text-slate-500">
+                <div class="text-4xl mb-3">💡</div>
+                <p class="font-bold text-base mb-2">数学四上核心知识点</p>
+                <a href="https://www.baidu.com/s?wd=人教版四年级上册数学知识点总结" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-emerald-400 hover:bg-emerald-500 text-white font-black text-sm shadow-soft transition">🔍 查看知识点</a>
+              </div>
+            `;
+          }
+        }
+
+        if (currentTextbookSubject === 'science') {
+          if (currentBookTab === 'video') {
+            return `
+              <div class="text-center py-8 text-slate-500">
+                <div class="text-4xl mb-3">🎬</div>
+                <p class="font-bold text-base mb-2">科学四上实验视频</p>
+                <a href="https://www.baidu.com/s?wd=教科版四年级上册科学实验视频" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-purple-400 hover:bg-purple-500 text-white font-black text-sm shadow-soft transition">🔍 搜索实验视频</a>
+              </div>
+            `;
+          }
+          if (currentBookTab === 'knowledge') {
+            return `
+              <div class="text-center py-8 text-slate-500">
+                <div class="text-4xl mb-3">🔬</div>
+                <p class="font-bold text-base mb-2">科学四上知识讲解</p>
+                <a href="https://www.baidu.com/s?wd=教科版四年级上册科学知识点" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-emerald-400 hover:bg-emerald-500 text-white font-black text-sm shadow-soft transition">🔍 搜索知识点</a>
+              </div>
+            `;
+          }
+          if (currentBookTab === 'practice') {
+            return `
+              <div class="text-center py-8 text-slate-500">
+                <div class="text-4xl mb-3">✏️</div>
+                <p class="font-bold text-base mb-2">科学四上在线练习</p>
+                <a href="https://www.baidu.com/s?wd=教科版四年级上册科学练习题" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-blue-400 hover:bg-blue-500 text-white font-black text-sm shadow-soft transition">🔍 搜索练习题</a>
+              </div>
+            `;
+          }
+          if (currentBookTab === 'doc') {
+            return `
+              <div class="text-center py-8 text-slate-500">
+                <div class="text-4xl mb-3">📖</div>
+                <p class="font-bold text-base mb-2">科学四上电子课本</p>
+                <a href="https://www.esph.com.cn/" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-amber-400 hover:bg-amber-500 text-white font-black text-sm shadow-soft transition">🏫 查看教科社官网</a>
+              </div>
+            `;
+          }
+        }
+
+        return '';
+      };
+
+      return `
+        <div class="mb-6">
+          <h2 class="text-2xl md:text-3xl font-black text-slate-700 mb-5 flex items-center gap-2"><span class="text-3xl sticker-shadow animate-bounce-slow">📖</span> 四上教材</h2>
+
+          <!-- 科目选择：一排四个 -->
+          <div class="bg-white rounded-3xl p-4 shadow-card border-4 border-boyblue-100 card-hover mb-6">
+            <div class="flex gap-2">
+              ${renderSubjectTabs()}
+            </div>
+          </div>
+
+          <!-- 当前科目学习区 -->
+          <div class="bg-white rounded-3xl p-5 md:p-6 shadow-card border-4 border-boyblue-100 card-hover">
+            <div class="flex items-center gap-3 mb-5">
+              <span class="text-3xl">${cfg.icon}</span>
+              <h3 class="text-xl md:text-2xl font-black text-slate-700">${cfg.title}</h3>
+            </div>
+
+            ${renderContentTabs()}
+
+            <div class="mt-4">
+              ${renderContent()}
+            </div>
           </div>
         </div>
       `;
@@ -1609,6 +1782,14 @@
 
     function setBookUnit(idx) {
       currentBookUnit = idx;
+      renderMain();
+    }
+
+    function setTextbookSubject(subject) {
+      currentTextbookSubject = subject;
+      // 切换到新科目时恢复默认标签
+      const defaults = { english: 'audios', chinese: 'kewen', math: 'practice', science: 'video' };
+      currentBookTab = defaults[subject] || 'audios';
       renderMain();
     }
 
