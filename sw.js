@@ -1,5 +1,5 @@
 // 姚子皓学习工作台 Service Worker - 离线支持
-const CACHE_NAME = 'yaozihao-workbench-v29';
+const CACHE_NAME = 'yaozihao-workbench-v30';
 const ASSETS = [
   './',
   './index.html',
