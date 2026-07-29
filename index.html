@@ -178,7 +178,7 @@
     const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
     const defaultData = {
-      version: 11,
+      version: 12,
       sun: 25,
       streak: 0,
       fullDays: 0,
@@ -1203,6 +1203,61 @@
       renderMain();
     }
 
+    // ==================== 部编版四上语文课文 ====================
+    const chineseBookData = {
+      lessons: [
+        { id: 1, name: '第1课 观潮', unit: 1 },
+        { id: 2, name: '第2课 走月亮', unit: 1 },
+        { id: 3, name: '第3课 现代诗二首', unit: 1 },
+        { id: 4, name: '第4课 繁星', unit: 1 },
+        { id: 5, name: '第5课 一个豆荚里的五粒豆', unit: 2 },
+        { id: 6, name: '第6课 夜间飞行的秘密', unit: 2 },
+        { id: 7, name: '第7课 呼风唤雨的世纪', unit: 2 },
+        { id: 8, name: '第8课 蝴蝶的家', unit: 2 },
+        { id: 9, name: '第9课 古诗三首', unit: 3 },
+        { id: 10, name: '第10课 爬山虎的脚', unit: 3 },
+        { id: 11, name: '第11课 蟋蟀的住宅', unit: 3 },
+        { id: 12, name: '第12课 盘古开天地', unit: 4 },
+        { id: 13, name: '第13课 精卫填海', unit: 4 },
+        { id: 14, name: '第14课 普罗米修斯', unit: 4 },
+        { id: 15, name: '第15课 女娲补天', unit: 4 },
+        { id: 16, name: '第16课 风筝', unit: 5 },
+        { id: 17, name: '第17课 纳米技术就在我们身边', unit: 5 },
+        { id: 18, name: '第18课 牛和鹅', unit: 5 },
+        { id: 19, name: '第19课 一只窝囊的大老虎', unit: 6 },
+        { id: 20, name: '第20课 陀螺', unit: 6 },
+        { id: 21, name: '第21课 古诗三首', unit: 7 },
+        { id: 22, name: '第22课 为中华之崛起而读书', unit: 7 },
+        { id: 23, name: '第23课 梅兰芳蓄须', unit: 7 },
+        { id: 24, name: '第24课 延安，我把你追寻', unit: 7 },
+        { id: 25, name: '第25课 王戎不取道旁李', unit: 8 },
+        { id: 26, name: '第26课 西门豹治邺', unit: 8 },
+        { id: 27, name: '第27课 故事二则', unit: 8 },
+      ],
+      // 日积月累内容
+      accumulations: [
+        { unit: 1, title: '第一单元·日积月累', items: ['鹿柴（唐·王维）', '空山不见人，但闻人语响。', '返景入深林，复照青苔上。'] },
+        { unit: 2, title: '第二单元·日积月累', items: ['好问则裕，自用则小。', '博学之，审问之，慎思之，明辨之，笃行之。', '智能之士，不学不成，不问不知。'] },
+        { unit: 3, title: '第三单元·日积月累', items: ['立了秋，把扇丢。', '二八月，乱穿衣。', '夏雨少，秋霜早。', '立了夏，把扇架。'] },
+        { unit: 4, title: '第四单元·日积月累', items: ['嫦娥（唐·李商隐）', '云母屏风烛影深，长河渐落晓星沉。', '嫦娥应悔偷灵药，碧海青天夜夜心。'] },
+        { unit: 5, title: '第五单元·日积月累', items: ['尺有所短，寸有所长。', '机不可失，时不再来。', '差之毫厘，谬以千里。'] },
+        { unit: 6, title: '第六单元·日积月累', items: ['别董大（唐·高适）', '千里黄云白日曛，北风吹雁雪纷纷。', '莫愁前路无知己，天下谁人不识君。'] },
+        { unit: 7, title: '第七单元·日积月累', items: ['但使龙城飞将在，不教胡马度阴山。', '醉卧沙场君莫笑，古来征战几人回。', '生当作人杰，死亦为鬼雄。'] },
+        { unit: 8, title: '第八单元·日积月累', items: ['眉清目秀', '亭亭玉立', '明眸皓齿', '文质彬彬', '威风凛凛', '膀大腰圆', '短小精悍'] },
+      ],
+      // 词语表（每单元重点词语）
+      words: [
+        { unit: 1, items: ['奇观', '农历', '据说', '宽阔', '滚动', '顿时', '逐渐', '犹如', '震天动地'] },
+        { unit: 2, items: ['豌豆', '按照', '舒适', '僵硬', '惊奇', '黑暗', '丰满', '等待', '虚弱'] },
+        { unit: 3, items: ['操场', '嫩茎', '枯萎', '住宅', '隐蔽', '毫不可惜', '随遇而安'] },
+        { unit: 4, items: ['混沌', '胳膊', '肌腱', '辽阔', '血肉', '奔流不息', '茂盛'] },
+        { unit: 5, items: ['风筝', '憧憬', '踪影', '希望', '纳米', '拥有', '隐形', '健康'] },
+        { unit: 6, items: ['窝囊', '角色', '期待', '排练', '危机', '通情达理', '哄堂大笑'] },
+        { unit: 7, items: ['崛起', '模范', '积蓄', '强迫', '占领', '负荆请罪'] },
+        { unit: 8, items: ['戎', '诸儿', '竞走', '唯', '信然', '漂浮', '灌溉'] },
+      ]
+    };
+
     // ==================== 人教PEP四上英语教材内容 ====================
     // 人教PEP四上英语教材内容（2024新版，含官方原声音频）
     const englishBookData = {
@@ -1497,7 +1552,7 @@
           tabs: [
             { id: 'kewen', label: '📖 课文原文', activeColor: 'bg-emerald-400 text-white', bgColor: 'bg-emerald-100 text-emerald-600' },
             { id: 'ciyu', label: '📚 单元词语', activeColor: 'bg-sky-400 text-white', bgColor: 'bg-sky-100 text-sky-600' },
-            { id: 'gushi', label: '🏮 古诗文言文', activeColor: 'bg-rose-400 text-white', bgColor: 'bg-rose-100 text-rose-600' },
+            { id: 'gushi', label: '🏮 日积月累', activeColor: 'bg-rose-400 text-white', bgColor: 'bg-rose-100 text-rose-600' },
             { id: 'practice', label: '✏️ 在线练习', isLink: 'https://www.ximalaya.com/album/117412002' },
           ]
         },
@@ -1639,28 +1694,55 @@
         if (currentTextbookSubject === 'chinese') {
           if (currentBookTab === 'kewen') {
             return `
-              <div class="text-center py-8 text-slate-500">
-                <div class="text-4xl mb-3">📖</div>
-                <p class="font-bold text-base mb-2">语文四上课文原文</p>
-                <a href="https://www.pep.com.cn/czyw/" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-emerald-400 hover:bg-emerald-500 text-white font-black text-sm shadow-soft transition">🏫 查看人教社官方课本</a>
+              <div class="space-y-2">
+                ${chineseBookData.lessons.map(l => `
+                  <div class="bg-gradient-to-r from-emerald-50 to-green-50 border-2 border-emerald-200 rounded-2xl px-4 py-3 flex items-center justify-between gap-3 card-hover">
+                    <div class="flex items-center gap-3 min-w-0">
+                      <span class="text-emerald-500 text-lg shrink-0">📖</span>
+                      <div class="font-black text-emerald-700 text-sm md:text-base truncate">${l.name}</div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                      <a href="https://www.baidu.com/s?wd=${encodeURIComponent(l.name + ' 课文原文 部编版四年级上册')}" target="_blank" rel="noopener" class="px-3 h-9 rounded-full bg-white text-emerald-600 shadow-sm flex items-center gap-1 text-xs font-black hover:scale-105 hover:bg-emerald-50 transition">
+                        📄 原文
+                      </a>
+                      <a href="https://www.ximalaya.com/album/117412002" target="_blank" rel="noopener" class="px-3 h-9 rounded-full bg-emerald-400 text-white shadow-sm flex items-center gap-1 text-xs font-black hover:scale-105 hover:bg-emerald-500 transition">
+                        ▶️ 朗读
+                      </a>
+                    </div>
+                  </div>
+                `).join('')}
               </div>
             `;
           }
           if (currentBookTab === 'ciyu') {
             return `
-              <div class="text-center py-8 text-slate-500">
-                <div class="text-4xl mb-3">📚</div>
-                <p class="font-bold text-base mb-2">语文四上单元词语</p>
-                <a href="https://www.pep.com.cn/czyw/" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-sky-400 hover:bg-sky-500 text-white font-black text-sm shadow-soft transition">🏫 查看人教社词语表</a>
+              <div class="space-y-4">
+                ${chineseBookData.words.map(u => `
+                  <div class="bg-gradient-to-r from-sky-50 to-blue-50 border-2 border-sky-200 rounded-2xl p-4">
+                    <h4 class="font-black text-sky-700 text-sm mb-3">第${u.unit}单元 词语</h4>
+                    <div class="flex flex-wrap gap-2">
+                      ${u.items.map(w => `
+                        <span class="px-3 py-1.5 bg-white rounded-xl text-sky-700 font-black text-sm border border-sky-100 shadow-sm">${w}</span>
+                      `).join('')}
+                    </div>
+                  </div>
+                `).join('')}
               </div>
             `;
           }
           if (currentBookTab === 'gushi') {
             return `
-              <div class="text-center py-8 text-slate-500">
-                <div class="text-4xl mb-3">🏮</div>
-                <p class="font-bold text-base mb-2">语文四上古诗文言文</p>
-                <a href="https://www.pep.com.cn/czyw/" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-rose-400 hover:bg-rose-500 text-white font-black text-sm shadow-soft transition">🏫 查看人教社古诗文</a>
+              <div class="space-y-4">
+                ${chineseBookData.accumulations.map(a => `
+                  <div class="bg-gradient-to-r from-rose-50 to-pink-50 border-2 border-rose-200 rounded-2xl p-4">
+                    <h4 class="font-black text-rose-700 text-sm mb-3">${a.title}</h4>
+                    <div class="space-y-1">
+                      ${a.items.map(item => `
+                        <p class="text-slate-700 font-bold text-sm leading-relaxed">${item}</p>
+                      `).join('')}
+                    </div>
+                  </div>
+                `).join('')}
               </div>
             `;
           }
