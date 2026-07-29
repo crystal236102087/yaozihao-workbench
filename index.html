@@ -1585,6 +1585,100 @@
       ]
     };
 
+    // ==================== 人教版四上数学教材内容 ====================
+    const mathBookData = {
+      units: [
+        {
+          unit: 1, title: '第一单元 大数的认识',
+          zhishi: ['十进制计数法：相邻两个计数单位进率为10', '数级分为个级、万级、亿级', '大数分级读写', '四舍五入求近似数', '整万/整亿数改写'],
+          litis: [
+            { q: '读数：杭州西湖全年接待游客约86050300人次，读作？', a: '八千六百零五万零三百' },
+            { q: '改写：某工厂年产值52000000元，改写成以"万"为单位？', a: '5200万' },
+            { q: '四舍五入：一个数省略万位后面尾数约是36万，这个数最大和最小分别是？', a: '最大364999，最小355000' }
+          ],
+          tips: '必考分级读写和四舍五入求近似数；改写时注意去掉末尾的0再加"万"或"亿"字。'
+        },
+        {
+          unit: 2, title: '第二单元 公顷和平方千米',
+          zhishi: ['1公顷=10000平方米', '1平方千米=100公顷=1000000平方米', '必考单位换算+生活场景'],
+          litis: [
+            { q: '填单位：小学操场约2（  ）；杭州市总面积约16850（  ）', a: '公顷；平方千米' },
+            { q: '一块长方形果园长200米、宽150米，面积是多少公顷？', a: '200×150=30000平方米=3公顷' },
+            { q: '换算：5平方千米=（  ）公顷；30000平方米=（  ）公顷', a: '500公顷；3公顷' }
+          ],
+          tips: '单位换算必考，要熟记1公顷=10000平方米、1平方千米=100公顷；联系生活场景判断填什么单位。'
+        },
+        {
+          unit: 3, title: '第三单元 角的度量',
+          zhishi: ['线段可测量，直线、射线无限延伸', '角由顶点+两条射线组成', '锐角<90°，直角=90°，钝角90°~180°，平角=180°，周角=360°', '量角、画指定度数的角'],
+          litis: [
+            { q: '3时整钟表时针和分针形成什么角？6时整呢？', a: '3时=直角90°；6时=平角180°' },
+            { q: '一张圆形纸对折两次，得到的角是多少度？', a: '360°÷2÷2=90°，直角' },
+            { q: '一个钝角减去一个直角，结果一定是？', a: '锐角' }
+          ],
+          tips: '角的分类要熟记；钟面角度问题是高频考点；画指定度数的角要会用量角器。'
+        },
+        {
+          unit: 4, title: '第四单元 三位数乘两位数',
+          zhishi: ['竖式笔算规则', '积的变化规律', '速度×时间=路程', '单价×数量=总价'],
+          litis: [
+            { q: '路程：汽车速度115千米/时，行驶14小时，一共行驶多少千米？', a: '115×14=1610（千米）' },
+            { q: '积的变化规律：25×36=900，若25不变，另一个因数乘2，积变为？', a: '1800' },
+            { q: '购物：校服138元/套，采购124套，总共需要多少钱？', a: '138×124=17112（元）' }
+          ],
+          tips: '竖式计算要练熟；速度×时间=路程、单价×数量=总价两大数量关系式必考；积的变化规律常出填空题。'
+        },
+        {
+          unit: 5, title: '第五单元 平行四边形和梯形',
+          zhishi: ['同一平面内两直线：平行、相交（垂直是相交的特殊情况）', '平行四边形两组对边平行相等，具有不稳定性', '梯形只有一组对边平行', '会画垂线、平行线、图形的高'],
+          litis: [
+            { q: '小区伸缩大门利用了平行四边形什么特点？', a: '容易变形、不稳定性' },
+            { q: '判断：长方形和正方形属于特殊的平行四边形', a: '√' },
+            { q: '从马路边A点修一条最短小路连接居民楼，要画什么？', a: '垂线段，点到直线之间垂线段最短' }
+          ],
+          tips: '平行四边形的不稳定性常考判断；画高是必考操作题；点到直线垂线段最短要理解。'
+        },
+        {
+          unit: 6, title: '第六单元 除数是两位数的除法',
+          zhishi: ['四舍五入试商', '余数必须<除数', '商不变规律：被除数和除数同时乘除相同数（0除外），商不变'],
+          litis: [
+            { q: '896千克西瓜，每筐装32千克，一共可以装满几筐？', a: '896÷32=28（筐）' },
+            { q: '商不变规律：720÷80=?', a: '72÷8=9' },
+            { q: '450本书，每班分48本，最多分给几个班？还剩几本？', a: '450÷48=9（个）……18（本）' }
+          ],
+          tips: '试商方法要熟练，余数必须小于除数；商不变规律是高频填空题；有余数除法应用题必考。'
+        },
+        {
+          unit: 7, title: '第七单元 条形统计图',
+          zhishi: ['直观反映数量多少', '可一格代表1、5、10等单位', '便于对比数据'],
+          litis: [
+            { q: '某班兴趣统计：看书12人、运动18人、画画8人、玩手机6人。横向条形统计图一格代表2人，运动需要画几格？', a: '18÷2=9格' },
+            { q: '喜欢运动的比玩手机的多几人？', a: '18-6=12（人）' }
+          ],
+          tips: '看图回答问题是主要考法；注意一格代表多少要数清楚；常考"多几人少几人"的对比。'
+        },
+        {
+          unit: 8, title: '第八单元 数学广角——优化',
+          zhishi: ['沏茶问题：合理安排同时进行的事', '烙饼问题：每次最多烙2张，烙3张最短9分钟', '田忌赛马：用下等对上等、上等对中等、中等对下等，三局两胜'],
+          litis: [
+            { q: '沏茶：烧水8分钟、洗茶杯2分钟、接水1分钟、找茶叶1分钟、沏茶1分钟。最短总时间？', a: '接水→烧水（同时洗茶杯、找茶叶）→沏茶 = 1+8+1=10分钟' },
+            { q: '烙饼：一次最多烙2张，每面3分钟，烙3张最短时间？', a: '9分钟' },
+            { q: '田忌赛马：齐王上中下三等马，田忌如何取胜？', a: '下等对上等、上等对中等、中等对下等，三局两胜' }
+          ],
+          tips: '沏茶、烙饼、田忌赛马是经典优化问题，要会画流程图；烙3张饼9分钟的原理要理解。'
+        },
+        {
+          unit: 9, title: '期末综合应用题',
+          zhishi: ['路程=速度×时间，返回速度=路程÷返回时间', '长方形面积=长×宽，注意单位换算'],
+          litis: [
+            { q: '货车从甲地到乙地，速度65千米/时，15小时到达。原路返回用了13小时，返回速度是多少？', a: '路程：65×15=975千米；返回速度：975÷13=75千米/时' },
+            { q: '一块长方形土地长400米、宽250米，面积是多少公顷？', a: '400×250=100000平方米=10公顷' }
+          ],
+          tips: '行程问题和面积单位换算是期末高频大题；注意"往返"问题要算总路程；面积换算到公顷要除以10000。'
+        },
+      ]
+    };
+
     // ==================== 人教PEP四上英语教材内容 ====================
     // 人教PEP四上英语教材内容（2024新版，含官方原声音频）
     const englishBookData = {
@@ -1806,6 +1900,7 @@
     let currentBookUnit = 0;
     let currentTextbookSubject = 'english';
     let currentChineseUnit = -1;  // 语文单元考点：-1 未选，0-7 对应 1-8 单元
+    let currentMathUnit = -1;    // 数学单元考点：-1 未选，0-8 对应 1-8 单元+期末
 
     // 朗读中文古诗（TTS）
     function speakChinese(text) {
@@ -1821,6 +1916,10 @@
     }
     function setChineseUnit(idx) {
       currentChineseUnit = (currentChineseUnit === idx) ? -1 : idx;
+      renderMain();
+    }
+    function setMathUnit(idx) {
+      currentMathUnit = (currentMathUnit === idx) ? -1 : idx;
       renderMain();
     }
     // 原声音频映射表（后期填入真实 mp3 URL 后自动优先使用原声）
@@ -1905,9 +2004,9 @@
           icon: '🧮',
           color: 'blue',
           tabs: [
-            { id: 'practice', label: '✏️ 同步练习', activeColor: 'bg-blue-400 text-white', bgColor: 'bg-blue-100 text-blue-600' },
-            { id: 'kousuan', label: '⚡ 口算速练', activeColor: 'bg-orange-400 text-white', bgColor: 'bg-orange-100 text-orange-600' },
-            { id: 'jiangjie', label: '🎬 名师讲解', activeColor: 'bg-purple-400 text-white', bgColor: 'bg-purple-100 text-purple-600' },
+            { id: 'kaodian', label: '📝 单元考点', activeColor: 'bg-sky-400 text-white', bgColor: 'bg-sky-100 text-sky-600' },
+            { id: 'jiangjie', label: '📺 名师讲解', activeColor: 'bg-purple-400 text-white', bgColor: 'bg-purple-100 text-purple-600' },
+            { id: 'practice', label: '✏️ 在线练习', activeColor: 'bg-blue-400 text-white', bgColor: 'bg-blue-100 text-blue-600' },
             { id: 'zhishi', label: '💡 知识点', activeColor: 'bg-emerald-400 text-white', bgColor: 'bg-emerald-100 text-emerald-600' },
           ]
         },
@@ -2151,30 +2250,83 @@
         }
 
         if (currentTextbookSubject === 'math') {
-          if (currentBookTab === 'practice') {
+          if (currentBookTab === 'kaodian') {
+            const u = mathBookData.units[currentMathUnit];
             return `
-              <div class="text-center py-8 text-slate-500">
-                <div class="text-4xl mb-3">✏️</div>
-                <p class="font-bold text-base mb-2">人教版数学四上同步练习</p>
-                <a href="https://www.skillxm.cn/textbook/pep/grade-4/" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-blue-400 hover:bg-blue-500 text-white font-black text-sm shadow-soft transition">🚀 开始练习</a>
+              <!-- 单元选择标签 一行两个 -->
+              <div class="grid grid-cols-2 gap-2 mb-4">
+                ${mathBookData.units.map((un, idx) => {
+                  const parts = un.title.split(' ');
+                  const num = parts[0];
+                  const name = parts.slice(1).join(' ');
+                  return `
+                  <button onclick="setMathUnit(${idx})" class="px-2 py-2 rounded-xl text-xs font-black transition text-center leading-tight ${currentMathUnit === idx ? 'bg-sky-400 text-white shadow-soft' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}">
+                    <div>${num}</div>
+                    <div class="${currentMathUnit === idx ? 'text-white/90' : 'text-slate-400'} text-[11px] mt-0.5">${name}</div>
+                  </button>
+                  `;
+                }).join('')}
               </div>
-            `;
-          }
-          if (currentBookTab === 'kousuan') {
-            return `
-              <div class="text-center py-8 text-slate-500">
-                <div class="text-4xl mb-3">⚡</div>
-                <p class="font-bold text-base mb-2">口算速练·计时挑战</p>
-                <a href="https://www.skillxm.cn/tools/mental-math/" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-orange-400 hover:bg-orange-500 text-white font-black text-sm shadow-soft transition">⏱️ 开始计时</a>
-              </div>
+              ${currentMathUnit === -1 ? `
+                <div class="text-center py-10 text-slate-400">
+                  <div class="text-4xl mb-3">👆</div>
+                  <p class="font-black text-base">点击上方单元标签查看考点</p>
+                  <p class="text-sm mt-2">共 8 个单元 + 期末综合应用题</p>
+                </div>
+              ` : `
+                <div class="bg-gradient-to-r from-sky-50 to-blue-50 border-2 border-sky-200 rounded-2xl p-4">
+                  <h4 class="font-black text-sky-700 text-lg mb-3">${u.title}</h4>
+                  <div class="space-y-3">
+                    <div class="bg-white rounded-xl p-3 border border-sky-100">
+                      <div class="font-black text-sky-500 text-sm mb-2">📐 核心知识点</div>
+                      <div class="space-y-1.5">
+                        ${u.zhishi.map(z => `<div class="text-slate-700 font-bold text-base leading-relaxed flex gap-2"><span class="text-sky-400 shrink-0">•</span><span>${z}</span></div>`).join('')}
+                      </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-3 border border-sky-100">
+                      <div class="font-black text-emerald-500 text-sm mb-2">✏️ 情景例题</div>
+                      <div class="space-y-2">
+                        ${u.litis.map(l => `
+                          <div class="bg-emerald-50 rounded-lg p-2.5 border border-emerald-100">
+                            <div class="text-slate-700 font-bold text-sm leading-relaxed mb-1">❓ ${l.q}</div>
+                            <div class="text-emerald-700 font-bold text-sm leading-relaxed">✅ ${l.a}</div>
+                          </div>
+                        `).join('')}
+                      </div>
+                    </div>
+                    ${u.tips ? `
+                      <div class="bg-amber-50 rounded-xl p-3 border-2 border-amber-200">
+                        <div class="font-black text-amber-600 text-sm mb-1">⭐ 易考点提醒</div>
+                        <div class="text-slate-700 font-bold text-base leading-relaxed">${u.tips}</div>
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+              `}
             `;
           }
           if (currentBookTab === 'jiangjie') {
             return `
               <div class="text-center py-8 text-slate-500">
-                <div class="text-4xl mb-3">🎬</div>
+                <div class="text-4xl mb-3">📺</div>
                 <p class="font-bold text-base mb-2">数学四上名师讲解</p>
                 <a href="https://www.baidu.com/s?wd=人教版四年级上册数学名师讲解" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-purple-400 hover:bg-purple-500 text-white font-black text-sm shadow-soft transition">🔍 搜索视频</a>
+              </div>
+            `;
+          }
+          if (currentBookTab === 'practice') {
+            return `
+              <div class="space-y-4">
+                <div class="bg-gradient-to-r from-blue-50 to-sky-50 border-2 border-blue-200 rounded-2xl p-5 text-center">
+                  <div class="text-4xl mb-3">✏️</div>
+                  <p class="font-black text-base text-slate-700 mb-3">同步练习</p>
+                  <a href="https://www.skillxm.cn/textbook/pep/grade-4/" target="_blank" rel="noopener" class="inline-block px-6 py-3 rounded-2xl bg-blue-400 hover:bg-blue-500 text-white font-black text-sm shadow-soft transition">🚀 开始练习</a>
+                </div>
+                <div class="bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-200 rounded-2xl p-5 text-center">
+                  <div class="text-4xl mb-3">⚡</div>
+                  <p class="font-black text-base text-slate-700 mb-3">口算速练·计时挑战</p>
+                  <a href="https://www.skillxm.cn/tools/mental-math/" target="_blank" rel="noopener" class="inline-block px-6 py-3 rounded-2xl bg-orange-400 hover:bg-orange-500 text-white font-black text-sm shadow-soft transition">⏱️ 开始计时</a>
+                </div>
               </div>
             `;
           }
