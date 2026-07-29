@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>姚子皓学习工作台</title>
+  <title>皓月自习社</title>
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#1aafff">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="学习工作台">
+  <meta name="apple-mobile-web-app-title" content="皓月自习社">
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <link rel="icon" type="image/png" href="./icon-192.png">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -132,7 +132,7 @@
 
       <div class="px-2 mb-5 text-center relative z-10">
         <div class="w-12 h-12 md:w-16 md:h-16 mx-auto bg-white/30 rounded-3xl flex items-center justify-center text-3xl mb-1 animate-float border-2 border-white/40">🧑‍🚀</div>
-        <p class="hidden md:block text-white text-[10px] font-black drop-shadow-md">姚子皓</p>
+        <p class="hidden md:block text-white text-[10px] font-black drop-shadow-md">皓月自习社</p>
       </div>
       <nav class="flex-1 space-y-2 px-2 relative z-10" id="sidebar-nav">
         <!-- 导航项由 JS 生成 -->
@@ -536,7 +536,7 @@
             <div class="absolute right-12 bottom-2 text-4xl opacity-60 animate-float">🚀</div>
             <div class="relative flex items-center gap-3 mb-2">
               <span class="text-4xl animate-bounce-slow">👋</span>
-              <h2 class="text-2xl md:text-3xl font-black">姚子皓，今天加油！</h2>
+              <h2 class="text-2xl md:text-3xl font-black">皓月自习社，今天加油！</h2>
             </div>
             <p class="relative text-white/95 text-sm md:text-base font-bold">${new Date().getFullYear()}年${formatDate(new Date())}</p>
           </div>
@@ -3156,7 +3156,7 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').then((reg) => {
-          console.log('学习工作台已可离线使用');
+          console.log('皓月自习社已可离线使用');
         }).catch((err) => {
           console.log('离线功能未启用:', err);
         });
