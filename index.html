@@ -2061,11 +2061,19 @@
           if (currentBookTab === 'kaodian') {
             const u = chineseBookData.units[currentChineseUnit];
             return `
-              <!-- 单元选择标签 -->
-              <div class="flex flex-wrap gap-2 mb-4">
-                ${chineseBookData.units.map((un, idx) => `
-                  <button onclick="setChineseUnit(${idx})" class="px-3 py-1.5 rounded-xl text-xs font-black transition ${currentChineseUnit === idx ? 'bg-sky-400 text-white shadow-soft' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}">第${idx+1}单元</button>
-                `).join('')}
+              <!-- 单元选择标签 一行两个 -->
+              <div class="grid grid-cols-2 gap-2 mb-4">
+                ${chineseBookData.units.map((un, idx) => {
+                  const parts = un.title.split(' ');
+                  const num = parts[0];
+                  const name = parts.slice(1).join(' ');
+                  return `
+                  <button onclick="setChineseUnit(${idx})" class="px-2 py-2 rounded-xl text-xs font-black transition text-center leading-tight ${currentChineseUnit === idx ? 'bg-sky-400 text-white shadow-soft' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}">
+                    <div>${num}</div>
+                    <div class="${currentChineseUnit === idx ? 'text-white/90' : 'text-slate-400'} text-[11px] mt-0.5">${name}</div>
+                  </button>
+                  `;
+                }).join('')}
               </div>
               ${currentChineseUnit === -1 ? `
                 <div class="text-center py-10 text-slate-400">
