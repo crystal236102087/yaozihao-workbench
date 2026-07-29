@@ -2380,24 +2380,27 @@
       const renderContent = () => {
         if (currentTextbookSubject === 'english') {
           if (currentBookTab === 'words') {
-            const wordAudioUrl = englishBookData.wordsAudio[currentBookUnit];
+            const allWords = englishBookData.units.flatMap((u, idx) => u.words.map(w => ({ ...w, unitIdx: idx + 1, unitName: u.name })));
             return `
-              ${wordAudioUrl ? `
-                <div class="mb-4">
-                  <h4 class="text-sm font-black text-slate-600 mb-2 flex items-center gap-1"><span>🎵</span> 本单元单词音频</h4>
-                  <div class="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl px-3 py-2.5 flex items-center justify-between gap-3 card-hover">
-                    <div class="flex items-center gap-2 min-w-0">
-                      <span class="text-emerald-500 text-base shrink-0">🎵</span>
-                      <div class="font-black text-emerald-700 text-xs truncate">${unit.name} 单词朗读</div>
+              <div class="mb-4">
+                <h4 class="text-sm font-black text-slate-600 mb-2 flex items-center gap-1"><span>🎵</span> 本学期单词音频</h4>
+                <div class="space-y-2">
+                  ${Object.entries(englishBookData.wordsAudio).map(([idx, url]) => `
+                    <div class="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl px-3 py-2.5 flex items-center justify-between gap-3 card-hover">
+                      <div class="flex items-center gap-2 min-w-0">
+                        <span class="text-emerald-500 text-base shrink-0">🎵</span>
+                        <div class="font-black text-emerald-700 text-xs truncate">${englishBookData.units[idx].name} 单词朗读</div>
+                      </div>
+                      <button onclick="playAudio(${JSON.stringify(url).replace(/"/g, '&quot;')})" class="shrink-0 w-8 h-8 rounded-full bg-white text-emerald-600 shadow-sm flex items-center justify-center text-xs hover:scale-110 hover:bg-emerald-50 transition" title="播放">▶️</button>
                     </div>
-                    <button onclick="playAudio(${JSON.stringify(wordAudioUrl).replace(/"/g, '&quot;')})" class="shrink-0 w-8 h-8 rounded-full bg-white text-emerald-600 shadow-sm flex items-center justify-center text-xs hover:scale-110 hover:bg-emerald-50 transition" title="播放">▶️</button>
-                  </div>
+                  `).join('')}
                 </div>
-              ` : ''}
+              </div>
               <div class="grid grid-cols-1 gap-2">
-                ${unit.words.map(w => `
-                  <div class="bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl px-4 py-3 flex items-center justify-between card-hover">
-                    <div class="flex items-center gap-3 min-w-0">
+                ${allWords.map(w => `
+                  <div class="relative bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl px-4 py-3 flex items-center justify-between card-hover">
+                    <span class="absolute top-2 left-2 text-[10px] font-black text-amber-400/70 bg-white/60 px-1.5 py-0.5 rounded">U${w.unitIdx}</span>
+                    <div class="flex items-center gap-3 min-w-0 pl-6">
                       <span class="text-amber-400 text-lg shrink-0">📝</span>
                       <div class="min-w-0">
                         <div class="font-black text-amber-700 text-lg truncate">${w.en}</div>
