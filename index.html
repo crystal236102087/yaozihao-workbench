@@ -2271,9 +2271,9 @@
               const m = title.match(/^(Unit\s+\d+)\s+(.*)$/);
               num = m ? m[1] : title;
               name = m ? m[2] : '';
-            } else if (/^第\d+单元/.test(title)) {
+            } else if (/^第[一二三四五六七八九十]+单元/.test(title)) {
               // 第一单元 自然之美 → 第一单元 / 自然之美
-              const m = title.match(/^(第\d+单元)\s+(.*)$/);
+              const m = title.match(/^(第[一二三四五六七八九十]+单元)\s+(.*)$/);
               num = m ? m[1] : title;
               name = m ? m[2] : '';
             } else {
