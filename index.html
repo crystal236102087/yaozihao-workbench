@@ -2208,6 +2208,27 @@
       window.speechSynthesis.speak(u);
       showToast('正在朗读 📢');
     }
+    // 连续朗读一组词语（单元四会词语）
+    function speakChineseList(words) {
+      if (!window.speechSynthesis) { showToast('浏览器不支持语音朗读', '⚠️'); return; }
+      window.speechSynthesis.cancel();
+      if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+      let i = 0;
+      function next() {
+        if (i >= words.length) return;
+        const u = new SpeechSynthesisUtterance(words[i]);
+        u.lang = 'zh-CN';
+        u.rate = 0.85;
+        u.pitch = 1.0;
+        u.onend = () => {
+          i++;
+          setTimeout(next, 450);
+        };
+        window.speechSynthesis.speak(u);
+      }
+      next();
+      showToast(`开始朗读 ${words.length} 个词语 📢`);
+    }
     function setChineseUnit(idx) {
       currentChineseUnit = (currentChineseUnit === idx) ? -1 : idx;
       renderMain();
@@ -2701,19 +2722,19 @@
             return `
               <div class="space-y-4">
                 ${chineseBookData.sihui.map(g => `
-                  <div class="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-4 border border-amber-100">
-                    <h4 class="font-black text-amber-700 text-base mb-3 flex items-center gap-2">
-                      <span class="px-2 py-0.5 bg-amber-200 text-amber-800 text-xs rounded">${g.title}</span>
-                      <span class="text-xs text-amber-500">(${g.words.length} 词)</span>
-                    </h4>
+                  <div class="bg-white rounded-2xl p-4 border border-stone-100 shadow-sm">
+                    <div class="flex items-center justify-between mb-3">
+                      <h4 class="font-black text-slate-700 text-base flex items-center gap-2">
+                        <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs rounded">${g.title}</span>
+                        <span class="text-xs text-slate-400">(${g.words.length} 词)</span>
+                      </h4>
+                      <button onclick="speakChineseList(${JSON.stringify(g.words.map(w => w.w)).replace(/"/g, '&quot;')})" class="w-8 h-8 rounded-full bg-stone-100 text-stone-600 flex items-center justify-center text-sm hover:scale-110 hover:bg-amber-100 hover:text-amber-600 transition" title="朗读本单元">🎵</button>
+                    </div>
                     <div class="grid grid-cols-2 gap-2">
                       ${g.words.map(w => `
-                        <div class="bg-white rounded-xl px-2.5 py-2 flex items-center justify-between border border-amber-100">
-                          <div class="min-w-0 flex-1">
-                            <div class="text-[10px] text-amber-400 leading-tight truncate">${w.p}</div>
-                            <div class="font-bold text-slate-700 text-sm leading-tight truncate">${w.w}</div>
-                          </div>
-                          <button onclick="speakChinese(${JSON.stringify(w.w).replace(/"/g, '&quot;')})" class="shrink-0 ml-1.5 w-5 h-5 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-[9px] hover:scale-110 hover:bg-amber-200 transition" title="朗读">🎵</button>
+                        <div class="bg-stone-50 rounded-xl px-3 py-2.5 border border-stone-100">
+                          <div class="text-[11px] text-amber-700 leading-tight truncate mb-0.5">${w.p}</div>
+                          <div class="font-black text-slate-800 text-lg leading-tight truncate">${w.w}</div>
                         </div>
                       `).join('')}
                     </div>
