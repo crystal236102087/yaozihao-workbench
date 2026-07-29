@@ -171,6 +171,7 @@
       { id: 'reading', icon: '📚', label: '阅读' },
       { id: 'sport', icon: '🏃', label: '运动' },
       { id: 'textbook', icon: '📖', label: '四上教材' },
+      { id: 'fun', icon: '🎮', label: '娱乐' },
       { id: 'reward', icon: '🎁', label: '奖励中心' },
       { id: 'stats', icon: '📊', label: '统计' },
     ];
@@ -178,7 +179,7 @@
     const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
     const defaultData = {
-      version: 12,
+      version: 13,
       sun: 25,
       streak: 0,
       fullDays: 0,
@@ -377,6 +378,9 @@
           { id: 's2', title: '跑步', sub: 'Running', desc: '户外慢跑或快走20分钟', done: false, sun: 5 },
           { id: 's3', title: '护眼操', sub: 'Eye Exercise', desc: '做眼保健操2次', done: false, sun: 5 },
         ],
+        fun: {
+          dailyLog: {},  // 每日娱乐记录 { 'YYYY-MM-DD': [{id, name, minutes, note}] }
+        },
       },
       textbooks: [
         { id: 't1', subject: '语文', name: '部编版四上语文', progress: 0, color: 'bg-emerald-100 text-emerald-700', link: 'https://www.pep.com.cn/czyw/' },
@@ -1126,6 +1130,140 @@
           delete data.tasks.reading.dailyLog[date];
           data.sun -= 5;  // 当天没阅读记录了,扣回阳光
         }
+      }
+      saveData();
+      renderMain();
+      showToast('已删除记录 🗑️');
+    }
+
+    // ==================== 娱乐 ====================
+    const funGames = [
+      { name: '数独挑战', icon: '🧩', desc: '锻炼逻辑思维', url: 'https://www.skillxm.cn/tools/sudoku/' },
+      { name: '24点游戏', icon: '🔢', desc: '数学心算游戏', url: 'https://www.24point.com/' },
+      { name: '记忆翻牌', icon: '🃏', desc: '记忆配对游戏', url: 'https://memory-game-online.com/' },
+      { name: '贪吃蛇', icon: '🐍', desc: '经典休闲游戏', url: 'https://playsnake.org/' },
+      { name: '2048', icon: '🎯', desc: '数字合并游戏', url: 'https://play2048.co/' },
+      { name: '俄罗斯方块', icon: '🟦', desc: '经典益智游戏', url: 'https://tetris.com/' },
+    ];
+
+    function renderFun() {
+      const today = todayKey();
+      const todayLogs = data.tasks.fun.dailyLog[today] || [];
+      return `
+        <div class="mb-6">
+          <div class="bg-gradient-to-r from-candy-pink to-rose-400 rounded-3xl p-6 text-white shadow-soft mb-6 relative overflow-hidden border-4 border-white/40">
+            <div class="absolute -right-8 -top-8 w-32 h-32 bg-white/20 rounded-full"></div>
+            <div class="absolute left-6 bottom-2 text-4xl opacity-60 animate-bounce-slow">🎮</div>
+            <div class="relative flex items-center gap-4">
+              <span class="text-5xl sticker-shadow animate-wiggle">🎮</span>
+              <div>
+                <h2 class="text-2xl md:text-3xl font-black">娱乐</h2>
+                <p class="text-white/95 font-bold">学得开心，玩得快乐！记得记录玩耍时间哦</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 今日娱乐记录 -->
+          <div class="bg-white rounded-3xl p-5 md:p-6 shadow-card border-4 border-rose-100 card-hover mb-6">
+            <div class="flex items-center justify-between mb-5 pb-4 border-b-2 border-slate-100">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl ${todayLogs.length > 0 ? 'bg-emerald-100' : 'bg-rose-100'} flex items-center justify-center text-2xl sticker-shadow">${todayLogs.length > 0 ? '✅' : '🎮'}</div>
+                <div>
+                  <h3 class="text-xl font-black text-slate-700">今日娱乐记录</h3>
+                  <p class="text-sm text-slate-400 font-bold">${todayLogs.length > 0 ? '今天已记录 '+todayLogs.length+' 项娱乐' : '记录今天玩了什么，玩了多久'}</p>
+                </div>
+              </div>
+              <button onclick="addFunLog()" class="bg-rose-400 hover:bg-rose-500 text-white font-black text-sm px-4 py-2 rounded-2xl shadow-soft transition">＋ 记录</button>
+            </div>
+            ${todayLogs.length === 0 ? `
+              <div class="text-center py-6 text-slate-400">
+                <div class="text-4xl mb-2">🎈</div>
+                <p class="font-bold text-sm">今天还没有娱乐记录</p>
+                <p class="text-xs mt-1">玩完了来记录吧（建议每天娱乐不超过1小时）</p>
+              </div>
+            ` : `
+              <div class="space-y-2">
+                ${todayLogs.map(log => `
+                  <div class="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-rose-50 to-pink-50 border-2 border-rose-100">
+                    <span class="text-xl">${log.icon || '🎉'}</span>
+                    <div class="flex-1 min-w-0">
+                      <span class="text-base font-black text-slate-700">${log.name}</span>
+                      <div class="text-xs text-slate-500 font-bold">
+                        <span class="text-rose-600">⏱ ${log.minutes}分钟</span>
+                        ${log.note ? `<span class="mx-2">·</span><span>${log.note}</span>` : ''}
+                      </div>
+                    </div>
+                    <button onclick="delFunLog('${today}', '${log.id}')" class="w-7 h-7 rounded-full bg-rose-100 text-rose-500 hover:bg-rose-200 flex items-center justify-center text-sm font-black shrink-0">×</button>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </div>
+
+          <!-- 在线小游戏 -->
+          <div class="bg-white rounded-3xl p-5 md:p-6 shadow-card border-4 border-purple-100 card-hover">
+            <div class="flex items-center gap-3 mb-5 pb-4 border-b-2 border-slate-100">
+              <div class="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center text-2xl sticker-shadow">🕹️</div>
+              <div>
+                <h3 class="text-xl font-black text-slate-700">在线小游戏</h3>
+                <p class="text-sm text-slate-400 font-bold">适合四年级的益智休闲游戏</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+              ${funGames.map(g => `
+                <a href="${g.url}" target="_blank" rel="noopener" class="bg-gradient-to-br from-purple-50 to-violet-50 border-2 border-purple-100 rounded-2xl p-4 flex flex-col items-center text-center card-hover hover:scale-105 transition">
+                  <span class="text-3xl mb-2">${g.icon}</span>
+                  <span class="font-black text-purple-700 text-sm">${g.name}</span>
+                  <span class="text-xs text-slate-400 font-bold mt-1">${g.desc}</span>
+                </a>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 添加娱乐记录
+    function addFunLog() {
+      const today = todayKey();
+      if (!data.tasks.fun.dailyLog[today]) data.tasks.fun.dailyLog[today] = [];
+      const presets = ['🍦 吃冰激凌', '📺 看动画片', '📱 玩手机', '🎮 打游戏', '⚽ 户外玩耍', '🎨 画画', '🧩 拼图', 'other'];
+      const choice = prompt('今天玩了什么？（输入名称，或选择）:\n\n' + presets.map((p,i)=>`${i+1}. ${p}`).join('\n') + '\n\n直接输入名称也行:');
+      if (!choice || !choice.trim()) return;
+      let name = choice.trim();
+      const num = parseInt(name);
+      if (!isNaN(num) && num >= 1 && num <= presets.length) {
+        name = presets[num-1];
+      }
+      let icon = '🎉';
+      if (name.includes('冰')) icon = '🍦';
+      else if (name.includes('动画') || name.includes('电视')) icon = '📺';
+      else if (name.includes('手机')) icon = '📱';
+      else if (name.includes('游戏')) icon = '🎮';
+      else if (name.includes('户外') || name.includes('玩耍') || name.includes('跑')) icon = '⚽';
+      else if (name.includes('画')) icon = '🎨';
+      else if (name.includes('拼')) icon = '🧩';
+      const minutes = prompt('玩了多长时间？（分钟）', '30');
+      if (!minutes) return;
+      const note = prompt('备注（可留空）:', '') || '';
+      data.tasks.fun.dailyLog[today].push({
+        id: 'fun' + Date.now(),
+        name: name,
+        minutes: parseInt(minutes) || 0,
+        note: note.trim(),
+        icon: icon
+      });
+      saveData();
+      renderMain();
+      showToast('已记录娱乐 🎮');
+    }
+
+    // 删除娱乐记录
+    function delFunLog(date, id) {
+      if (!confirm('确定删除这条记录吗？')) return;
+      if (data.tasks.fun.dailyLog[date]) {
+        data.tasks.fun.dailyLog[date] = data.tasks.fun.dailyLog[date].filter(l => l.id !== id);
+        if (data.tasks.fun.dailyLog[date].length === 0) delete data.tasks.fun.dailyLog[date];
       }
       saveData();
       renderMain();
@@ -2042,6 +2180,7 @@
         case 'reading': content = renderReading(); break;
         case 'sport': content = renderSport(); break;
         case 'textbook': content = renderTextbook(); break;
+        case 'fun': content = renderFun(); break;
         case 'reward': content = renderReward(); break;
         case 'stats': content = renderStats(); break;
       }
