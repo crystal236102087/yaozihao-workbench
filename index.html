@@ -713,14 +713,8 @@
     // ==================== 学科模块（标题只显示栏目名）====================
     // 各学科对应的联网动作按钮配置
     const subjectActions = {
-      chinese: [
-        { label: '🔊 课文朗读(部编版四上)', url: 'https://www.ximalaya.com/album/117412002', color: 'bg-emerald-400 hover:bg-emerald-500' },
-        { label: '📚 课文内容', url: 'https://www.pep.com.cn/czyw/', color: 'bg-emerald-300 hover:bg-emerald-400' },
-      ],
-      math: [
-        { label: '✏️ 在线练习(人教版四上)', url: 'https://www.skillxm.cn/textbook/pep/grade-4/', color: 'bg-blue-400 hover:bg-blue-500' },
-        { label: '⚡ 口算速练(计时挑战)', url: 'https://www.skillxm.cn/tools/mental-math/', color: 'bg-blue-300 hover:bg-blue-400' },
-      ],
+      chinese: [],
+      math: [],
       english: [
         { label: '🔊 英语跟读', url: 'https://www.baidu.com/s?wd=人教PEP四年级上册英语课文跟读', color: 'bg-amber-400 hover:bg-amber-500' },
         { label: '📚 课文内容', url: 'https://www.baidu.com/s?wd=人教PEP四年级上册英语课文原文', color: 'bg-amber-300 hover:bg-amber-400' },
@@ -2390,20 +2384,17 @@
       const renderContent = () => {
         if (currentTextbookSubject === 'english') {
           if (currentBookTab === 'words') {
+            const wordAudioUrl = englishBookData.wordsAudio[currentBookUnit];
             return `
-              ${unit.audios && unit.audios.length > 0 ? `
+              ${wordAudioUrl ? `
                 <div class="mb-4">
-                  <h4 class="text-sm font-black text-slate-600 mb-2 flex items-center gap-1"><span>🎵</span> 本单元音频</h4>
-                  <div class="space-y-2">
-                    ${unit.audios.map(a => `
-                      <div class="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl px-3 py-2.5 flex items-center justify-between gap-3 card-hover">
-                        <div class="flex items-center gap-2 min-w-0">
-                          <span class="text-emerald-500 text-base shrink-0">🎵</span>
-                          <div class="font-black text-emerald-700 text-xs truncate">${a.name}</div>
-                        </div>
-                        <button onclick="playAudio(${JSON.stringify(a.url).replace(/"/g, '&quot;')})" class="shrink-0 w-8 h-8 rounded-full bg-white text-emerald-600 shadow-sm flex items-center justify-center text-xs hover:scale-110 hover:bg-emerald-50 transition" title="播放">▶️</button>
-                      </div>
-                    `).join('')}
+                  <h4 class="text-sm font-black text-slate-600 mb-2 flex items-center gap-1"><span>🎵</span> 本单元单词音频</h4>
+                  <div class="bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl px-3 py-2.5 flex items-center justify-between gap-3 card-hover">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="text-emerald-500 text-base shrink-0">🎵</span>
+                      <div class="font-black text-emerald-700 text-xs truncate">${unit.name} 单词朗读</div>
+                    </div>
+                    <button onclick="playAudio(${JSON.stringify(wordAudioUrl).replace(/"/g, '&quot;')})" class="shrink-0 w-8 h-8 rounded-full bg-white text-emerald-600 shadow-sm flex items-center justify-center text-xs hover:scale-110 hover:bg-emerald-50 transition" title="播放">▶️</button>
                   </div>
                 </div>
               ` : ''}
