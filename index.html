@@ -1519,7 +1519,7 @@
         {
           unit: 1, title: '第一单元',
           poems: [
-            { type: 'poem', title: '鹿柴', author: '唐·王维', source: '《全唐诗》', text: '空山不见人，但闻人语响。\n返景入深林，复照青苔上。' }
+            { type: 'poem', title: '鹿柴', author: '唐·王维', source: '《全唐诗》', text: '空山不见人，但闻人语响。\n返景入深林，复照青苔上。', translation: '幽静的山谷里看不见人影，只听到人说话的声音。落日余晖映入深林，又照在幽暗处的青苔上。' }
           ]
         },
         {
@@ -1534,9 +1534,9 @@
         {
           unit: 3, title: '第三单元',
           poems: [
-            { type: 'poem', title: '暮江吟', author: '唐·白居易', source: '部编版四上第9课', text: '一道残阳铺水中，半江瑟瑟半江红。\n可怜九月初三夜，露似真珠月似弓。' },
-            { type: 'poem', title: '题西林壁', author: '宋·苏轼', source: '部编版四上第9课', text: '横看成岭侧成峰，远近高低各不同。\n不识庐山真面目，只缘身在此山中。' },
-            { type: 'poem', title: '雪梅', author: '宋·卢钺', source: '部编版四上第9课', text: '梅雪争春未肯降，骚人阁笔费评章。\n梅须逊雪三分白，雪却输梅一段香。' }
+            { type: 'poem', title: '暮江吟', author: '唐·白居易', source: '部编版四上第9课', text: '一道残阳铺水中，半江瑟瑟半江红。\n可怜九月初三夜，露似真珠月似弓。', translation: '一道夕阳的余晖铺在江面上，江水一半青绿、一半艳红。最可爱的是九月初三的夜晚，露珠像珍珠，新月像弯弓。' },
+            { type: 'poem', title: '题西林壁', author: '宋·苏轼', source: '部编版四上第9课', text: '横看成岭侧成峰，远近高低各不同。\n不识庐山真面目，只缘身在此山中。', translation: '从正面、侧面看庐山，山岭起伏、山峰耸立；从远、近、高、低不同角度看，庐山呈现各种姿态。之所以看不清庐山全貌，是因为自己正处在山中。' },
+            { type: 'poem', title: '雪梅', author: '宋·卢钺', source: '部编版四上第9课', text: '梅雪争春未肯降，骚人阁笔费评章。\n梅须逊雪三分白，雪却输梅一段香。', translation: '梅花和雪花都认为自己占尽春色，互不相让。诗人放下笔，难以评判。梅花虽比雪花少了三分洁白，雪花却输给梅花一段清香。' }
           ]
         },
         {
@@ -1560,9 +1560,9 @@
         {
           unit: 7, title: '第七单元',
           poems: [
-            { type: 'poem', title: '出塞', author: '唐·王昌龄', source: '部编版四上第21课', text: '秦时明月汉时关，万里长征人未还。\n但使龙城飞将在，不教胡马度阴山。' },
-            { type: 'poem', title: '凉州词', author: '唐·王翰', source: '部编版四上第21课', text: '葡萄美酒夜光杯，欲饮琵琶马上催。\n醉卧沙场君莫笑，古来征战几人回。' },
-            { type: 'poem', title: '夏日绝句', author: '宋·李清照', source: '部编版四上第21课', text: '生当作人杰，死亦为鬼雄。\n至今思项羽，不肯过江东。' }
+            { type: 'poem', title: '出塞', author: '唐·王昌龄', source: '部编版四上第21课', text: '秦时明月汉时关，万里长征人未还。\n但使龙城飞将在，不教胡马度阴山。', translation: '依旧是秦汉时的明月和边关，出征万里的将士还没有回还。倘若龙城的飞将军李广还在，绝不会让敌人的战马越过阴山。' },
+            { type: 'poem', title: '凉州词', author: '唐·王翰', source: '部编版四上第21课', text: '葡萄美酒夜光杯，欲饮琵琶马上催。\n醉卧沙场君莫笑，古来征战几人回？', translation: '葡萄美酒倒满了夜光杯，正要畅饮时，琵琶声在马上催促。如果醉倒在战场上，请你不要笑话，自古以来征战沙场又有几人能回？' },
+            { type: 'poem', title: '夏日绝句', author: '宋·李清照', source: '部编版四上第21课', text: '生当作人杰，死亦为鬼雄。\n至今思项羽，不肯过江东。', translation: '活着应当做人中的豪杰，死了也要做鬼中的英雄。到现在人们还思念项羽，因为他不肯苟且偷生退回江东。' }
           ]
         },
         {
@@ -2389,7 +2389,7 @@
             return `
               <div class="grid grid-cols-1 gap-2">
                 ${unit.words.map(w => `
-                  <div class="bg-gradient-to-r from-amber-50 to-amber-100 border-2 border-amber-200 rounded-2xl px-4 py-3 flex items-center justify-between card-hover">
+                  <div class="bg-gradient-to-r from-amber-50 to-amber-100 rounded-2xl px-4 py-3 flex items-center justify-between card-hover">
                     <div class="flex items-center gap-3 min-w-0">
                       <span class="text-amber-400 text-lg shrink-0">📝</span>
                       <div class="min-w-0">
@@ -2397,9 +2397,7 @@
                         <div class="text-xs text-slate-500 font-bold">${w.cn}</div>
                       </div>
                     </div>
-                    <button onclick="speakText(${JSON.stringify(w.en).replace(/"/g, '&quot;')})" class="shrink-0 px-3 h-10 rounded-full bg-white text-amber-600 shadow-sm flex items-center gap-1 text-sm font-black hover:scale-105 hover:bg-amber-50 transition">
-                      🔊 <span class="text-xs">跟读</span>
-                    </button>
+                    <button onclick="speakText(${JSON.stringify(w.en).replace(/"/g, '&quot;')})" class="shrink-0 w-9 h-9 rounded-full bg-white text-amber-600 shadow-sm flex items-center justify-center text-sm hover:scale-110 hover:bg-amber-50 transition" title="朗读">🎵</button>
                   </div>
                 `).join('')}
               </div>
@@ -2618,39 +2616,36 @@
           }
           if (currentBookTab === 'gushi') {
             return `
-              <div class="space-y-4" style="font-family:'STSong','SimSun','Songti SC','Source Han Serif SC',serif;">
+              <div class="space-y-5" style="font-family:'STSong','SimSun','Songti SC','Source Han Serif SC',serif;">
                 ${chineseBookData.accumulations.map(a => `
-                  <div class="bg-gradient-to-br from-amber-50 via-yellow-50 to-stone-50 border-2 border-red-900/40 rounded-xl p-4 relative overflow-hidden shadow-sm">
-                    <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-red-800 to-red-900"></div>
-                    <div class="flex items-center gap-2 mb-3 pl-2">
-                      <span class="inline-block px-2 py-0.5 bg-red-900 text-amber-50 text-xs font-bold rounded-sm tracking-wider">${a.title}</span>
+                  <div class="relative">
+                    <div class="flex items-center gap-2 mb-3">
+                      <span class="inline-block px-2.5 py-1 bg-red-900 text-amber-50 text-xs font-bold rounded-sm tracking-widest shadow-sm">${a.title}</span>
                     </div>
-                    <div class="space-y-3 pl-2">
+                    <div class="space-y-4 pl-1">
                       ${a.poems.map(p => {
                         const audioText = JSON.stringify(p.text.replace(/\\n/g, ' ')).replace(/"/g, '&quot;');
                         if (p.type === 'poem') {
                           return `
-                            <div class="bg-amber-50/80 border border-red-900/20 rounded-lg p-3 relative">
-                              <div class="flex items-center gap-2 mb-2">
-                                <span class="text-red-900 font-black text-lg tracking-wide">${p.title}</span>
-                                <span class="text-stone-500 text-xs font-bold">· ${p.author} · ${p.source}</span>
-                              </div>
-                              <p class="text-stone-800 font-bold text-lg leading-loose whitespace-pre-line mb-2 tracking-wide">${p.text}</p>
-                              <button onclick="speakChinese(${audioText})" class="px-3 h-8 rounded-full bg-red-900/90 text-amber-50 shadow-sm flex items-center gap-1 text-xs font-bold hover:scale-105 hover:bg-red-800 transition">
-                                🔊 <span>朗读</span>
-                              </button>
+                            <div class="relative bg-gradient-to-b from-stone-50 to-amber-50/60 rounded-2xl p-5 text-center" style="box-shadow: inset 0 0 30px rgba(120,53,15,0.04);">
+                              <button onclick="speakChinese(${audioText})" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-red-900/90 text-amber-50 text-xs flex items-center justify-center hover:scale-110 hover:bg-red-800 transition shadow-sm" title="朗读">🔊</button>
+                              <div class="text-red-900 font-black text-xl tracking-[0.15em] mb-1">${p.title}</div>
+                              <div class="text-stone-500 text-xs font-bold mb-4">${p.author} · ${p.source}</div>
+                              <div class="text-stone-800 font-bold text-lg leading-[2.2] whitespace-pre-line tracking-wider mb-4">${p.text}</div>
+                              ${p.translation ? `
+                                <div class="inline-block text-left max-w-full">
+                                  <div class="text-stone-400 text-[10px] font-bold mb-1 text-center">— 译文 —</div>
+                                  <div class="text-stone-600 text-sm leading-relaxed font-medium px-3 py-2 bg-white/60 rounded-lg">${p.translation}</div>
+                                </div>
+                              ` : ''}
                             </div>
                           `;
                         } else {
                           return `
-                            <div class="bg-amber-50/80 border border-red-900/20 rounded-lg p-3 relative">
-                              <p class="text-stone-800 font-bold text-base leading-loose whitespace-pre-line tracking-wide mb-2">${p.text}</p>
-                              <div class="flex items-center justify-between">
-                                <button onclick="speakChinese(${audioText})" class="px-3 h-8 rounded-full bg-red-900/90 text-amber-50 shadow-sm flex items-center gap-1 text-xs font-bold hover:scale-105 hover:bg-red-800 transition">
-                                  🔊 <span>朗读</span>
-                                </button>
-                                <span class="text-stone-500 text-xs font-bold italic">—— ${p.author} · ${p.source}</span>
-                              </div>
+                            <div class="relative bg-gradient-to-b from-stone-50 to-amber-50/40 rounded-2xl p-4">
+                              <button onclick="speakChinese(${audioText})" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-red-900/90 text-amber-50 text-xs flex items-center justify-center hover:scale-110 hover:bg-red-800 transition shadow-sm" title="朗读">🔊</button>
+                              <p class="text-stone-800 font-bold text-base leading-loose whitespace-pre-line tracking-wide pr-8">${p.text}</p>
+                              <div class="text-right mt-2 text-stone-500 text-xs font-bold italic">—— ${p.author} · ${p.source}</div>
                             </div>
                           `;
                         }
