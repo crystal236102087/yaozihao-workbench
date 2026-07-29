@@ -1420,7 +1420,7 @@
     };
 
     // 教材内容当前标签状态（英语）
-    let currentBookTab = 'audios';
+    let currentBookTab = '';
     let currentBookUnit = 0;
     let currentTextbookSubject = 'english';
 
@@ -1787,9 +1787,7 @@
 
     function setTextbookSubject(subject) {
       currentTextbookSubject = subject;
-      // 切换到新科目时恢复默认标签
-      const defaults = { english: 'audios', chinese: 'kewen', math: 'practice', science: 'video' };
-      currentBookTab = defaults[subject] || 'audios';
+      currentBookTab = '';  // 切换科目后不默认显示任何内容
       renderMain();
     }
 
