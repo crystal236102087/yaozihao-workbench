@@ -1679,6 +1679,95 @@
       ]
     };
 
+    // ==================== 教科版四上科学教材内容 ====================
+    const scienceBookData = {
+      units: [
+        {
+          unit: 1, title: '第一单元 声音',
+          zhishi: [
+            '声音由物体振动产生，振动停止，声音立刻消失',
+            '声音传播依靠介质：固体＞液体＞气体；真空不能传播声音',
+            '音量：由振动幅度决定，振幅越大，声音越强',
+            '音高：由振动快慢（频率）决定，物体越短、越细、越紧，振动越快、音高越高',
+            '耳朵结构：耳廓收集声音→鼓膜振动→听小骨传递→耳蜗转化信号→听觉神经传给大脑'
+          ],
+          litis: [
+            { q: '敲完音叉后立刻触碰水面，水面泛起一圈圈水花，为什么？', a: '音叉在振动，振动通过触碰传递给水，带动水面震动，说明声音由物体振动产生。' },
+            { q: '趴在桌子一端轻敲桌面，耳朵贴紧桌面能清晰听见，离开桌面声音变弱，说明什么？', a: '固体传播声音的能力比空气更强。' },
+            { q: '往玻璃水杯里不断加水，用小木棒连续敲击杯壁，声音会怎么变化？', a: '杯中水越来越多，杯子振动越慢，音高越来越低。' },
+            { q: '长期戴耳机开最大音量上网课，容易损伤耳朵哪个部位？怎么保护听力？', a: '容易损伤鼓膜；远离强噪音，不长时间戴耳机，不用尖锐物品掏耳朵。' }
+          ],
+          tips: '声音传播介质强弱顺序（固体>液体>气体）必考；音高与振动快慢的关系常考实验题；鼓膜保护是生活应用高频点。'
+        },
+        {
+          unit: 2, title: '第二单元 呼吸与消化',
+          zhishi: [
+            '呼吸路径：鼻腔→咽喉→气管→支气管→肺',
+            '肺是气体交换的主要器官，吸气吸入氧气，呼气排出二氧化碳',
+            '肺活量：尽力吸气后再尽力呼出的气体总量，经常体育锻炼可以增大肺活量',
+            '消化顺序：口腔（牙齿咀嚼、唾液分解淀粉）→食道→胃（研磨食物）→小肠（吸收绝大部分营养）→大肠（吸收水分）→肛门'
+          ],
+          litis: [
+            { q: '体育课跑完800米后，心跳和呼吸明显加快，为什么？', a: '剧烈运动消耗大量氧气，身体需要加快呼吸吸入更多氧气，加快心跳输送氧气到全身。' },
+            { q: '为什么吃饭时奶奶总叮嘱"细嚼慢咽，不要狼吞虎咽"？', a: '牙齿充分咀嚼可以把食物磨碎，减轻胃的负担；唾液提前分解淀粉，有利于消化吸收。' },
+            { q: '经常打篮球的小亮憋气时间远长于不爱运动的小明，为什么？', a: '小亮经常运动，肺活量更大，单次呼吸储存的空气更多。' },
+            { q: '长时间吃辣条、油炸零食，会最先加重哪个消化器官负担？', a: '胃，辛辣油腻食物会刺激胃黏膜，加重胃部研磨消化的压力。' }
+          ],
+          tips: '呼吸路径顺序必考；肺活量概念和运动的关系常考；消化顺序中各器官功能是高频考点。'
+        },
+        {
+          unit: 3, title: '第三单元 运动和力',
+          zhishi: [
+            '重力：地球吸引产生，方向竖直向下',
+            '弹力：物体发生形变后产生的恢复原状的力（橡皮筋、弹簧、气球）',
+            '摩擦力：两个物体接触面之间阻碍相对运动的力',
+            '摩擦力影响因素：接触面越粗糙、物体自身越重，摩擦力越大',
+            '力可以改变物体的运动状态：启动、静止、加快/减慢速度、改变运动方向'
+          ],
+          litis: [
+            { q: '苹果熟透后从树上自动掉落地面，是什么力？方向怎样？', a: '重力；方向竖直向下。' },
+            { q: '橡皮筋动力小车，橡皮筋缠绕圈数越多跑得越远，原理是什么？', a: '橡皮筋缠绕圈数越多，形变量越大，产生的弹力越大，给小车的动力越强。' },
+            { q: '下雨天汽车刹车后很难立刻停下，容易打滑，为什么？怎么办？', a: '雨水让轮胎和地面接触面变光滑，摩擦力变小；解决办法：雨天减速慢行，加深轮胎防滑纹路。' },
+            { q: '搬运笨重木箱时，在底部垫上几根圆木棍会轻松很多，原理是什么？', a: '变滑动摩擦为滚动摩擦，大幅减小摩擦力。' }
+          ],
+          tips: '三种力的概念和方向是必考点；摩擦力大小影响因素常考实验设计；增大/减小摩擦的生活应用题高频。'
+        },
+        {
+          unit: 4, title: '第四单元 我们的身体',
+          zhishi: [
+            '人体组成：头、颈、躯干、四肢；人体骨骼一共206块',
+            '骨骼：支撑身体、保护内脏器官',
+            '关节：让肢体灵活活动',
+            '肌肉：收缩、舒张带动骨骼运动',
+            '人体是一个统一整体，运动时呼吸、循环、肌肉系统协同工作'
+          ],
+          litis: [
+            { q: '弯腰、抬手、跑步等动作，依靠哪三者配合完成？', a: '骨骼、关节、肌肉相互配合。' },
+            { q: '剧烈运动后，肌肉发酸，呼吸、心跳也会加速，说明什么？', a: '人体各个器官不是独立工作的，而是相互配合、协同运作的统一整体。' },
+            { q: '经常坐姿歪斜、趴在桌上写字，长期会对身体哪部分造成伤害？', a: '会压迫脊柱骨骼，导致脊柱变形，同时影响胸腔发育，挤压内脏。' },
+            { q: '体育课热身运动有什么意义？', a: '活动开关节、拉伸肌肉，避免剧烈运动时肌肉拉伤、关节扭伤。' }
+          ],
+          tips: '骨骼、关节、肌肉的功能分工是必考点；人体是统一整体的理解常考综合题；不良姿势的危害是生活应用题。'
+        },
+        {
+          unit: 5, title: '单元综合压轴情景题',
+          zhishi: [
+            '声音由振动产生',
+            '声音传播速度比光慢',
+            '物体越重，摩擦力、压力越大',
+            '运动加大氧气消耗，呼吸和循环系统协同供氧'
+          ],
+          litis: [
+            { q: '露营夜晚篝火旁唱歌，手放喉咙处能感觉到震动，说明什么？', a: '声音由振动产生。' },
+            { q: '远处有人呼喊，为什么先看到火光再听见喊声？', a: '声音传播速度比光慢。' },
+            { q: '背包越重，肩膀勒得越疼，行走越费力，说明什么？', a: '物体越重，摩擦力、压力越大。' },
+            { q: '爬山半小时后气喘吁吁、心跳加速，说明什么？', a: '运动加大氧气消耗，呼吸和循环系统协同供氧。' }
+          ],
+          tips: '综合题要善于把现象和知识点联系起来：声音、光、重力/摩擦力、呼吸循环是四大常考点。'
+        },
+      ]
+    };
+
     // ==================== 人教PEP四上英语教材内容 ====================
     // 人教PEP四上英语教材内容（2024新版，含官方原声音频）
     const englishBookData = {
@@ -1901,6 +1990,7 @@
     let currentTextbookSubject = 'english';
     let currentChineseUnit = -1;  // 语文单元考点：-1 未选，0-7 对应 1-8 单元
     let currentMathUnit = -1;    // 数学单元考点：-1 未选，0-8 对应 1-8 单元+期末
+    let currentScienceUnit = -1; // 科学单元考点：-1 未选
 
     // 朗读中文古诗（TTS）
     function speakChinese(text) {
@@ -1922,6 +2012,11 @@
       currentMathUnit = (currentMathUnit === idx) ? -1 : idx;
       renderMain();
     }
+    function setScienceUnit(idx) {
+      currentScienceUnit = (currentScienceUnit === idx) ? -1 : idx;
+      renderMain();
+    }
+
     // 原声音频映射表（后期填入真实 mp3 URL 后自动优先使用原声）
     // 现在为空，全部走 TTS 机器发音；拿到人教社原声文件后按 { '单词': 'mp3地址' } 填入即可
     const audioMap = {};
@@ -1971,6 +2066,34 @@
       currentAudio.addEventListener('ended', () => { currentAudio = null; });
     }
 
+    // 统一的拼色单元选择器（用于语文/数学/科学）
+    // units: 单元数组；currentIdx: 当前选中索引；onClick: 点击函数名；color: 主题色
+    function renderUnitSelector(units, currentIdx, onClick, color) {
+      const colorMap = {
+        sky: { active: 'from-sky-400 to-blue-500', text: 'text-white', sub: 'text-white/90', ring: 'ring-2 ring-sky-300 ring-offset-1' },
+        emerald: { active: 'from-emerald-400 to-teal-500', text: 'text-white', sub: 'text-white/90', ring: 'ring-2 ring-emerald-300 ring-offset-1' },
+        purple: { active: 'from-purple-400 to-violet-500', text: 'text-white', sub: 'text-white/90', ring: 'ring-2 ring-purple-300 ring-offset-1' },
+        orange: { active: 'from-orange-400 to-red-500', text: 'text-white', sub: 'text-white/90', ring: 'ring-2 ring-orange-300 ring-offset-1' },
+      };
+      const c = colorMap[color] || colorMap.sky;
+      return `
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          ${units.map((un, idx) => {
+            const parts = un.title.split(' ');
+            const num = parts[0];
+            const name = parts.slice(1).join(' ');
+            const active = currentIdx === idx;
+            return `
+              <button onclick="${onClick}(${idx})" class="relative overflow-hidden px-2 py-2.5 rounded-2xl text-xs font-black transition text-center leading-tight shadow-soft ${active ? `bg-gradient-to-br ${c.active} ${c.text} ${c.ring}` : 'bg-white text-slate-600 border-2 border-slate-100 hover:border-slate-300 hover:shadow-md'}">
+                <span class="relative z-10">${num}</span>
+                <span class="relative z-10 block ${active ? c.sub : 'text-slate-400'} text-[11px] mt-1">${name}</span>
+              </button>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
     // ==================== 四上教材 ====================
     function renderTextbook() {
       const unit = englishBookData.units[currentBookUnit];
@@ -2005,9 +2128,9 @@
           color: 'blue',
           tabs: [
             { id: 'kaodian', label: '📝 单元考点', activeColor: 'bg-sky-400 text-white', bgColor: 'bg-sky-100 text-sky-600' },
+            { id: 'yikaodian', label: '⭐ 易考点', activeColor: 'bg-orange-400 text-white', bgColor: 'bg-orange-100 text-orange-600' },
             { id: 'jiangjie', label: '📺 名师讲解', activeColor: 'bg-purple-400 text-white', bgColor: 'bg-purple-100 text-purple-600' },
             { id: 'practice', label: '✏️ 在线练习', activeColor: 'bg-blue-400 text-white', bgColor: 'bg-blue-100 text-blue-600' },
-            { id: 'zhishi', label: '💡 知识点', activeColor: 'bg-emerald-400 text-white', bgColor: 'bg-emerald-100 text-emerald-600' },
           ]
         },
         science: {
@@ -2015,8 +2138,8 @@
           icon: '🔬',
           color: 'purple',
           tabs: [
-            { id: 'video', label: '🎬 实验视频', activeColor: 'bg-purple-400 text-white', bgColor: 'bg-purple-100 text-purple-600' },
-            { id: 'knowledge', label: '🔬 科学知识', activeColor: 'bg-emerald-400 text-white', bgColor: 'bg-emerald-100 text-emerald-600' },
+            { id: 'kaodian', label: '📝 单元考点', activeColor: 'bg-purple-400 text-white', bgColor: 'bg-purple-100 text-purple-600' },
+            { id: 'video', label: '🎬 实验视频', activeColor: 'bg-sky-400 text-white', bgColor: 'bg-sky-100 text-sky-600' },
             { id: 'practice', label: '✏️ 在线练习', activeColor: 'bg-blue-400 text-white', bgColor: 'bg-blue-100 text-blue-600' },
             { id: 'doc', label: '📖 电子课本', activeColor: 'bg-amber-400 text-white', bgColor: 'bg-amber-100 text-amber-600' },
           ]
@@ -2160,20 +2283,7 @@
           if (currentBookTab === 'kaodian') {
             const u = chineseBookData.units[currentChineseUnit];
             return `
-              <!-- 单元选择标签 一行两个 -->
-              <div class="grid grid-cols-2 gap-2 mb-4">
-                ${chineseBookData.units.map((un, idx) => {
-                  const parts = un.title.split(' ');
-                  const num = parts[0];
-                  const name = parts.slice(1).join(' ');
-                  return `
-                  <button onclick="setChineseUnit(${idx})" class="px-2 py-2 rounded-xl text-xs font-black transition text-center leading-tight ${currentChineseUnit === idx ? 'bg-sky-400 text-white shadow-soft' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}">
-                    <div>${num}</div>
-                    <div class="${currentChineseUnit === idx ? 'text-white/90' : 'text-slate-400'} text-[11px] mt-0.5">${name}</div>
-                  </button>
-                  `;
-                }).join('')}
-              </div>
+              ${renderUnitSelector(chineseBookData.units, currentChineseUnit, 'setChineseUnit', 'emerald')}
               ${currentChineseUnit === -1 ? `
                 <div class="text-center py-10 text-slate-400">
                   <div class="text-4xl mb-3">👆</div>
@@ -2253,20 +2363,7 @@
           if (currentBookTab === 'kaodian') {
             const u = mathBookData.units[currentMathUnit];
             return `
-              <!-- 单元选择标签 一行两个 -->
-              <div class="grid grid-cols-2 gap-2 mb-4">
-                ${mathBookData.units.map((un, idx) => {
-                  const parts = un.title.split(' ');
-                  const num = parts[0];
-                  const name = parts.slice(1).join(' ');
-                  return `
-                  <button onclick="setMathUnit(${idx})" class="px-2 py-2 rounded-xl text-xs font-black transition text-center leading-tight ${currentMathUnit === idx ? 'bg-sky-400 text-white shadow-soft' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}">
-                    <div>${num}</div>
-                    <div class="${currentMathUnit === idx ? 'text-white/90' : 'text-slate-400'} text-[11px] mt-0.5">${name}</div>
-                  </button>
-                  `;
-                }).join('')}
-              </div>
+              ${renderUnitSelector(mathBookData.units, currentMathUnit, 'setMathUnit', 'sky')}
               ${currentMathUnit === -1 ? `
                 <div class="text-center py-10 text-slate-400">
                   <div class="text-4xl mb-3">👆</div>
@@ -2330,33 +2427,86 @@
               </div>
             `;
           }
-          if (currentBookTab === 'zhishi') {
+          if (currentBookTab === 'yikaodian') {
+            const u = mathBookData.units[currentMathUnit];
             return `
-              <div class="text-center py-8 text-slate-500">
-                <div class="text-4xl mb-3">💡</div>
-                <p class="font-bold text-base mb-2">数学四上核心知识点</p>
-                <a href="https://www.baidu.com/s?wd=人教版四年级上册数学知识点总结" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-emerald-400 hover:bg-emerald-500 text-white font-black text-sm shadow-soft transition">🔍 查看知识点</a>
-              </div>
+              ${renderUnitSelector(mathBookData.units, currentMathUnit, 'setMathUnit', 'orange')}
+              ${currentMathUnit === -1 ? `
+                <div class="text-center py-10 text-slate-400">
+                  <div class="text-4xl mb-3">👆</div>
+                  <p class="font-black text-base">点击上方单元标签查看易考点</p>
+                  <p class="text-sm mt-2">每个单元都有高频易考点提示</p>
+                </div>
+              ` : `
+                <div class="bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-200 rounded-2xl p-4">
+                  <h4 class="font-black text-orange-700 text-lg mb-3">${u.title} · 易考点</h4>
+                  ${u.tips ? `
+                    <div class="bg-white rounded-xl p-3 border-2 border-orange-200 mb-3">
+                      <div class="font-black text-orange-600 text-sm mb-2">⭐ 易考点提醒</div>
+                      <div class="text-slate-700 font-bold text-base leading-relaxed">${u.tips}</div>
+                    </div>
+                  ` : ''}
+                  <div class="bg-white rounded-xl p-3 border border-orange-100">
+                    <div class="font-black text-orange-500 text-sm mb-2">📐 核心知识点</div>
+                    <div class="space-y-1.5">
+                      ${u.zhishi.map(z => `<div class="text-slate-700 font-bold text-base leading-relaxed flex gap-2"><span class="text-orange-400 shrink-0">•</span><span>${z}</span></div>`).join('')}
+                    </div>
+                  </div>
+                </div>
+              `}
             `;
           }
         }
 
         if (currentTextbookSubject === 'science') {
+          if (currentBookTab === 'kaodian') {
+            const u = scienceBookData.units[currentScienceUnit];
+            return `
+              ${renderUnitSelector(scienceBookData.units, currentScienceUnit, 'setScienceUnit', 'purple')}
+              ${currentScienceUnit === -1 ? `
+                <div class="text-center py-10 text-slate-400">
+                  <div class="text-4xl mb-3">👆</div>
+                  <p class="font-black text-base">点击上方单元标签查看考点</p>
+                  <p class="text-sm mt-2">共 4 个单元 + 综合情景题</p>
+                </div>
+              ` : `
+                <div class="bg-gradient-to-r from-purple-50 to-violet-50 border-2 border-purple-200 rounded-2xl p-4">
+                  <h4 class="font-black text-purple-700 text-lg mb-3">${u.title}</h4>
+                  <div class="space-y-3">
+                    <div class="bg-white rounded-xl p-3 border border-purple-100">
+                      <div class="font-black text-purple-500 text-sm mb-2">🔬 核心知识点</div>
+                      <div class="space-y-1.5">
+                        ${u.zhishi.map(z => `<div class="text-slate-700 font-bold text-base leading-relaxed flex gap-2"><span class="text-purple-400 shrink-0">•</span><span>${z}</span></div>`).join('')}
+                      </div>
+                    </div>
+                    <div class="bg-white rounded-xl p-3 border border-purple-100">
+                      <div class="font-black text-emerald-500 text-sm mb-2">✏️ 情景例题</div>
+                      <div class="space-y-2">
+                        ${u.litis.map(l => `
+                          <div class="bg-emerald-50 rounded-lg p-2.5 border border-emerald-100">
+                            <div class="text-slate-700 font-bold text-sm leading-relaxed mb-1">❓ ${l.q}</div>
+                            <div class="text-emerald-700 font-bold text-sm leading-relaxed">✅ ${l.a}</div>
+                          </div>
+                        `).join('')}
+                      </div>
+                    </div>
+                    ${u.tips ? `
+                      <div class="bg-amber-50 rounded-xl p-3 border-2 border-amber-200">
+                        <div class="font-black text-amber-600 text-sm mb-1">⭐ 易考点提醒</div>
+                        <div class="text-slate-700 font-bold text-base leading-relaxed">${u.tips}</div>
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+              `}
+            `;
+          }
           if (currentBookTab === 'video') {
             return `
               <div class="text-center py-8 text-slate-500">
                 <div class="text-4xl mb-3">🎬</div>
                 <p class="font-bold text-base mb-2">科学四上实验视频</p>
                 <a href="https://www.baidu.com/s?wd=教科版四年级上册科学实验视频" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-purple-400 hover:bg-purple-500 text-white font-black text-sm shadow-soft transition">🔍 搜索实验视频</a>
-              </div>
-            `;
-          }
-          if (currentBookTab === 'knowledge') {
-            return `
-              <div class="text-center py-8 text-slate-500">
-                <div class="text-4xl mb-3">🔬</div>
-                <p class="font-bold text-base mb-2">科学四上知识讲解</p>
-                <a href="https://www.baidu.com/s?wd=教科版四年级上册科学知识点" target="_blank" rel="noopener" class="inline-block mt-3 px-6 py-3 rounded-2xl bg-emerald-400 hover:bg-emerald-500 text-white font-black text-sm shadow-soft transition">🔍 搜索知识点</a>
               </div>
             `;
           }
