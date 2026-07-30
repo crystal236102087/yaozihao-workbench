@@ -990,8 +990,6 @@
                       <span class="text-base font-black text-slate-700">${log.book}</span>
                       <div class="text-xs text-slate-500 font-bold">
                         <span class="text-sky-600">⏱ ${log.minutes}分钟</span>
-                        <span class="mx-2">·</span>
-                        <span class="text-blue-600">📄 ${log.pages}页</span>
                       </div>
                     </div>
                     <button onclick="delDailyLog('${today}', '${log.id}')" class="w-7 h-7 rounded-full bg-rose-100 text-rose-500 hover:bg-rose-200 flex items-center justify-center text-sm font-black shrink-0">×</button>
@@ -1096,14 +1094,12 @@
       if (!book || !book.trim()) return;
       const minutes = prompt('读了多少分钟？', '20');
       if (!minutes) return;
-      const pages = prompt('读了多少页？', '10');
-      if (!pages) return;
       const wasEmpty = data.tasks.reading.dailyLog[today].length === 0;
       data.tasks.reading.dailyLog[today].push({
         id: 'log' + Date.now(),
         book: book.trim(),
         minutes: parseInt(minutes) || 0,
-        pages: parseInt(pages) || 0
+        pages: 0
       });
       if (wasEmpty) {
         data.sun += 5;
@@ -1315,6 +1311,24 @@
             </div>
           </div>
 
+          <!-- 添加运动记录 -->
+          <div class="bg-white rounded-3xl p-5 md:p-6 shadow-card border-4 border-sky-100 card-hover mb-6">
+            <h3 class="text-lg font-black text-slate-700 mb-4 flex items-center gap-2"><span class="text-2xl">➕</span> 添加运动项目</h3>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+              <div class="md:col-span-5">
+                <label class="block text-xs font-bold text-slate-500 mb-1">项目名称</label>
+                <input type="text" id="sport-name-input" placeholder="例如：打篮球" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-sky-400 focus:outline-none text-sm font-bold text-slate-700">
+              </div>
+              <div class="md:col-span-4">
+                <label class="block text-xs font-bold text-slate-500 mb-1">运动时间</label>
+                <input type="text" id="sport-time-input" placeholder="例如：30分钟" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-sky-400 focus:outline-none text-sm font-bold text-slate-700">
+              </div>
+              <div class="md:col-span-3 flex items-end">
+                <button onclick="addSportTask()" class="w-full py-3 rounded-xl bg-sky-400 hover:bg-sky-500 text-white font-black text-sm shadow-soft transition">添加</button>
+              </div>
+            </div>
+          </div>
+
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             ${data.tasks.sport.map((task, idx) => {
               const colors = [
@@ -1323,14 +1337,16 @@
                 'bg-gradient-to-br from-purple-100 to-violet-100 border-purple-200'
               ];
               const icons = ['🪢','🏃','👀'];
+              const icon = task.icon || icons[idx % icons.length] || '🏃';
               return `
-                <div class="${colors[idx]} border-2 rounded-2xl p-5 card-hover">
+                <div class="${colors[idx % colors.length]} border-2 rounded-2xl p-5 card-hover relative">
+                  ${task.custom ? `<button onclick="delSportTask('${task.id}')" class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-rose-100 text-rose-500 hover:bg-rose-200 flex items-center justify-center text-xs font-black shadow-sm" title="删除">×</button>` : ''}
                   <div class="flex justify-between items-start mb-3">
-                    <span class="text-4xl sticker-shadow">${icons[idx]}</span>
+                    <span class="text-4xl sticker-shadow">${icon}</span>
                     <input type="checkbox" class="checkbox-custom" ${task.done ? 'checked' : ''} onchange="toggleSportTask('${task.id}', this)">
                   </div>
                   <h4 class="text-lg md:text-xl font-black text-slate-700 ${task.done ? 'line-through text-slate-400' : ''}">${task.title}</h4>
-                  <p class="text-xs text-slate-500 font-bold mb-2">${task.sub}</p>
+                  ${task.sub ? `<p class="text-xs text-slate-500 font-bold mb-2">${task.sub}</p>` : ''}
                   <p class="text-sm text-slate-600 ${task.done ? 'line-through text-slate-300' : ''}">${task.desc}</p>
                   <div class="mt-3 inline-flex items-center gap-1 text-xs font-black text-amber-600 bg-white/90 px-2 py-1 rounded-full border border-amber-100 shadow-sm">
                     <span>☀️</span> +${task.sun}
@@ -1368,6 +1384,44 @@
       updateCalendarStatus();
       saveData();
       renderMain();
+    }
+
+    // 添加自定义运动项目
+    function addSportTask() {
+      const nameInput = document.getElementById('sport-name-input');
+      const timeInput = document.getElementById('sport-time-input');
+      const name = nameInput ? nameInput.value.trim() : '';
+      const time = timeInput ? timeInput.value.trim() : '';
+      if (!name) { showToast('请输入运动项目名称 ⚠️'); return; }
+      if (!time) { showToast('请输入运动时间 ⚠️'); return; }
+      const newTask = {
+        id: 'sc' + Date.now(),
+        title: name,
+        sub: '',
+        desc: time,
+        done: false,
+        sun: 5,
+        custom: true,
+        icon: '🏃'
+      };
+      data.tasks.sport.unshift(newTask);
+      saveData();
+      renderMain();
+      showToast(`已添加运动项目：${name} 🏃`);
+    }
+
+    // 删除自定义运动项目
+    function delSportTask(id) {
+      if (!confirm('确定删除这个运动项目吗？')) return;
+      const idx = data.tasks.sport.findIndex(t => t.id === id);
+      if (idx === -1) return;
+      const task = data.tasks.sport[idx];
+      if (task.done) data.sun -= task.sun;
+      data.tasks.sport.splice(idx, 1);
+      updateCalendarStatus();
+      saveData();
+      renderMain();
+      showToast('已删除运动项目 🗑️');
     }
 
     // ==================== 部编版四上语文课文 ====================
