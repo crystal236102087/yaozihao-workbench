@@ -162,7 +162,7 @@
   <script>
     // ==================== 数据 ====================
     const navItems = [
-      { id: 'home', icon: '📋', label: '每日计划' },
+      { id: 'home', icon: '📋', label: '每周计划' },
       { id: 'calendar', icon: '📚', label: '打卡记录' },
       { id: 'textbook', icon: '📖', label: '学期重点' },
       { id: 'chinese', icon: '📝', label: '语文' },
@@ -179,7 +179,7 @@
     const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
     const defaultData = {
-      version: 13,
+      version: 14,
       sun: 25,
       streak: 0,
       fullDays: 0,
@@ -396,6 +396,12 @@
         { id: 'r5', icon: '🎠', name: '去游乐园', cost: 300 },
       ],
       calendar: {},
+      // 每周任务系统（以周日为起始日）
+      weekly: {
+        currentWeekId: '',       // 当前周期ID，如 '2026-W31'
+        weeks: {},               // { '2026-W31': { id, startDate, endDate, tasks: [...], summary: {total, done, rate, sun} } }
+        history: [],             // 最近3个已结束周期ID ['2026-W30', '2026-W29', '2026-W28']
+      },
     };
 
     let data = JSON.parse(JSON.stringify(defaultData));
@@ -411,6 +417,10 @@
           // 如果版本号不一致，说明任务模板已更新，使用新模板
           if (parsed.version !== defaultData.version) {
             console.log('任务模板已更新，使用最新默认任务');
+            // 保留 weekly 数据（如果有的话）
+            if (parsed.weekly) {
+              data.weekly = parsed.weekly;
+            }
             return;
           }
           data = { ...defaultData, ...parsed };
@@ -423,6 +433,7 @@
           if (parsed.textbooks) data.textbooks = parsed.textbooks;
           if (parsed.rewards) data.rewards = parsed.rewards;
           if (parsed.calendar) data.calendar = parsed.calendar;
+          if (parsed.weekly) data.weekly = parsed.weekly;
         } catch (e) {}
       }
     }
@@ -455,6 +466,113 @@
 
     function getTodayWeekDay() {
       return new Date().getDay();
+    }
+
+    // ===== 周期管理工具（周日为起始日）=====
+    // 计算某日期所属的周期ID（格式 'YYYY-Www'，周日为每周第一天）
+    function getWeekId(date) {
+      const d = new Date(date);
+      const day = d.getDay(); // 0=周日
+      // 回退到本周周日
+      d.setDate(d.getDate() - day);
+      const year = d.getFullYear();
+      // 计算该周日是当年第几天
+      const jan1 = new Date(year, 0, 1);
+      const dayOfYear = Math.floor((d - jan1) / 86400000) + 1;
+      // 找到第一个周日作为第1周起点
+      const firstDay = jan1.getDay();
+      const firstSundayOffset = firstDay === 0 ? 0 : (7 - firstDay);
+      const weekNum = Math.ceil((dayOfYear - firstSundayOffset) / 7);
+      return `${year}-W${String(weekNum).padStart(2, '0')}`;
+    }
+
+    // 获取某日期所在周的周日（起始日）Date 对象
+    function getWeekStart(date) {
+      const d = new Date(date);
+      d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() - d.getDay()); // 回退到周日
+      return d;
+    }
+
+    // 获取某日期所在周的周六（结束日）Date 对象
+    function getWeekEnd(date) {
+      const d = getWeekStart(date);
+      d.setDate(d.getDate() + 6);
+      return d;
+    }
+
+    // 格式化日期为 'YYYY-MM-DD'
+    function dateStr(date) {
+      return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+    }
+
+    // 格式化日期为 'M月D日'
+    function dateShort(date) {
+      return `${date.getMonth()+1}月${date.getDate()}日`;
+    }
+
+    // 用默认任务模板创建一个新周期
+    function createNewWeek(weekId, startDate, endDate) {
+      return {
+        id: weekId,
+        startDate: dateStr(startDate),
+        endDate: dateStr(endDate),
+        tasks: JSON.parse(JSON.stringify(defaultData.tasks.home)).map(t => {
+          t.done = false; // 新周期重置完成状态
+          return t;
+        }),
+        summary: null, // 周期结束后自动填充
+      };
+    }
+
+    // 检查并执行周期切换
+    function checkWeekRollover() {
+      if (!data.weekly) {
+        data.weekly = { currentWeekId: '', weeks: {}, history: [] };
+      }
+      const todayWeekId = getWeekId(new Date());
+      const todayStart = getWeekStart(new Date());
+      const todayEnd = getWeekEnd(new Date());
+
+      // 首次初始化
+      if (!data.weekly.currentWeekId) {
+        const w = createNewWeek(todayWeekId, todayStart, todayEnd);
+        data.weekly.weeks[todayWeekId] = w;
+        data.weekly.currentWeekId = todayWeekId;
+        return;
+      }
+
+      // 如果当前周期ID == 今天周期ID，无需切换
+      if (data.weekly.currentWeekId === todayWeekId) return;
+
+      // 周期切换！总结上一周期
+      const oldWeekId = data.weekly.currentWeekId;
+      const oldWeek = data.weekly.weeks[oldWeekId];
+      if (oldWeek && !oldWeek.summary) {
+        const total = oldWeek.tasks.length;
+        const done = oldWeek.tasks.filter(t => t.done).length;
+        oldWeek.summary = {
+          total,
+          done,
+          rate: total > 0 ? Math.round(done / total * 100) : 0,
+          sun: oldWeek.tasks.filter(t => t.done).reduce((s, t) => s + (t.sun || 5), 0),
+        };
+      }
+
+      // 移入历史（保留最近3个）
+      if (oldWeekId !== todayWeekId && !data.weekly.history.includes(oldWeekId)) {
+        data.weekly.history.unshift(oldWeekId);
+        if (data.weekly.history.length > 3) {
+          // 删除超过3个的旧周期数据
+          const removed = data.weekly.history.splice(3);
+          removed.forEach(id => { delete data.weekly.weeks[id]; });
+        }
+      }
+
+      // 创建新周期
+      const newWeek = createNewWeek(todayWeekId, todayStart, todayEnd);
+      data.weekly.weeks[todayWeekId] = newWeek;
+      data.weekly.currentWeekId = todayWeekId;
     }
 
     function calcProgress() {
@@ -522,11 +640,28 @@
 
     // ==================== 首页 ====================
     function renderHome() {
-      const progress = calcProgress();
-      const { total, done } = calcTodayDone();
+      // 确保周期数据存在
+      if (!data.weekly || !data.weekly.currentWeekId) {
+        checkWeekRollover();
+      }
+      const week = data.weekly.weeks[data.weekly.currentWeekId];
+      const weekTasks = week ? week.tasks : [];
+      const weekTotal = weekTasks.length;
+      const weekDone = weekTasks.filter(t => t.done).length;
+      const weekProgress = weekTotal > 0 ? Math.round(weekDone / weekTotal * 100) : 0;
+      const weekSun = weekTasks.filter(t => t.done).reduce((s, t) => s + (t.sun || 5), 0);
+
       const radius = 52;
       const circumference = 2 * Math.PI * radius;
-      const offset = circumference - (progress / 100) * circumference;
+      const offset = circumference - (weekProgress / 100) * circumference;
+
+      // 周期日期范围
+      const ws = getWeekStart(new Date());
+      const we = getWeekEnd(new Date());
+      const weekRangeStr = `${dateShort(ws)} - ${dateShort(we)}`;
+
+      // 历史周期总结
+      const historyWeeks = (data.weekly.history || []).map(id => data.weekly.weeks[id]).filter(w => w && w.summary);
 
       return `
         <div class="mb-5">
@@ -538,13 +673,13 @@
               <span class="text-4xl animate-bounce-slow">👋</span>
               <h2 class="text-2xl md:text-3xl font-black">姚子皓，今天加油！</h2>
             </div>
-            <p class="relative text-white/95 text-sm md:text-base font-bold">${new Date().getFullYear()}年${formatDate(new Date())}</p>
+            <p class="relative text-white/95 text-sm md:text-base font-bold">📅 本周计划：${weekRangeStr}</p>
           </div>
         </div>
 
         <div class="grid md:grid-cols-2 gap-5 mb-6">
           <div class="bg-white rounded-3xl p-5 shadow-card flex flex-col items-center justify-center border-4 border-boyblue-100 card-hover">
-            <h3 class="text-slate-500 font-black mb-3">整体完成进度</h3>
+            <h3 class="text-slate-500 font-black mb-3">本周完成进度</h3>
             <div class="relative w-36 h-36">
               <svg class="w-full h-full" viewBox="0 0 120 120">
                 <circle cx="60" cy="60" r="${radius}" fill="none" stroke="#d1efff" stroke-width="14"/>
@@ -557,15 +692,19 @@
                 </defs>
               </svg>
               <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span class="text-4xl font-black text-boyblue-500">${progress}%</span>
+                <span class="text-4xl font-black text-boyblue-500">${weekProgress}%</span>
               </div>
             </div>
-            <p class="text-slate-400 text-sm mt-2 font-bold">今日已完成 ${done}/${total} 项</p>
+            <p class="text-slate-400 text-sm mt-2 font-bold">本周已完成 ${weekDone}/${weekTotal} 项</p>
           </div>
 
           <div class="bg-white rounded-3xl p-5 shadow-card border-4 border-boyblue-100 card-hover">
-            <h3 class="text-slate-600 font-black mb-4 flex items-center gap-2 text-lg"><span class="text-2xl">☀️</span> 今日能量</h3>
+            <h3 class="text-slate-600 font-black mb-4 flex items-center gap-2 text-lg"><span class="text-2xl">☀️</span> 能量面板</h3>
             <div class="space-y-3">
+              <div class="flex justify-between items-center p-3 bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl border-2 border-amber-200">
+                <span class="text-slate-600 font-black">本周获得阳光</span>
+                <span class="text-2xl font-black text-amber-500">+${weekSun}</span>
+              </div>
               <div class="flex justify-between items-center p-3 bg-gradient-to-r from-boyblue-50 to-boyblue-100 rounded-xl border-2 border-boyblue-200">
                 <span class="text-slate-600 font-black">可用阳光</span>
                 <span class="text-2xl font-black text-amber-500">${data.sun}</span>
@@ -574,63 +713,75 @@
                 <span class="text-slate-600 font-black">连续全勤</span>
                 <span class="text-xl font-black text-boyblue-500">${data.streak} 天</span>
               </div>
-              <div class="flex justify-between items-center p-3 bg-gradient-to-r from-boyblue-50 to-boyblue-100 rounded-xl border-2 border-boyblue-200">
-                <span class="text-slate-600 font-black">漏打卡</span>
-                <span class="text-xl font-black text-candy-red">${data.missed} 天</span>
-              </div>
             </div>
           </div>
         </div>
 
-        <!-- 今日任务卡片：汇总当天语数英科+运动 -->
+        <!-- 本周任务卡片 -->
         <div class="mb-5">
           <h3 class="text-xl font-black text-slate-700 flex items-center gap-2 mb-4">
-            <span class="text-2xl">🎯</span> 今日任务卡片
+            <span class="text-2xl">🎯</span> 本周任务
           </h3>
-          ${(() => {
-            const w = getTodayWeekDay();
-            // 汇总当天所有科目任务
-            const groups = [
-              { key: 'chinese', label: '语文', icon: '📝', color: 'from-emerald-100 to-green-100 border-emerald-200', tasks: data.tasks.chinese[w] },
-              { key: 'math', label: '数学', icon: '🧮', color: 'from-blue-100 to-sky-100 border-blue-200', tasks: data.tasks.math[w] },
-              { key: 'english', label: '英语', icon: '🌈', color: 'from-amber-100 to-yellow-100 border-amber-200', tasks: data.tasks.english[w] },
-              { key: 'science', label: '科学', icon: '🔬', color: 'from-purple-100 to-violet-100 border-purple-200', tasks: data.tasks.science[w] },
-              { key: 'sport', label: '运动', icon: '🏃', color: 'from-rose-100 to-pink-100 border-rose-200', tasks: data.tasks.sport },
-            ];
-            return groups.map(g => `
-              <div class="bg-gradient-to-br ${g.color} border-2 rounded-2xl p-4 mb-3 card-hover">
-                <div class="flex items-center gap-2 mb-3">
-                  <span class="text-2xl">${g.icon}</span>
-                  <h4 class="font-black text-slate-700 text-lg">${g.label}</h4>
-                  <span class="ml-auto text-xs font-black text-slate-500 bg-white/70 px-2 py-1 rounded-full">${g.tasks.filter(t=>t.done).length}/${g.tasks.length}</span>
-                </div>
-                <div class="space-y-2">
-                  ${g.tasks.map(task => `
-                    <label class="flex items-center gap-2 p-2 bg-white/60 rounded-xl cursor-pointer">
-                      <input type="checkbox" class="checkbox-custom shrink-0" ${task.done ? 'checked' : ''} onchange="toggleTodayTask('${g.key}', ${g.key === 'sport' ? -1 : w}, '${task.id}', this)">
-                      <span class="text-sm font-bold ${task.done ? 'line-through text-slate-400' : 'text-slate-700'}">${task.text || task.title}${task.desc ? '（'+task.desc+'）' : ''}</span>
-                      ${task.done ? '' : `<span class="ml-auto text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full shrink-0">☀️+${task.sun || 5}</span>`}
-                    </label>
-                  `).join('')}
-                </div>
-              </div>
-            `).join('');
-          })()}
+          <div class="bg-white rounded-3xl p-5 shadow-card border-4 border-boyblue-100 card-hover">
+            <div class="space-y-2">
+              ${weekTasks.map(task => `
+                <label class="flex items-center gap-3 p-3 rounded-2xl ${task.done ? 'bg-emerald-50 border-2 border-emerald-200' : 'bg-gradient-to-r from-boyblue-50 to-sky-50 border-2 border-boyblue-100'} cursor-pointer transition">
+                  <input type="checkbox" class="checkbox-custom shrink-0" ${task.done ? 'checked' : ''} onchange="toggleWeeklyTask('${task.id}', this)">
+                  <div class="flex-1 min-w-0">
+                    <span class="text-sm font-black ${task.done ? 'line-through text-slate-400' : 'text-slate-700'}">${task.title}</span>
+                    ${task.desc ? `<span class="text-xs text-slate-500 font-bold ml-1">${task.desc}</span>` : ''}
+                  </div>
+                  ${task.done ? '<span class="text-xs font-black text-emerald-600 bg-emerald-100 px-2 py-1 rounded-full shrink-0">✅ 已完成</span>' : `<span class="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full shrink-0">☀️+${task.sun || 5}</span>`}
+                </label>
+              `).join('')}
+            </div>
+          </div>
         </div>
+
+        <!-- 历史周期总结 -->
+        ${historyWeeks.length > 0 ? `
+        <div class="mb-5">
+          <h3 class="text-xl font-black text-slate-700 flex items-center gap-2 mb-4">
+            <span class="text-2xl">📊</span> 历史周期总结
+          </h3>
+          <div class="space-y-3">
+            ${historyWeeks.map((hw, idx) => {
+              const s = hw.summary;
+              const sDate = new Date(hw.startDate);
+              const eDate = new Date(hw.endDate);
+              const colors = [
+                'from-sky-50 to-blue-50 border-sky-200',
+                'from-emerald-50 to-green-50 border-emerald-200',
+                'from-purple-50 to-violet-50 border-purple-200',
+              ];
+              const cc = colors[idx % colors.length];
+              return `
+                <div class="bg-gradient-to-r ${cc} border-2 rounded-2xl p-4">
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="font-black text-slate-700 text-sm">📅 ${dateShort(sDate)} - ${dateShort(eDate)}</span>
+                    <span class="text-xs font-black ${s.rate >= 80 ? 'text-emerald-600' : s.rate >= 50 ? 'text-amber-600' : 'text-rose-500'} bg-white/80 px-2 py-1 rounded-full">${s.rate}%</span>
+                  </div>
+                  <div class="flex items-center gap-4 text-xs font-bold text-slate-600">
+                    <span>✅ 完成 ${s.done}/${s.total} 项</span>
+                    <span>☀️ 获得 ${s.sun} 阳光</span>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+        ` : ''}
       `;
     }
 
-    // 今日任务勾选(同步到各科目)
-    function toggleTodayTask(subject, dayIdx, id, el) {
-      let task;
-      if (subject === 'sport') {
-        task = data.tasks.sport.find(t => t.id === id);
-      } else {
-        task = data.tasks[subject][dayIdx].find(t => t.id === id);
-      }
+    // 周任务勾选
+    function toggleWeeklyTask(id, el) {
+      const week = data.weekly.weeks[data.weekly.currentWeekId];
+      if (!week) return;
+      const task = week.tasks.find(t => t.id === id);
       if (!task) return;
       task.done = el.checked;
-      if (task.done) { data.sun += (task.sun || 5); showToast('完成任务，获得 ' + (task.sun || 5) + ' 阳光！'); }
+      if (task.done) { data.sun += (task.sun || 5); showToast('完成「' + task.title + '」，获得 ' + (task.sun || 5) + ' 阳光！'); }
       else { data.sun -= (task.sun || 5); }
       updateCalendarStatus();
       saveData();
@@ -3196,6 +3347,7 @@
 
     function init() {
       loadData();
+      checkWeekRollover(); // 检查周期切换
       renderNav();
       renderMain();
       updateNavSun();
