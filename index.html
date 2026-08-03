@@ -651,15 +651,6 @@
       const showWeekId = viewWeekId || data.weekly.currentWeekId;
       const showWeek = data.weekly.weeks[showWeekId];
       const isCurrentWeek = !viewWeekId;
-      const weekTasks = showWeek ? showWeek.tasks : [];
-      const weekTotal = weekTasks.length;
-      const weekDone = weekTasks.filter(t => t.done).length;
-      const weekProgress = weekTotal > 0 ? Math.round(weekDone / weekTotal * 100) : 0;
-      const weekSun = weekTasks.filter(t => t.done).reduce((s, t) => s + (t.sun || 5), 0);
-
-      const radius = 52;
-      const circumference = 2 * Math.PI * radius;
-      const offset = circumference - (weekProgress / 100) * circumference;
 
       // 周期日期范围
       let weekRangeStr;
@@ -723,41 +714,10 @@
         ` : ''}
 
         <div class="grid md:grid-cols-2 gap-5 mb-6">
-          <div class="bg-white rounded-3xl p-5 shadow-card flex flex-col items-center justify-center border-4 border-boyblue-100 card-hover">
-            <h3 class="text-slate-500 font-black mb-3">${isCurrentWeek ? '本周完成进度' : '周期完成进度'}</h3>
-            <div class="relative w-36 h-36">
-              <svg class="w-full h-full" viewBox="0 0 120 120">
-                <circle cx="60" cy="60" r="${radius}" fill="none" stroke="#d1efff" stroke-width="14"/>
-                <circle class="progress-ring-circle" cx="60" cy="60" r="${radius}" fill="none" stroke="url(#blueGradient)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/>
-                <defs>
-                  <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#1aafff"/>
-                    <stop offset="100%" stop-color="#008fe0"/>
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span class="text-4xl font-black text-boyblue-500">${weekProgress}%</span>
-              </div>
-            </div>
-            <p class="text-slate-400 text-sm mt-2 font-bold">${isCurrentWeek ? '本周' : '周期'}已完成 ${weekDone}/${weekTotal} 项</p>
-          </div>
-
           <div class="bg-white rounded-3xl p-5 shadow-card border-4 border-boyblue-100 card-hover">
             <h3 class="text-slate-600 font-black mb-4 flex items-center gap-2 text-lg"><span class="text-2xl">☀️</span> 能量面板</h3>
             <div class="space-y-3">
-              ${isCurrentWeek ? `
               <div class="flex justify-between items-center p-3 bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl border-2 border-amber-200">
-                <span class="text-slate-600 font-black">本周获得阳光</span>
-                <span class="text-2xl font-black text-amber-500">+${weekSun}</span>
-              </div>
-              ` : `
-              <div class="flex justify-between items-center p-3 bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl border-2 border-amber-200">
-                <span class="text-slate-600 font-black">该周期获得阳光</span>
-                <span class="text-2xl font-black text-amber-500">${showWeek && showWeek.summary ? '+' + showWeek.summary.sun : '-'}</span>
-              </div>
-              `}
-              <div class="flex justify-between items-center p-3 bg-gradient-to-r from-boyblue-50 to-boyblue-100 rounded-xl border-2 border-boyblue-200">
                 <span class="text-slate-600 font-black">可用阳光</span>
                 <span class="text-2xl font-black text-amber-500">${data.sun}</span>
               </div>
@@ -767,26 +727,40 @@
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- 本周/历史周期任务卡片 -->
-        <div class="mb-5">
-          <h3 class="text-xl font-black text-slate-700 flex items-center gap-2 mb-4">
-            <span class="text-2xl">🎯</span> ${isCurrentWeek ? '本周任务' : '周期任务'}
-          </h3>
-          <div class="bg-white rounded-3xl p-5 shadow-card border-4 border-boyblue-100 card-hover">
-            <div class="space-y-2">
-              ${weekTasks.map(task => `
-                <div class="flex items-center gap-3 p-3 rounded-2xl ${task.done ? 'bg-emerald-50 border-2 border-emerald-200' : 'bg-gradient-to-r from-boyblue-50 to-sky-50 border-2 border-boyblue-100'} ${isCurrentWeek ? 'cursor-pointer' : ''} transition">
-                  ${isCurrentWeek ? `<input type="checkbox" class="checkbox-custom shrink-0" ${task.done ? 'checked' : ''} onchange="toggleWeeklyTask('${task.id}', this)">` : `<span class="shrink-0 text-lg">${task.done ? '✅' : '⬜'}</span>`}
-                  <div class="flex-1 min-w-0">
-                    <span class="text-sm font-black ${task.done ? 'line-through text-slate-400' : 'text-slate-700'}">${task.title}</span>
-                    ${task.desc ? `<span class="text-xs text-slate-500 font-bold ml-1">${task.desc}</span>` : ''}
-                  </div>
-                  ${task.done ? '<span class="text-xs font-black text-emerald-600 bg-emerald-100 px-2 py-1 rounded-full shrink-0">✅ 已完成</span>' : `<span class="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full shrink-0">☀️+${task.sun || 5}</span>`}
-                </div>
-              `).join('')}
+          <div class="bg-white rounded-3xl p-5 shadow-card flex flex-col items-center justify-center border-4 border-boyblue-100 card-hover">
+            <h3 class="text-slate-500 font-black mb-3">今日完成进度</h3>
+            <div class="relative w-36 h-36">
+              <svg class="w-full h-full" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="#d1efff" stroke-width="14"/>
+                <circle class="progress-ring-circle" cx="60" cy="60" r="52" fill="none" stroke="url(#blueGradient)" stroke-width="14" stroke-linecap="round" stroke-dasharray="326.73" stroke-dashoffset="${(() => {
+                  const allTasks = [...data.tasks.chinese[todayWD], ...data.tasks.math[todayWD], ...data.tasks.english[todayWD], ...data.tasks.science[todayWD], ...data.tasks.sport];
+                  const total = allTasks.length;
+                  const done = allTasks.filter(t => t.done).length;
+                  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+                  return 326.73 - (pct / 100) * 326.73;
+                })()}"/>
+                <defs>
+                  <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#1aafff"/>
+                    <stop offset="100%" stop-color="#008fe0"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span class="text-4xl font-black text-boyblue-500">${(() => {
+                  const allTasks = [...data.tasks.chinese[todayWD], ...data.tasks.math[todayWD], ...data.tasks.english[todayWD], ...data.tasks.science[todayWD], ...data.tasks.sport];
+                  const total = allTasks.length;
+                  const done = allTasks.filter(t => t.done).length;
+                  return total > 0 ? Math.round(done / total * 100) : 0;
+                })()}%</span>
+              </div>
             </div>
+            <p class="text-slate-400 text-sm mt-2 font-bold">今日已完成 ${(() => {
+              const allTasks = [...data.tasks.chinese[todayWD], ...data.tasks.math[todayWD], ...data.tasks.english[todayWD], ...data.tasks.science[todayWD], ...data.tasks.sport];
+              const done = allTasks.filter(t => t.done).length;
+              const total = allTasks.length;
+              return `${done}/${total}`;
+            })()} 项</p>
           </div>
         </div>
 
