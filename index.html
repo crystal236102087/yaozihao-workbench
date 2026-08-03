@@ -699,26 +699,26 @@
         </div>
 
         <!-- 快速查看上周/上上周按钮（仅当前周期时显示） -->
-        ${isCurrentWeek && (prevWeekId || prevPrevWeekId) ? `
+        ${isCurrentWeek ? `
         <div class="flex gap-2 mb-5">
-          ${prevWeekId ? (() => {
-            const pw = data.weekly.weeks[prevWeekId];
-            const ps = pw ? pw.summary : null;
-            return `<button onclick="viewWeekId='${prevWeekId}';renderMain()" class="flex-1 bg-white rounded-2xl p-3 border-2 border-sky-200 card-hover text-left">
-              <div class="text-xs font-black text-sky-500">← 上周</div>
-              <div class="text-sm font-black text-slate-700">${pw ? dateShort(new Date(pw.startDate)) + ' - ' + dateShort(new Date(pw.endDate)) : ''}</div>
-              ${ps ? `<div class="text-xs text-slate-500 mt-0.5">完成 ${ps.done}/${ps.total} 项 · ${ps.rate}%</div>` : ''}
-            </button>`;
-          })() : ''}
-          ${prevPrevWeekId ? (() => {
-            const ppw = data.weekly.weeks[prevPrevWeekId];
-            const pps = ppw ? ppw.summary : null;
-            return `<button onclick="viewWeekId='${prevPrevWeekId}';renderMain()" class="flex-1 bg-white rounded-2xl p-3 border-2 border-purple-200 card-hover text-left">
-              <div class="text-xs font-black text-purple-500">← 上上周</div>
-              <div class="text-sm font-black text-slate-700">${ppw ? dateShort(new Date(ppw.startDate)) + ' - ' + dateShort(new Date(ppw.endDate)) : ''}</div>
-              ${pps ? `<div class="text-xs text-slate-500 mt-0.5">完成 ${pps.done}/${pps.total} 项 · ${pps.rate}%</div>` : ''}
-            </button>`;
-          })() : ''}
+          <div class="flex-1 bg-white rounded-2xl p-3 border-2 ${prevWeekId ? 'border-sky-200 card-hover cursor-pointer' : 'border-slate-200 opacity-50'} text-left" ${prevWeekId ? `onclick="viewWeekId='${prevWeekId}';renderMain()"` : ''}>
+            <div class="text-xs font-black text-sky-500">← 上周</div>
+            ${prevWeekId ? (() => {
+              const pw = data.weekly.weeks[prevWeekId];
+              const ps = pw ? pw.summary : null;
+              return `<div class="text-sm font-black text-slate-700">${pw ? dateShort(new Date(pw.startDate)) + ' - ' + dateShort(new Date(pw.endDate)) : ''}</div>
+              ${ps ? `<div class="text-xs text-slate-500 mt-0.5">完成 ${ps.done}/${ps.total} 项 · ${ps.rate}%</div>` : ''}`;
+            })() : `<div class="text-sm text-slate-400 mt-0.5">暂无数据</div>`}
+          </div>
+          <div class="flex-1 bg-white rounded-2xl p-3 border-2 ${prevPrevWeekId ? 'border-purple-200 card-hover cursor-pointer' : 'border-slate-200 opacity-50'} text-left" ${prevPrevWeekId ? `onclick="viewWeekId='${prevPrevWeekId}';renderMain()"` : ''}>
+            <div class="text-xs font-black text-purple-500">← 上上周</div>
+            ${prevPrevWeekId ? (() => {
+              const ppw = data.weekly.weeks[prevPrevWeekId];
+              const pps = ppw ? ppw.summary : null;
+              return `<div class="text-sm font-black text-slate-700">${ppw ? dateShort(new Date(ppw.startDate)) + ' - ' + dateShort(new Date(ppw.endDate)) : ''}</div>
+              ${pps ? `<div class="text-xs text-slate-500 mt-0.5">完成 ${pps.done}/${pps.total} 项 · ${pps.rate}%</div>` : ''}`;
+            })() : `<div class="text-sm text-slate-400 mt-0.5">暂无数据</div>`}
+          </div>
         </div>
         ` : ''}
 
@@ -828,11 +828,12 @@
         ` : ''}
 
         <!-- 历史周期总结（仅当前周期显示） -->
-        ${isCurrentWeek && historyWeeks.length > 0 ? `
+        ${isCurrentWeek ? `
         <div class="mb-5">
           <h3 class="text-xl font-black text-slate-700 flex items-center gap-2 mb-4">
             <span class="text-2xl">📊</span> 历史周期总结
           </h3>
+          ${historyWeeks.length > 0 ? `
           <div class="space-y-3">
             ${historyWeeks.map((hw, idx) => {
               const s = hw.summary;
@@ -858,6 +859,11 @@
               `;
             }).join('')}
           </div>
+          ` : `<div class="bg-white rounded-2xl p-6 border-2 border-dashed border-slate-200 text-center">
+            <div class="text-3xl mb-2">📋</div>
+            <p class="text-slate-400 font-bold text-sm">还没有历史周期数据</p>
+            <p class="text-slate-300 text-xs mt-1">每周日自动结算，完成后这里就会显示啦~</p>
+          </div>`}
         </div>
         ` : ''}
       `;

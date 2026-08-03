@@ -1,5 +1,5 @@
 // 皓月自习社 Service Worker - 离线支持
-const CACHE_NAME = 'yaozihao-workbench-v37';
+const CACHE_NAME = 'yaozihao-workbench-v38';
 const ASSETS = [
   './',
   './index.html',
