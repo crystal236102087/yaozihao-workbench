@@ -408,6 +408,7 @@
     let currentNav = 'home';
     let currentMonth = new Date();
     let currentSubjectDay = { chinese: new Date().getDay(), math: new Date().getDay(), english: new Date().getDay(), science: new Date().getDay() };
+    let viewWeekId = null; // null=当前周期，否则为查看的历史周期ID
 
     function loadData() {
       const saved = localStorage.getItem('yaozihao-workbench');
@@ -633,6 +634,7 @@
 
     function switchNav(id) {
       currentNav = id;
+      viewWeekId = null; // 切页面时重置周期查看
       renderNav();
       renderMain();
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -644,8 +646,12 @@
       if (!data.weekly || !data.weekly.currentWeekId) {
         checkWeekRollover();
       }
-      const week = data.weekly.weeks[data.weekly.currentWeekId];
-      const weekTasks = week ? week.tasks : [];
+
+      // 决定展示哪个周期：viewWeekId 非 null 则查看历史周期
+      const showWeekId = viewWeekId || data.weekly.currentWeekId;
+      const showWeek = data.weekly.weeks[showWeekId];
+      const isCurrentWeek = !viewWeekId;
+      const weekTasks = showWeek ? showWeek.tasks : [];
       const weekTotal = weekTasks.length;
       const weekDone = weekTasks.filter(t => t.done).length;
       const weekProgress = weekTotal > 0 ? Math.round(weekDone / weekTotal * 100) : 0;
@@ -656,12 +662,24 @@
       const offset = circumference - (weekProgress / 100) * circumference;
 
       // 周期日期范围
-      const ws = getWeekStart(new Date());
-      const we = getWeekEnd(new Date());
-      const weekRangeStr = `${dateShort(ws)} - ${dateShort(we)}`;
+      let weekRangeStr;
+      if (isCurrentWeek) {
+        const ws = getWeekStart(new Date());
+        const we = getWeekEnd(new Date());
+        weekRangeStr = `${dateShort(ws)} - ${dateShort(we)}`;
+      } else {
+        weekRangeStr = `${dateShort(new Date(showWeek.startDate))} - ${dateShort(new Date(showWeek.endDate))}`;
+      }
 
-      // 历史周期总结
+      // 历史周期（用于底部卡片和按钮）
       const historyWeeks = (data.weekly.history || []).map(id => data.weekly.weeks[id]).filter(w => w && w.summary);
+
+      // 获取当前周期的上一周期和上上一周期ID（用于快速查看按钮）
+      const prevWeekId = historyWeeks.length > 0 ? data.weekly.history[0] : null;
+      const prevPrevWeekId = historyWeeks.length > 1 ? data.weekly.history[1] : null;
+
+      // 今天是周几
+      const todayWD = getTodayWeekDay();
 
       return `
         <div class="mb-5">
@@ -673,13 +691,40 @@
               <span class="text-4xl animate-bounce-slow">👋</span>
               <h2 class="text-2xl md:text-3xl font-black">姚子皓，今天加油！</h2>
             </div>
-            <p class="relative text-white/95 text-sm md:text-base font-bold">📅 本周计划：${weekRangeStr}</p>
+            <p class="relative text-white/95 text-sm md:text-base font-bold">
+              📅 ${isCurrentWeek ? '本周计划' : '查看周期'}：${weekRangeStr}
+              ${!isCurrentWeek ? `<button onclick="viewWeekId=null;renderMain()" class="ml-2 inline-block px-3 py-1 bg-white/30 rounded-full text-xs font-black hover:bg-white/40">← 返回本周</button>` : ''}
+            </p>
           </div>
         </div>
 
+        <!-- 快速查看上周/上上周按钮（仅当前周期时显示） -->
+        ${isCurrentWeek && (prevWeekId || prevPrevWeekId) ? `
+        <div class="flex gap-2 mb-5">
+          ${prevWeekId ? (() => {
+            const pw = data.weekly.weeks[prevWeekId];
+            const ps = pw ? pw.summary : null;
+            return `<button onclick="viewWeekId='${prevWeekId}';renderMain()" class="flex-1 bg-white rounded-2xl p-3 border-2 border-sky-200 card-hover text-left">
+              <div class="text-xs font-black text-sky-500">← 上周</div>
+              <div class="text-sm font-black text-slate-700">${pw ? dateShort(new Date(pw.startDate)) + ' - ' + dateShort(new Date(pw.endDate)) : ''}</div>
+              ${ps ? `<div class="text-xs text-slate-500 mt-0.5">完成 ${ps.done}/${ps.total} 项 · ${ps.rate}%</div>` : ''}
+            </button>`;
+          })() : ''}
+          ${prevPrevWeekId ? (() => {
+            const ppw = data.weekly.weeks[prevPrevWeekId];
+            const pps = ppw ? ppw.summary : null;
+            return `<button onclick="viewWeekId='${prevPrevWeekId}';renderMain()" class="flex-1 bg-white rounded-2xl p-3 border-2 border-purple-200 card-hover text-left">
+              <div class="text-xs font-black text-purple-500">← 上上周</div>
+              <div class="text-sm font-black text-slate-700">${ppw ? dateShort(new Date(ppw.startDate)) + ' - ' + dateShort(new Date(ppw.endDate)) : ''}</div>
+              ${pps ? `<div class="text-xs text-slate-500 mt-0.5">完成 ${pps.done}/${pps.total} 项 · ${pps.rate}%</div>` : ''}
+            </button>`;
+          })() : ''}
+        </div>
+        ` : ''}
+
         <div class="grid md:grid-cols-2 gap-5 mb-6">
           <div class="bg-white rounded-3xl p-5 shadow-card flex flex-col items-center justify-center border-4 border-boyblue-100 card-hover">
-            <h3 class="text-slate-500 font-black mb-3">本周完成进度</h3>
+            <h3 class="text-slate-500 font-black mb-3">${isCurrentWeek ? '本周完成进度' : '周期完成进度'}</h3>
             <div class="relative w-36 h-36">
               <svg class="w-full h-full" viewBox="0 0 120 120">
                 <circle cx="60" cy="60" r="${radius}" fill="none" stroke="#d1efff" stroke-width="14"/>
@@ -695,16 +740,23 @@
                 <span class="text-4xl font-black text-boyblue-500">${weekProgress}%</span>
               </div>
             </div>
-            <p class="text-slate-400 text-sm mt-2 font-bold">本周已完成 ${weekDone}/${weekTotal} 项</p>
+            <p class="text-slate-400 text-sm mt-2 font-bold">${isCurrentWeek ? '本周' : '周期'}已完成 ${weekDone}/${weekTotal} 项</p>
           </div>
 
           <div class="bg-white rounded-3xl p-5 shadow-card border-4 border-boyblue-100 card-hover">
             <h3 class="text-slate-600 font-black mb-4 flex items-center gap-2 text-lg"><span class="text-2xl">☀️</span> 能量面板</h3>
             <div class="space-y-3">
+              ${isCurrentWeek ? `
               <div class="flex justify-between items-center p-3 bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl border-2 border-amber-200">
                 <span class="text-slate-600 font-black">本周获得阳光</span>
                 <span class="text-2xl font-black text-amber-500">+${weekSun}</span>
               </div>
+              ` : `
+              <div class="flex justify-between items-center p-3 bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl border-2 border-amber-200">
+                <span class="text-slate-600 font-black">该周期获得阳光</span>
+                <span class="text-2xl font-black text-amber-500">${showWeek && showWeek.summary ? '+' + showWeek.summary.sun : '-'}</span>
+              </div>
+              `}
               <div class="flex justify-between items-center p-3 bg-gradient-to-r from-boyblue-50 to-boyblue-100 rounded-xl border-2 border-boyblue-200">
                 <span class="text-slate-600 font-black">可用阳光</span>
                 <span class="text-2xl font-black text-amber-500">${data.sun}</span>
@@ -717,29 +769,66 @@
           </div>
         </div>
 
-        <!-- 本周任务卡片 -->
+        <!-- 本周/历史周期任务卡片 -->
         <div class="mb-5">
           <h3 class="text-xl font-black text-slate-700 flex items-center gap-2 mb-4">
-            <span class="text-2xl">🎯</span> 本周任务
+            <span class="text-2xl">🎯</span> ${isCurrentWeek ? '本周任务' : '周期任务'}
           </h3>
           <div class="bg-white rounded-3xl p-5 shadow-card border-4 border-boyblue-100 card-hover">
             <div class="space-y-2">
               ${weekTasks.map(task => `
-                <label class="flex items-center gap-3 p-3 rounded-2xl ${task.done ? 'bg-emerald-50 border-2 border-emerald-200' : 'bg-gradient-to-r from-boyblue-50 to-sky-50 border-2 border-boyblue-100'} cursor-pointer transition">
-                  <input type="checkbox" class="checkbox-custom shrink-0" ${task.done ? 'checked' : ''} onchange="toggleWeeklyTask('${task.id}', this)">
+                <div class="flex items-center gap-3 p-3 rounded-2xl ${task.done ? 'bg-emerald-50 border-2 border-emerald-200' : 'bg-gradient-to-r from-boyblue-50 to-sky-50 border-2 border-boyblue-100'} ${isCurrentWeek ? 'cursor-pointer' : ''} transition">
+                  ${isCurrentWeek ? `<input type="checkbox" class="checkbox-custom shrink-0" ${task.done ? 'checked' : ''} onchange="toggleWeeklyTask('${task.id}', this)">` : `<span class="shrink-0 text-lg">${task.done ? '✅' : '⬜'}</span>`}
                   <div class="flex-1 min-w-0">
                     <span class="text-sm font-black ${task.done ? 'line-through text-slate-400' : 'text-slate-700'}">${task.title}</span>
                     ${task.desc ? `<span class="text-xs text-slate-500 font-bold ml-1">${task.desc}</span>` : ''}
                   </div>
                   ${task.done ? '<span class="text-xs font-black text-emerald-600 bg-emerald-100 px-2 py-1 rounded-full shrink-0">✅ 已完成</span>' : `<span class="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full shrink-0">☀️+${task.sun || 5}</span>`}
-                </label>
+                </div>
               `).join('')}
             </div>
           </div>
         </div>
 
-        <!-- 历史周期总结 -->
-        ${historyWeeks.length > 0 ? `
+        <!-- 今日任务卡片：汇总当天语数英科+运动（仅当前周期显示） -->
+        ${isCurrentWeek ? `
+        <div class="mb-5">
+          <h3 class="text-xl font-black text-slate-700 flex items-center gap-2 mb-4">
+            <span class="text-2xl">📋</span> 今日任务卡片
+          </h3>
+          ${(() => {
+            const w = todayWD;
+            const groups = [
+              { key: 'chinese', label: '语文', icon: '📝', color: 'from-emerald-100 to-green-100 border-emerald-200', tasks: data.tasks.chinese[w] },
+              { key: 'math', label: '数学', icon: '🧮', color: 'from-blue-100 to-sky-100 border-blue-200', tasks: data.tasks.math[w] },
+              { key: 'english', label: '英语', icon: '🌈', color: 'from-amber-100 to-yellow-100 border-amber-200', tasks: data.tasks.english[w] },
+              { key: 'science', label: '科学', icon: '🔬', color: 'from-purple-100 to-violet-100 border-purple-200', tasks: data.tasks.science[w] },
+              { key: 'sport', label: '运动', icon: '🏃', color: 'from-rose-100 to-pink-100 border-rose-200', tasks: data.tasks.sport },
+            ];
+            return groups.map(g => `
+              <div class="bg-gradient-to-br ${g.color} border-2 rounded-2xl p-4 mb-3 card-hover">
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="text-2xl">${g.icon}</span>
+                  <h4 class="font-black text-slate-700 text-lg">${g.label}</h4>
+                  <span class="ml-auto text-xs font-black text-slate-500 bg-white/70 px-2 py-1 rounded-full">${g.tasks.filter(t=>t.done).length}/${g.tasks.length}</span>
+                </div>
+                <div class="space-y-2">
+                  ${g.tasks.map(task => `
+                    <label class="flex items-center gap-2 p-2 bg-white/60 rounded-xl cursor-pointer">
+                      <input type="checkbox" class="checkbox-custom shrink-0" ${task.done ? 'checked' : ''} onchange="toggleTodayTask('${g.key}', ${g.key === 'sport' ? -1 : w}, '${task.id}', this)">
+                      <span class="text-sm font-bold ${task.done ? 'line-through text-slate-400' : 'text-slate-700'}">${task.text || task.title}${task.desc ? '（'+task.desc+'）' : ''}</span>
+                      ${task.done ? '' : `<span class="ml-auto text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full shrink-0">☀️+${task.sun || 5}</span>`}
+                    </label>
+                  `).join('')}
+                </div>
+              </div>
+            `).join('');
+          })()}
+        </div>
+        ` : ''}
+
+        <!-- 历史周期总结（仅当前周期显示） -->
+        ${isCurrentWeek && historyWeeks.length > 0 ? `
         <div class="mb-5">
           <h3 class="text-xl font-black text-slate-700 flex items-center gap-2 mb-4">
             <span class="text-2xl">📊</span> 历史周期总结
@@ -756,7 +845,7 @@
               ];
               const cc = colors[idx % colors.length];
               return `
-                <div class="bg-gradient-to-r ${cc} border-2 rounded-2xl p-4">
+                <button onclick="viewWeekId='${hw.id}';renderMain()" class="w-full bg-gradient-to-r ${cc} border-2 rounded-2xl p-4 text-left card-hover">
                   <div class="flex items-center justify-between mb-2">
                     <span class="font-black text-slate-700 text-sm">📅 ${dateShort(sDate)} - ${dateShort(eDate)}</span>
                     <span class="text-xs font-black ${s.rate >= 80 ? 'text-emerald-600' : s.rate >= 50 ? 'text-amber-600' : 'text-rose-500'} bg-white/80 px-2 py-1 rounded-full">${s.rate}%</span>
@@ -765,13 +854,30 @@
                     <span>✅ 完成 ${s.done}/${s.total} 项</span>
                     <span>☀️ 获得 ${s.sun} 阳光</span>
                   </div>
-                </div>
+                </button>
               `;
             }).join('')}
           </div>
         </div>
         ` : ''}
       `;
+    }
+
+    // 今日任务勾选(同步到各科目)
+    function toggleTodayTask(subject, dayIdx, id, el) {
+      let task;
+      if (subject === 'sport') {
+        task = data.tasks.sport.find(t => t.id === id);
+      } else {
+        task = data.tasks[subject][dayIdx].find(t => t.id === id);
+      }
+      if (!task) return;
+      task.done = el.checked;
+      if (task.done) { data.sun += (task.sun || 5); showToast('完成任务，获得 ' + (task.sun || 5) + ' 阳光！'); }
+      else { data.sun -= (task.sun || 5); }
+      updateCalendarStatus();
+      saveData();
+      renderMain();
     }
 
     // 周任务勾选
