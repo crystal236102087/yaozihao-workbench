@@ -159,6 +159,11 @@
     <span id="toast-msg" class="text-sm font-black text-slate-600"></span>
   </div>
 
+  <!-- 补卡弹窗容器 -->
+  <div id="makeup-modal" class="hidden"></div>
+  <!-- 云同步设置弹窗容器 -->
+  <div id="sync-settings-modal" class="hidden"></div>
+
   <script>
     // ==================== 数据 ====================
     const navItems = [
@@ -174,12 +179,13 @@
       { id: 'fun', icon: '🎮', label: '娱乐' },
       { id: 'reward', icon: '🎁', label: '奖励中心' },
       { id: 'stats', icon: '📊', label: '统计' },
+      { id: 'sync', icon: '☁️', label: '云同步' },
     ];
 
     const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 
     const defaultData = {
-      version: 14,
+      version: 15,
       sun: 25,
       streak: 0,
       fullDays: 0,
@@ -396,6 +402,18 @@
         { id: 'r5', icon: '🎠', name: '去游乐园', cost: 300 },
       ],
       calendar: {},
+      // 每日补卡快照：记录某天各科任务完成明细（用于补打卡）
+      // { 'YYYY-MM-DD': { weekDay, subjects:{chinese:[{id,text,done}],math:[...],english:[...],science:[...]}, sport:[{id,title,done}], sunAwarded, sunAmount, createdAt, updatedAt } }
+      daySnapshots: {},
+      // 云同步元数据
+      syncMeta: {
+        lastSyncTime: 0,
+        lastPushTime: 0,
+        lastPullTime: 0,
+        cloudETag: '',
+        cloudSHA: '',
+        deviceId: '',
+      },
       // 每周任务系统（以周日为起始日）
       weekly: {
         currentWeekId: '',       // 当前周期ID，如 '2026-W31'
@@ -404,11 +422,35 @@
       },
     };
 
+    // ==================== 云同步配置 ====================
+    const SYNC_CONFIG = {
+      // 同步数据存放的仓库（私有仓库，避免学习数据公开）
+      owner: '',   // TODO: 填写私有仓库所有者的 GitHub 用户名
+      repo: '',    // TODO: 填写私有仓库名
+      filePath: 'cloud-data.json',
+      // GitHub API 地址（含 token 的版本，token 写进代码）
+      get apiBase() {
+        return `https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.filePath}`;
+      },
+      // 默认 token（写进代码，用户选择）。建议使用受限 token 并在手机端设置页可修改。
+      defaultToken: '',  // TODO: 填写 GitHub Personal Access Token (需要 repo 权限)
+      tokenKey: 'yh-sync-token',
+      syncInterval: 60000,      // 定时拉取间隔 60秒
+      debouncePushDelay: 3000,  // 推送防抖 3秒
+    };
+
     let data = JSON.parse(JSON.stringify(defaultData));
     let currentNav = 'home';
     let currentMonth = new Date();
     let currentSubjectDay = { chinese: new Date().getDay(), math: new Date().getDay(), english: new Date().getDay(), science: new Date().getDay() };
     let viewWeekId = null; // null=当前周期，否则为查看的历史周期ID
+
+    // ===== 云同步状态标志 =====
+    let isPulling = false;         // 正在拉取（防止拉取合并触发的保存再推送）
+    let isPushing = false;         // 正在推送
+    let lastPushedHash = '';       // 上次推送时的数据指纹（防重复推送）
+    let pushDebounceTimer = null;  // 推送防抖定时器
+    let syncIntervalId = null;     // 定时轮询ID
 
     function loadData() {
       const saved = localStorage.getItem('yaozihao-workbench');
@@ -418,10 +460,10 @@
           // 如果版本号不一致，说明任务模板已更新，使用新模板
           if (parsed.version !== defaultData.version) {
             console.log('任务模板已更新，使用最新默认任务');
-            // 保留 weekly 数据（如果有的话）
-            if (parsed.weekly) {
-              data.weekly = parsed.weekly;
-            }
+            // 保留用户数据（weekly/daySnapshots/syncMeta 等）
+            if (parsed.weekly) data.weekly = parsed.weekly;
+            if (parsed.daySnapshots) data.daySnapshots = parsed.daySnapshots;
+            if (parsed.syncMeta) data.syncMeta = { ...defaultData.syncMeta, ...parsed.syncMeta };
             return;
           }
           data = { ...defaultData, ...parsed };
@@ -435,6 +477,8 @@
           if (parsed.rewards) data.rewards = parsed.rewards;
           if (parsed.calendar) data.calendar = parsed.calendar;
           if (parsed.weekly) data.weekly = parsed.weekly;
+          if (parsed.daySnapshots) data.daySnapshots = parsed.daySnapshots;
+          if (parsed.syncMeta) data.syncMeta = { ...defaultData.syncMeta, ...parsed.syncMeta };
         } catch (e) {}
       }
     }
@@ -443,6 +487,8 @@
       const toSave = { ...data, version: defaultData.version };
       localStorage.setItem('yaozihao-workbench', JSON.stringify(toSave));
       updateNavSun();
+      // 有同步配置时触发防抖推送
+      debouncedPush();
     }
 
     function showToast(msg, icon='✅') {
@@ -604,18 +650,7 @@
       else if (done > 0) data.calendar[key] = 'partial';
       else data.calendar[key] = 'missed';
 
-      data.fullDays = Object.values(data.calendar).filter(s => s === 'full').length;
-      data.missed = Object.values(data.calendar).filter(s => s === 'missed').length;
-
-      let streak = 0;
-      const d = new Date();
-      while (true) {
-        const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        if (data.calendar[k] === 'full') { streak++; d.setDate(d.getDate() - 1); }
-        else if (k === todayKey() && data.calendar[k] !== 'missed') { d.setDate(d.getDate() - 1); }
-        else break;
-      }
-      data.streak = streak;
+      recalcStatsFromCalendar();
     }
 
     function updateNavSun() {
@@ -923,10 +958,14 @@
                 none: 'bg-slate-50 text-slate-400 border-2 border-slate-100'
               }[status];
               const mark = status === 'missed' ? '×' : (status === 'full' ? '✓' : '');
+              const canMakeup = canMakeupDay(key);
+              const hasSnap = data.daySnapshots && data.daySnapshots[key];
               return `
-                <div class="calendar-day rounded-xl ${statusClass} ${isToday ? 'ring-2 ring-boyblue-400 ring-offset-2' : ''} flex flex-col items-center justify-center text-xs md:text-sm font-black cursor-pointer hover:opacity-80 transition">
+                <div class="calendar-day rounded-xl ${statusClass} ${isToday ? 'ring-2 ring-boyblue-400 ring-offset-2' : ''} flex flex-col items-center justify-center text-xs md:text-sm font-black ${canMakeup ? 'cursor-pointer hover:opacity-80' : 'cursor-default'} transition"
+                  ${canMakeup ? `onclick="openMakeupModal('${key}')" title="点击补卡"` : ''}>
                   <span>${day}</span>
                   ${mark ? `<span class="text-[10px]">${mark}</span>` : ''}
+                  ${canMakeup ? `<span class="text-[9px] opacity-70">${hasSnap ? '📝' : '补卡'}</span>` : ''}
                 </div>
               `;
             }).join('')}
@@ -937,6 +976,7 @@
             <div class="flex items-center gap-2 font-bold text-slate-500"><span class="w-4 h-4 rounded bg-amber-300 border border-amber-400"></span> 部分完成</div>
             <div class="flex items-center gap-2 font-bold text-slate-500"><span class="w-4 h-4 rounded bg-rose-300 border border-rose-400"></span> 未打卡</div>
             <div class="flex items-center gap-2 font-bold text-slate-500"><span class="w-4 h-4 rounded bg-slate-50 border border-slate-100"></span> 无任务/未来</div>
+            <div class="flex items-center gap-2 font-bold text-sky-600"><span class="text-[10px]">📝/补卡</span> 可补卡(本周内)</div>
           </div>
         </div>
       `;
@@ -3426,19 +3466,455 @@
         case 'fun': content = renderFun(); break;
         case 'reward': content = renderReward(); break;
         case 'stats': content = renderStats(); break;
+        case 'sync': content = renderSyncSettings(); break;
       }
 
       main.innerHTML = (currentNav === 'home' ? '' : headerDate) + content;
     }
 
+    // ==================== 云同步模块 ====================
+    function getSyncToken() {
+      return localStorage.getItem(SYNC_CONFIG.tokenKey) || SYNC_CONFIG.defaultToken || '';
+    }
+    function setSyncToken(token) {
+      if (token) localStorage.setItem(SYNC_CONFIG.tokenKey, token.trim());
+      else localStorage.removeItem(SYNC_CONFIG.tokenKey);
+    }
+    function getDeviceId() {
+      if (!data.syncMeta.deviceId) {
+        data.syncMeta.deviceId = 'dev-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+      }
+      return data.syncMeta.deviceId;
+    }
+
+    // 拉取云端数据
+    async function cloudPull() {
+      const token = getSyncToken();
+      if (!token || !SYNC_CONFIG.owner || !SYNC_CONFIG.repo) return null;
+      try {
+        const headers = { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' };
+        if (data.syncMeta.cloudETag) headers['If-None-Match'] = data.syncMeta.cloudETag;
+        const resp = await fetch(SYNC_CONFIG.apiBase, { headers });
+        if (resp.status === 304) return null;           // 数据未变化
+        if (resp.status === 404) return null;           // 云端文件不存在（首次）
+        if (resp.status === 403) { showToast('云同步限流，稍后再试', '⚠️'); return null; }
+        if (!resp.ok) throw new Error(`拉取失败 ${resp.status}`);
+        data.syncMeta.cloudETag = resp.headers.get('ETag') || '';
+        const file = await resp.json();
+        data.syncMeta.cloudSHA = file.sha;
+        const text = decodeURIComponent(escape(atob(file.content.replace(/\n/g, ''))));
+        return JSON.parse(text);
+      } catch (e) {
+        console.error('云同步拉取失败:', e);
+        showToast('云同步拉取失败', '⚠️');
+        return null;
+      }
+    }
+
+    // 合并本地与云端数据（字段级三路合并）
+    function mergeData(local, cloud) {
+      if (!cloud) return;
+      // sun 取最大值（两台都可能加阳光，不能丢）
+      local.sun = Math.max(local.sun || 0, cloud.sun || 0);
+      // calendar 按状态优先级合并
+      const pri = { full: 4, partial: 3, missed: 2, none: 1 };
+      const allKeys = new Set([...Object.keys(local.calendar), ...Object.keys(cloud.calendar || {})]);
+      allKeys.forEach(k => {
+        const l = local.calendar[k] || 'none', c = cloud.calendar[k] || 'none';
+        local.calendar[k] = (pri[l] >= pri[c]) ? l : c;
+      });
+      // daySnapshots 不覆盖已存在
+      if (cloud.daySnapshots) {
+        for (const k in cloud.daySnapshots) {
+          if (!local.daySnapshots[k]) local.daySnapshots[k] = cloud.daySnapshots[k];
+        }
+      }
+      // 学科任务 done 取 true 优先 + 新增任务合并
+      ['chinese','math','english','science'].forEach(sub => {
+        if (!cloud.tasks || !cloud.tasks[sub]) return;
+        for (let d = 0; d < 7; d++) {
+          const ct = cloud.tasks[sub][d]; if (!ct) continue;
+          const lt = local.tasks[sub][d];
+          ct.forEach(c => {
+            const l = lt.find(t => t.id === c.id);
+            if (l) { if (c.done) l.done = true; }
+            else lt.push(c);
+          });
+        }
+      });
+      // sport 合并
+      if (cloud.tasks && cloud.tasks.sport) {
+        cloud.tasks.sport.forEach(c => {
+          const l = local.tasks.sport.find(t => t.id === c.id);
+          if (l) { if (c.done) l.done = true; }
+          else local.tasks.sport.push(c);
+        });
+      }
+      // weekly 合并
+      if (cloud.weekly && cloud.weekly.weeks) {
+        for (const wid in cloud.weekly.weeks) {
+          if (!local.weekly.weeks[wid]) local.weekly.weeks[wid] = cloud.weekly.weeks[wid];
+          else if (cloud.weekly.weeks[wid].tasks) {
+            cloud.weekly.weeks[wid].tasks.forEach(c => {
+              const l = local.weekly.weeks[wid].tasks.find(t => t.id === c.id);
+              if (l && c.done) l.done = true;
+            });
+          }
+        }
+      }
+      // reading/fun dailyLog 并集
+      ['reading','fun'].forEach(cat => {
+        if (cloud.tasks && cloud.tasks[cat] && cloud.tasks[cat].dailyLog) {
+          for (const dk in cloud.tasks[cat].dailyLog) {
+            if (!local.tasks[cat].dailyLog[dk]) local.tasks[cat].dailyLog[dk] = cloud.tasks[cat].dailyLog[dk];
+          }
+        }
+      });
+      // reading.finished 并集去重
+      if (cloud.tasks && cloud.tasks.reading) {
+        cloud.tasks.reading.finished.forEach(cf => {
+          if (!local.tasks.reading.finished.find(f => f.id === cf.id)) local.tasks.reading.finished.push(cf);
+        });
+      }
+      // textbooks progress 取大
+      if (cloud.textbooks) {
+        cloud.textbooks.forEach(c => {
+          const l = local.textbooks.find(t => t.id === c.id);
+          if (l && c.progress > l.progress) l.progress = c.progress;
+        });
+      }
+      // 重算统计
+      recalcStatsFromCalendar();
+      data.syncMeta.lastPullTime = Date.now();
+      data.syncMeta.lastSyncTime = Date.now();
+    }
+
+    // 推送本地数据到云端
+    async function cloudPush() {
+      const token = getSyncToken();
+      if (!token || !SYNC_CONFIG.owner || !SYNC_CONFIG.repo) return;
+      if (isPushing) return;
+      isPushing = true;
+      try {
+        // 先拉取最新并合并，减少覆盖
+        const cloudData = await cloudPull();
+        if (cloudData) mergeData(data, cloudData);
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+        const body = {
+          message: `sync ${getDeviceId()} ${new Date().toISOString()}`,
+          content,
+          sha: data.syncMeta.cloudSHA || undefined,
+        };
+        let resp = await fetch(SYNC_CONFIG.apiBase, {
+          method: 'PUT',
+          headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (resp.status === 409) {
+          // 冲突：另一设备刚推送，重试一次
+          const newCloud = await cloudPull();
+          if (newCloud) mergeData(data, newCloud);
+          body.sha = data.syncMeta.cloudSHA;
+          body.content = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+          resp = await fetch(SYNC_CONFIG.apiBase, {
+            method: 'PUT',
+            headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          });
+        }
+        if (resp.ok) {
+          const rd = await resp.json();
+          data.syncMeta.cloudSHA = rd.content.sha;
+          data.syncMeta.cloudETag = rd.content.etag || '';
+          data.syncMeta.lastPushTime = Date.now();
+          data.syncMeta.lastSyncTime = Date.now();
+          saveData();
+        } else if (resp.status !== 403) {
+          console.error('云同步推送失败', resp.status);
+          showToast('云同步推送失败', '⚠️');
+        }
+      } catch (e) {
+        console.error('云同步推送异常:', e);
+      } finally {
+        isPushing = false;
+      }
+    }
+
+    // 防抖推送 + hash 指纹防重复
+    function debouncedPush() {
+      const token = getSyncToken();
+      if (!token || !SYNC_CONFIG.owner || !SYNC_CONFIG.repo) return;
+      if (isPulling) return; // 拉取合并中的保存不推送
+      clearTimeout(pushDebounceTimer);
+      pushDebounceTimer = setTimeout(() => {
+        const h = JSON.stringify(data).slice(0, 500);
+        if (h === lastPushedHash) return;
+        lastPushedHash = h;
+        cloudPush();
+      }, SYNC_CONFIG.debouncePushDelay);
+    }
+
+    // App 打开时同步
+    function syncOnOpen() {
+      const token = getSyncToken();
+      if (!token || !SYNC_CONFIG.owner || !SYNC_CONFIG.repo) return;
+      isPulling = true;
+      cloudPull().then(cloudData => {
+        if (cloudData) {
+          mergeData(data, cloudData);
+          saveData();
+          renderMain();
+          updateNavSun();
+        }
+        isPulling = false;
+        // 启动定时轮询（仅拉取）
+        if (!syncIntervalId) {
+          syncIntervalId = setInterval(() => {
+            if (!isPulling && !isPushing) {
+              isPulling = true;
+              cloudPull().then(cd => {
+                if (cd) { mergeData(data, cd); saveData(); renderMain(); updateNavSun(); }
+                isPulling = false;
+              });
+            }
+          }, SYNC_CONFIG.syncInterval);
+        }
+      });
+    }
+
+    // 手动完整同步
+    async function manualSync() {
+      const token = getSyncToken();
+      if (!token) { showToast('请先配置Token', '⚠️'); return; }
+      if (!SYNC_CONFIG.owner || !SYNC_CONFIG.repo) { showToast('请先配置仓库', '⚠️'); return; }
+      showToast('正在同步...', '☁️');
+      await cloudPush();
+      showToast('同步完成', '✅');
+      renderMain();
+    }
+
+    // 同步设置页面
+    function renderSyncSettings() {
+      const token = getSyncToken();
+      const devId = getDeviceId();
+      const lastSync = data.syncMeta.lastSyncTime ? new Date(data.syncMeta.lastSyncTime).toLocaleString() : '从未同步';
+      return `
+        <div class="bg-white rounded-3xl p-6 shadow-card border-4 border-boyblue-100">
+          <h2 class="text-2xl font-black text-slate-700 mb-2 flex items-center gap-2"><span class="text-2xl">☁️</span> 云同步</h2>
+          <p class="text-slate-400 text-sm font-bold mb-5">在手机A完成打卡后，会自动同步到手机B。</p>
+
+          <div class="space-y-4">
+            <div class="bg-gradient-to-r from-boyblue-50 to-sky-50 rounded-2xl p-4 border-2 border-boyblue-100">
+              <div class="flex justify-between items-center mb-1">
+                <span class="font-black text-slate-600 text-sm">设备ID</span>
+                <span class="text-xs font-black text-boyblue-500 bg-white px-2 py-1 rounded-full">${devId}</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="font-black text-slate-600 text-sm">上次同步</span>
+                <span class="text-xs font-black text-slate-500">${lastSync}</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-black text-slate-600 mb-1">同步 Token（存在本机，不会上传）</label>
+              <input id="sync-token-input" type="password" value="${token}" placeholder="GitHub Personal Access Token"
+                class="w-full px-4 py-3 rounded-xl border-2 border-boyblue-200 focus:outline-none focus:border-boyblue-400 font-mono text-sm">
+            </div>
+            <div>
+              <label class="block text-sm font-black text-slate-600 mb-1">仓库（owner/repo，私有仓库）</label>
+              <input id="sync-repo-input" type="text" value="${SYNC_CONFIG.owner ? SYNC_CONFIG.owner + '/' + SYNC_CONFIG.repo : ''}" placeholder="你的用户名/私有仓库名"
+                class="w-full px-4 py-3 rounded-xl border-2 border-boyblue-200 focus:outline-none focus:border-boyblue-400 text-sm">
+            </div>
+
+            <button onclick="saveSyncSettings();manualSync()" class="w-full py-3 rounded-2xl bg-boyblue-500 text-white font-black shadow-btn hover:bg-boyblue-600 transition">立即同步</button>
+            <button onclick="saveSyncSettings()" class="w-full py-3 rounded-2xl bg-white text-slate-600 font-black border-2 border-slate-200 hover:bg-slate-50 transition">保存设置</button>
+            <button onclick="showSyncHelp()" class="w-full py-3 rounded-2xl bg-emerald-50 text-emerald-600 font-black border-2 border-emerald-200 hover:bg-emerald-100 transition">📖 如何创建私有仓库和Token</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function saveSyncSettings() {
+      const t = document.getElementById('sync-token-input').value;
+      setSyncToken(t);
+      const r = document.getElementById('sync-repo-input').value.trim();
+      if (r) {
+        const parts = r.split('/');
+        if (parts.length === 2) {
+          SYNC_CONFIG.owner = parts[0].trim();
+          SYNC_CONFIG.repo = parts[1].trim();
+        }
+      }
+      saveData();
+      showToast('同步设置已保存', '✅');
+    }
+
+    function showSyncHelp() {
+      openSimpleModal(`
+        <h3 class="text-lg font-black text-slate-700 mb-3">📖 创建私有仓库 & Token</h3>
+        <div class="space-y-3 text-sm text-slate-600 font-medium leading-relaxed">
+          <div><b>1. 建私有仓库：</b>登录 github.com → 右上角 + → New repository → 填名字（如 study-sync）→ 选 <b>Private</b> → Create。</div>
+          <div><b>2. 创建Token：</b>头像 → Settings → Developer settings → Personal access tokens → Tokens(classic) → Generate new token → 勾选 <b>repo</b> → Generate → 复制保存。</div>
+          <div><b>3. 填写：</b>在"仓库"框填 <b>你的用户名/仓库名</b>，Token 框粘贴 token，点"立即同步"。</div>
+        </div>
+        <button onclick="closeSimpleModal()" class="mt-4 w-full py-3 rounded-2xl bg-boyblue-500 text-white font-black">知道了</button>
+      `);
+    }
+
+    function openSimpleModal(html) {
+      document.getElementById('makeup-modal').innerHTML = `
+        <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onclick="closeSimpleModal()">
+          <div class="bg-white rounded-3xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto shadow-float" onclick="event.stopPropagation()">${html}</div>
+        </div>`;
+      document.getElementById('makeup-modal').classList.remove('hidden');
+    }
+    function closeSimpleModal() {
+      document.getElementById('makeup-modal').classList.add('hidden');
+    }
+
+    // ==================== 补打卡模块 ====================
+    function getWeekDayFromDateKey(dateKey) {
+      return new Date(dateKey).getDay();
+    }
+    function canMakeupDay(dateKey) {
+      if (dateKey >= todayKey()) return false; // 不能补今天和未来
+      const t = new Date(dateKey).getTime();
+      const ws = getWeekStart(new Date()).getTime();
+      const we = getWeekEnd(new Date()).getTime();
+      return t >= ws && t <= we; // 仅当前周内
+    }
+    function calcDayStatusFromSnapshot(dateKey) {
+      const snap = data.daySnapshots[dateKey];
+      if (!snap) return 'none';
+      let total = 0, done = 0;
+      Object.values(snap.subjects).forEach(arr => arr.forEach(t => { total++; if (t.done) done++; }));
+      snap.sport.forEach(t => { total++; if (t.done) done++; });
+      if (total === 0) return 'none';
+      if (done === total) return 'full';
+      if (done > 0) return 'partial';
+      return 'missed';
+    }
+    function recalcStatsFromCalendar() {
+      data.fullDays = Object.values(data.calendar).filter(s => s === 'full').length;
+      data.missed = Object.values(data.calendar).filter(s => s === 'missed').length;
+      let streak = 0;
+      const d = new Date();
+      while (true) {
+        const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        if (data.calendar[k] === 'full') { streak++; d.setDate(d.getDate() - 1); }
+        else if (k === todayKey() && data.calendar[k] !== 'missed') { d.setDate(d.getDate() - 1); }
+        else break;
+      }
+      data.streak = streak;
+    }
+
+    function openMakeupModal(dateKey) {
+      if (!canMakeupDay(dateKey)) { showToast('只能补当前周内的过去日期', '⚠️'); return; }
+      const w = getWeekDayFromDateKey(dateKey);
+      let snap = data.daySnapshots[dateKey];
+      let subjects, sport;
+      if (snap) {
+        subjects = snap.subjects;
+        sport = snap.sport;
+      } else {
+        subjects = {
+          chinese: JSON.parse(JSON.stringify(data.tasks.chinese[w])).map(t => ({ ...t, done: false })),
+          math: JSON.parse(JSON.stringify(data.tasks.math[w])).map(t => ({ ...t, done: false })),
+          english: JSON.parse(JSON.stringify(data.tasks.english[w])).map(t => ({ ...t, done: false })),
+          science: JSON.parse(JSON.stringify(data.tasks.science[w])).map(t => ({ ...t, done: false })),
+        };
+        sport = JSON.parse(JSON.stringify(data.tasks.sport)).map(t => ({ id: t.id, title: t.title, done: false }));
+      }
+      const groups = [
+        { key: 'chinese', label: '语文', icon: '📝', tasks: subjects.chinese },
+        { key: 'math', label: '数学', icon: '🧮', tasks: subjects.math },
+        { key: 'english', label: '英语', icon: '🌈', tasks: subjects.english },
+        { key: 'science', label: '科学', icon: '🔬', tasks: subjects.science },
+        { key: 'sport', label: '运动', icon: '🏃', tasks: sport },
+      ];
+      document.getElementById('makeup-modal').innerHTML = `
+        <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onclick="closeMakeupModal()">
+          <div class="bg-white rounded-3xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto shadow-float" onclick="event.stopPropagation()">
+            <h3 class="text-xl font-black text-slate-700">📝 补卡 - ${dateKey}</h3>
+            <p class="text-sm text-slate-400 font-bold mb-4">${weekDays[w]} 的任务</p>
+            ${groups.map(g => `
+              <div class="mb-4">
+                <h4 class="font-black text-slate-600 mb-2 text-sm">${g.icon} ${g.label}</h4>
+                <div class="space-y-1">
+                  ${g.tasks.map((task, i) => `
+                    <label class="flex items-center gap-2 p-2 bg-slate-50 rounded-xl cursor-pointer">
+                      <input type="checkbox" class="checkbox-custom shrink-0" id="makeup-${g.key}-${i}" ${task.done ? 'checked' : ''}>
+                      <span class="text-sm font-bold text-slate-700">${task.text || task.title}</span>
+                    </label>
+                  `).join('')}
+                </div>
+              </div>
+            `).join('')}
+            <div class="flex gap-2 mt-5">
+              <button onclick="saveMakeupDay('${dateKey}', ${w})" class="flex-1 py-3 rounded-xl bg-boyblue-500 text-white font-black shadow-btn">保存补卡</button>
+              <button onclick="closeMakeupModal()" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-black">取消</button>
+            </div>
+          </div>
+        </div>`;
+      document.getElementById('makeup-modal').classList.remove('hidden');
+    }
+
+    function saveMakeupDay(dateKey, weekDay) {
+      const subjects = {};
+      ['chinese','math','english','science'].forEach(sub => {
+        const tpl = data.tasks[sub][weekDay];
+        subjects[sub] = tpl.map((task, i) => ({
+          id: task.id, text: task.text,
+          done: document.getElementById(`makeup-${sub}-${i}`).checked
+        }));
+      });
+      const sport = data.tasks.sport.map((task, i) => ({
+        id: task.id, title: task.title,
+        done: document.getElementById(`makeup-sport-${i}`).checked
+      }));
+
+      let doneCount = 0;
+      Object.values(subjects).forEach(arr => arr.forEach(t => { if (t.done) doneCount++; }));
+      sport.forEach(t => { if (t.done) doneCount++; });
+
+      const existing = data.daySnapshots[dateKey];
+      // 阳光处理（防重复）
+      let sunDelta = 0;
+      const newSun = doneCount * 5;
+      if (existing && existing.sunAwarded) {
+        sunDelta = -existing.sunAmount + newSun;
+      } else {
+        sunDelta = newSun;
+      }
+      data.sun += sunDelta;
+
+      data.daySnapshots[dateKey] = {
+        weekDay, subjects, sport,
+        sunAwarded: true, sunAmount: newSun,
+        createdAt: existing ? existing.createdAt : Date.now(),
+        updatedAt: Date.now(),
+      };
+      data.calendar[dateKey] = calcDayStatusFromSnapshot(dateKey);
+      recalcStatsFromCalendar();
+      closeMakeupModal();
+      saveData();
+      renderMain();
+      showToast(sunDelta > 0 ? `补卡成功，获得 ${sunDelta} 阳光！` : (sunDelta < 0 ? `补卡已更新` : '补卡成功'), '✅');
+    }
+    function closeMakeupModal() {
+      document.getElementById('makeup-modal').classList.add('hidden');
+    }
+
     function init() {
       loadData();
       checkWeekRollover(); // 检查周期切换
+      getDeviceId();       // 初始化设备ID
       renderNav();
       renderMain();
       updateNavSun();
       updateCalendarStatus();
       saveData();
+      syncOnOpen();        // 启动云同步（有配置时拉取+定时轮询）
     }
 
     init();
