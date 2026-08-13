@@ -327,3 +327,32 @@ const { chromium } = require('playwright');
 *文档最后更新：2026-07-30*
 *当前 Service Worker 版本：v35*
 *当前 Git 提交：2a45eca*
+
+---
+
+## v40 - 云同步 & 补打卡（2026-08-13）
+
+### 新增功能
+1. **云同步**：通过 GitHub Contents API 把数据存到私有仓库的 `cloud-data.json`，两台手机自动同步。
+   - Token 存 localStorage（key `yh-sync-token`），也支持代码里 `SYNC_CONFIG.defaultToken` 默认值。
+   - 仓库通过 `SYNC_CONFIG.owner` / `SYNC_CONFIG.repo` 或设置页输入。
+   - 同步时机：打开app拉取、每次saveData防抖推送(3s)、每60s定时拉取。
+   - 防循环：`isPulling`标志 + hash指纹 + 时间窗口。
+   - 冲突处理：字段级三路合并（sun取max、calendar按优先级、done取true优先、快照不覆盖、dailyLog并集）。
+   - **待配置**：`SYNC_CONFIG.owner/repo/defaultToken` 仍为空，需填私有仓库信息和token。
+
+2. **补打卡**：日历上本周内(周日起始)、今天之前的日期可点击补卡。
+   - 补卡弹窗列出该天(按星期几)的语文/数学/英语/科学/运动任务，可勾选。
+   - 数据存 `data.daySnapshots['YYYY-MM-DD']`（每日快照，不影响全局任务done）。
+   - 阳光按完成数×5发放，`sunAwarded`防重复加分。
+   - 补卡后重算该天日历状态(full/partial/missed)和全局streak。
+
+### 关键文件改动
+- `index.html`：新增云同步模块、补打卡模块、`daySnapshots`/`syncMeta`数据结构、云同步导航页。
+- `sw.js`：CACHE_NAME v39→v40。
+
+### 踩过的坑
+- GitHub API 需带 `Authorization: token xxx` 和 `Accept: application/vnd.github.v3+json` 头。
+- base64 内容需处理换行：`atob(content.replace(/\n/g,''))`，中文用 `decodeURIComponent(escape())`。
+- PUT 更新必须带 `sha`（来自GET），否则409。
+- token 不能写进公开仓库的 index.html（会泄露），已提供手机端输入方案。
