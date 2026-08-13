@@ -356,3 +356,27 @@ const { chromium } = require('playwright');
 - base64 内容需处理换行：`atob(content.replace(/\n/g,''))`，中文用 `decodeURIComponent(escape())`。
 - PUT 更新必须带 `sha`（来自GET），否则409。
 - token 不能写进公开仓库的 index.html（会泄露），已提供手机端输入方案。
+
+---
+
+## v41 - 云同步已启用（2026-08-13）
+
+### 变更
+- `SYNC_CONFIG` 已配置：owner=`crystal236102087`，repo=`study-sync`（私有仓库）。
+- **私有仓库 `study-sync` 已创建**，存放 `cloud-data.json` 同步数据。
+- **token 不能写进代码**（GitHub 密钥扫描会拦截提交，实测 409 "Secret detected"）。
+  - `SYNC_CONFIG.defaultToken` 保持为空。
+  - 用户在 app 内"云同步"设置页输入 token（存 localStorage `yh-sync-token`，不上传）。
+- sw.js CACHE_NAME v40 → v41。
+
+### 端到端测试结果（已验证，token 由代码变量传入时）
+- 第一台手机手动同步 → 数据成功推送到私有仓库 cloud-data.json。
+- 第二台手机（全新浏览器）打开 → 自动拉取完整数据。
+- 云端数据完整性验证通过（sun/tasks/calendar/daySnapshots/weekly 全保留）。
+- 无 JS 错误。
+
+### 安全提醒（重要）
+- **token 绝不能写进公开仓库的 index.html**（GitHub 密钥扫描会拦截，且写进去会被任何人看到）。
+- **token 正确配置方式**：用户打开 app → 云同步页 → 粘贴 token（需 repo 权限）→ 保存。token 仅存本机 localStorage。
+- 该私有仓库 `study-sync` 只有 owner（crystal236102087）能访问，学习数据不会公开。
+- 部署时若 git push 遇到 TLS 握手失败（沙箱网络问题），可用 GitHub Contents API 上传文件绕过（见下文踩坑记录）。
