@@ -425,15 +425,16 @@
     // ==================== 云同步配置 ====================
     const SYNC_CONFIG = {
       // 同步数据存放的仓库（私有仓库，避免学习数据公开）
-      owner: '',   // TODO: 填写私有仓库所有者的 GitHub 用户名
-      repo: '',    // TODO: 填写私有仓库名
+      owner: 'crystal236102087',
+      repo: 'study-sync',
       filePath: 'cloud-data.json',
-      // GitHub API 地址（含 token 的版本，token 写进代码）
+      // GitHub API 地址
       get apiBase() {
         return `https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.filePath}`;
       },
-      // 默认 token（写进代码，用户选择）。建议使用受限 token 并在手机端设置页可修改。
-      defaultToken: '',  // TODO: 填写 GitHub Personal Access Token (需要 repo 权限)
+      // 注意：token 不能写进代码（GitHub 密钥扫描会拦截提交）。
+      // 请在 app 内"云同步"设置页输入 token，仅存本机 localStorage。
+      defaultToken: '',
       tokenKey: 'yh-sync-token',
       syncInterval: 60000,      // 定时拉取间隔 60秒
       debouncePushDelay: 3000,  // 推送防抖 3秒
